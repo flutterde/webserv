@@ -25,6 +25,8 @@
 *.la
 *.a
 *.lib
+.vscode/
+webserv
 
 # Executables
 *.exe
