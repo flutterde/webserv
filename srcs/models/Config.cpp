@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 16:21:32 by ochouati          #+#    #+#             */
-/*   Updated: 2025/01/25 18:47:28 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/01/26 10:24:54 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static void	_printing(std::string str)
 Config::Config()
 {
 	if (DEBUG_MODE)
-		_printing("Default Constructor");
+		_printing("Config Default Constructor");
 	this->_host = "127.0.0.1";
 	this->_port = 8080;
 	this->_page404 = "configs/404.html";
@@ -36,7 +36,7 @@ Config::Config()
 Config::~Config()
 {
 	if (DEBUG_MODE)
-		_printing("Destructor");
+		_printing("Config Destructor");
 	delete[] this->buffer;
 }
 

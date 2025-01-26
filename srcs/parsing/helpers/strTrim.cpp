@@ -1,19 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   header.hpp                                         :+:      :+:    :+:   */
+/*   strTrim.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/25 15:42:22 by ochouati          #+#    #+#             */
-/*   Updated: 2025/01/26 12:51:16 by ochouati         ###   ########.fr       */
+/*   Created: 2025/01/26 12:03:41 by ochouati          #+#    #+#             */
+/*   Updated: 2025/01/26 12:30:32 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
-
 #include <iostream>
-#include "Cont.hpp"
 
-std::string	strTrim(std::string&str, std::string set);
-std::vector<Cont>	readConfigFile(std::string& file);
+std::string	strTrim(std::string&str, std::string set)
+{
+	size_t	f = str.find_first_not_of(set);
+	if (f != std::string::npos)
+		str = str.erase(0, f);
+	size_t	l = str.find_last_not_of(set);
+	if (l != std::string::npos)
+		str = str.erase(l + 1, str.length());
+	return (str);
+}

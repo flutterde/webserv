@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/25 15:41:59 by ochouati          #+#    #+#             */
-/*   Updated: 2025/01/25 18:47:05 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/01/26 12:59:08 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,26 +20,22 @@
 #include <unistd.h>
 #include <netinet/in.h>
 
-
-#define PORT 8080
-#define BUFFER_SIZE 1024
-
 int	main(int ac, char **av)
 {
-	(void)av;
 	if (ac != 2)
 	{
 		std::cout << "config file require!" << std::endl;
 		return (1);
 	}
+	std::string confFile(av[1]);
+    std::cout << "-->>> " << confFile << std::endl;
 	Config	conf;
-	
+	readConfigFile(confFile);
 	std::cout << " ------------------------------ " << conf.getRootFolder() << std::endl;
 	    int server_fd, new_socket;
     struct sockaddr_in address;
     int opt = 1;
     int addrlen = sizeof(address);
-    // char buffer[BUFFER_SIZE] = {0};
     
     // Create socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
@@ -72,7 +68,7 @@ int	main(int ac, char **av)
         exit(EXIT_FAILURE);
     }
     
-    std::cout << "HTTP server running on port " << PORT << std::endl;
+    std::cout << "HTTP server running on port " << conf.getPort() << std::endl;
     
     while (true) {
         // Accept a connection
