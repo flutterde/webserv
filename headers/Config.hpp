@@ -18,6 +18,7 @@
 #define DEBUG_MODE 0
 #endif
 
+typedef unsigned int    uint32_t;
 class Config {
 	private:
 		std::string				_host;

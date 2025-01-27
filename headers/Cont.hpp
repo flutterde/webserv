@@ -17,6 +17,7 @@
 #define DEBUG_MODE 0
 #endif
 
+typedef unsigned int    uint32_t;
 // Cont is a class that contain config file lines
 class	Cont {
 	private:
