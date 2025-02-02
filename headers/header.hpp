@@ -19,3 +19,4 @@
 typedef unsigned int    uint32_t;
 std::string	strTrim(std::string&str, std::string set);
 std::vector<Cont>	readConfigFile(std::string& file);
+void				readConfigs(std::ifstream& file);

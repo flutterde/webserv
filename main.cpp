@@ -20,6 +20,8 @@
 #include <unistd.h>
 #include <netinet/in.h>
 
+#include <fstream>
+
 int	main(int ac, char **av)
 {
 	if (ac != 2)
@@ -28,6 +30,11 @@ int	main(int ac, char **av)
 		return (1);
 	}
 	std::string confFile(av[1]);
+    std::ifstream   fFile(confFile.c_str());
+    if (!fFile)
+        return (1);
+    readConfigs(fFile);
+    std::exit(0);
     std::cout << "-->>> " << confFile << std::endl;
 	Config	conf;
 	readConfigFile(confFile);

@@ -3,7 +3,8 @@ CPPFLAGS = -Wall -Wextra -Werror -std=c++98
 
 NAME=webserv
 SRCS=main.cpp srcs/models/Config.cpp srcs/models/Cont.cpp \
-srcs/parsing/readConfigFile.cpp srcs/parsing/helpers/strTrim.cpp 
+srcs/parsing/readConfigFile.cpp srcs/parsing/helpers/strTrim.cpp \
+srcs/models/Server.cpp srcs/parsing/config/readConfig.cpp 
 
 HEADERS=headers/*
 OBJS=$(SRCS:.cpp=.o)

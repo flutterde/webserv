@@ -1,0 +1,95 @@
+###############################################################################
+# Server 1: Default server
+###############################################################################
+[server.default]
+host = "127.0.0.1"
+port = 8080
+server_name = "myserver.local"
+client_max_body_size = 1048576
+
+# Default error pages
+error_page_404 = "/errors/404.html"
+error_page_500 = "/errors/500.html"
+
+# Route 1 (for path "/")
+location1_path = "/"
+location1_root = "/var/www/html"
+location1_index = "index.html"
+location1_allow_methods = "GET,POST,DELETE"
+location1_autoindex = "off"
+location1_upload_enabled = "on"
+location1_upload_store = "/var/www/uploads"
+
+# Route 2 (for path "/api")
+location2_path = "/api"
+location2_root = "/var/www/api"
+location2_redirect = "/api/v1"
+
+# Route 3 (for path "/scripts")
+location3_path = "/scripts"
+location3_root = "/var/www/cgi-bin"
+location3_cgi_enable = ".php,.py"
+location3_cgi_path_info = "on"
+
+
+###############################################################################
+# Server 2
+###############################################################################
+[server.second]
+host = "127.0.0.1"
+port = 9090
+server_name = "another-server.local"
+
+# Error page for this server
+error_page_403 = "/errors/403.html"
+
+# Route (for path "/static")
+location1_path = "/static"
+location1_root = "/var/www/static"
+location1_allow_methods = "GET"
+location1_autoindex = "on"
+
+
+###############################################################################
+# Server 3
+###############################################################################
+[server.third]
+host = "192.168.1.1"
+port = 8081
+server_name = "third-server.local"
+client_max_body_size = 2097152
+
+# Error pages
+error_page_400 = "/errors/400.html"
+error_page_500 = "/errors/500.html"
+
+# Route (for path "/")
+location1_path = "/"
+location1_root = "/var/www/app"
+location1_index = "home.html"
+location1_allow_methods = "GET,POST"
+location1_autoindex = "off"
+location1_upload_enabled = "off"
+
+
+###############################################################################
+# Server 4
+###############################################################################
+[server.fourth]
+host = "10.0.0.1"
+port = 7070
+server_name = "fourth-server.local"
+client_max_body_size = 5242880
+
+# Error pages
+error_page_403 = "/errors/403.html"
+error_page_502 = "/errors/502.html"
+
+# Route (for path "/")
+location1_path = "/"
+location1_root = "/var/www/public"
+location1_index = "default.html"
+location1_allow_methods = "GET,POST,PUT,DELETE"
+location1_autoindex = "on"
+location1_upload_enabled = "on"
+location1_upload_store = "/var/www/public/uploads"
