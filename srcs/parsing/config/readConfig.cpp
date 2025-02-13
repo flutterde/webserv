@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 11:50:19 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/13 16:02:33 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/02/13 18:16:24 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,15 +29,15 @@ const char *readConfig::OpenFileException::what() const throw()
 	return ("can't open that file");
 }
 
-bool	readConfig::isNewServer(std::string& line)
+void	readConfig::parseConf(void)
 {
-	if (line[0] == '[' && line[line.size() - 1]
-		&& FtPars::charsCount(line, ']') == 1
-			&& FtPars::charsCount(line, '[') == 1)
-		return (true);
-	return (false);
+	Server srv;
+	for (size_t i = 0; i < this->lines->size(); ++i) {
+		if (FtPars::isNewServer((*this->lines)[i])) {
+			Server srv = Server(*this->lines, i);
+		}
+	}
 }
-
 
 std::vector<std::string>*	readConfig::readLines(std::ifstream& file)
 {

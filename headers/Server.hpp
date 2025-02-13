@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 13:40:33 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/13 16:06:02 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/02/13 18:10:49 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,5 +25,6 @@ class	Server {
 		std::string	errorPage404;
 		std::string	errorPage500;
 	public:
-		Server(std::vector<std::string>& arr, int& idx);
+		Server(std::vector<std::string>& arr, size_t& idx);
+		Server(void);
 };

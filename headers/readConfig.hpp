@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 11:50:46 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/13 16:01:14 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/02/13 17:42:31 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ class	readConfig {
 		std::vector<Server>			servers;
 		std::vector<std::string>	*lines;
 		std::vector<std::string>*	readLines(std::ifstream& file);
+		void						parseConf(void);
 		void						printLines(void) const; //!
-		bool						isNewServer(std::string& line);
 	public:
 		readConfig(void);
 		~readConfig(void);
