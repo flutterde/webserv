@@ -1,24 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   strTrim.cpp                                        :+:      :+:    :+:   */
+/*   FtPars.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/26 12:03:41 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/13 11:35:52 by ochouati         ###   ########.fr       */
+/*   Created: 2025/02/13 15:08:31 by ochouati          #+#    #+#             */
+/*   Updated: 2025/02/13 15:43:57 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
+#include "./../../../headers/FtPars.hpp"
 
-std::string&	strTrim(std::string&str, std::string set)
-{
-	size_t	f = str.find_first_not_of(set);
-	if (f != std::string::npos)
-		str = str.erase(0, f);
-	size_t	l = str.find_last_not_of(set);
-	if (l != std::string::npos)
-		str = str.erase(l + 1, str.length());
-	return (str);
+namespace	FtPars {
+	size_t	charsCount(std::string& str, char c) {
+		size_t	i = 0;
+		for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
+			if (*it == c)
+				i++;
+		}
+		return (i);
+	}
+
+	bool	strnCompare(std::string& str1, std::string str2, size_t n) {
+		std::string	tmp = str1.substr(0, n);
+		if (tmp == str2)
+			return (true);
+		return (false);
+	}
 }

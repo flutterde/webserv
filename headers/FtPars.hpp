@@ -1,12 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse.cpp                                          :+:      :+:    :+:   */
+/*   FtPars.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/25 16:07:37 by ochouati          #+#    #+#             */
-/*   Updated: 2025/01/25 16:07:38 by ochouati         ###   ########.fr       */
+/*   Created: 2025/02/13 15:22:11 by ochouati          #+#    #+#             */
+/*   Updated: 2025/02/13 15:35:04 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#pragma once
+
+# include <iostream>
+
+namespace FtPars {
+	size_t	charsCount(std::string& str, char c);
+	bool	strnCompare(std::string& str1, std::string str2, size_t n);
+}

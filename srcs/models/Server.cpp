@@ -1,24 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   strTrim.cpp                                        :+:      :+:    :+:   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/26 12:03:41 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/13 11:35:52 by ochouati         ###   ########.fr       */
+/*   Created: 2025/02/13 15:56:06 by ochouati          #+#    #+#             */
+/*   Updated: 2025/02/13 16:00:05 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
+#include "./../../headers/Server.hpp"
 
-std::string&	strTrim(std::string&str, std::string set)
+Server::Server(std::vector<std::string>& arr, int& idx)
 {
-	size_t	f = str.find_first_not_of(set);
-	if (f != std::string::npos)
-		str = str.erase(0, f);
-	size_t	l = str.find_last_not_of(set);
-	if (l != std::string::npos)
-		str = str.erase(l + 1, str.length());
-	return (str);
+	(void) this->errorPage404;
+	(void) this->errorPage500;
+	(void) this->host;
+	(void) this->limitClientBodySize;
+	(void) this->port;
+	(void) this->serverName;
+	(void) arr;
+	(void) idx;
 }
