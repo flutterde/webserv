@@ -6,12 +6,13 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 13:40:33 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/13 15:58:28 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/02/13 16:06:02 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 #include <iostream>
+#include <vector>
 
 typedef	unsigned int	uint32_t;
 
