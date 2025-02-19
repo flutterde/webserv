@@ -1,9 +1,9 @@
 CPP = c++
-CPPFLAGS = -Wall -Wextra -Werror -std=c++98
+CPPFLAGS = -Wall -Wextra -Werror -std=c++98 -I./headers/
 
 NAME=webserv
 SRCS=main.cpp srcs/parsing/config/readConfig.cpp srcs/parsing/helpers/strTrim.cpp \
-srcs/parsing/helpers/FtPars.cpp srcs/models/Server.cpp 
+srcs/parsing/helpers/FtPars.cpp srcs/models/Server.cpp  debug/printing.cpp 
 
 HEADERS=headers/*.hpp
 OBJS=$(SRCS:.cpp=.o)

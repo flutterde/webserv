@@ -1,3 +1,3 @@
 
 make && clear && \
-./webserv configs/webserv.conf 
+./webserv configs/config.conf 

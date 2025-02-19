@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 11:50:19 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/13 18:16:24 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/02/19 18:00:44 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,9 @@ void	readConfig::parseConf(void)
 	Server srv;
 	for (size_t i = 0; i < this->lines->size(); ++i) {
 		if (FtPars::isNewServer((*this->lines)[i])) {
-			Server srv = Server(*this->lines, i);
+			std::cout << " *************************************** \n";
+			srv = Server(*this->lines, i);
+			this->servers.push_back(srv);
 		}
 	}
 }
@@ -69,10 +71,24 @@ void	readConfig::readFile(char *argFile)
 		if (file.fail())
 			throw std::runtime_error("can't open file");
 		this->lines = this->readLines(file);
+		parseConf();
 	}
 	catch(const std::exception& e)
 	{
 		std::cerr << e.what() << '\n';
 	}
-	this->printLines();
+	for (size_t x = 0; x < this->servers.size(); ++x) {
+		std::cout << x << " Lenght: " << this->servers[x].getserverName().length() << std::endl;
+		if (this->servers[x].getserverName().empty())
+		{
+			std::cout << "Should be erase.\n";
+			this->servers.erase(this->servers.begin() + x);	
+		}
+	}
+	std::cout << this->servers.size() << " ################################################### \n";
+	for (size_t i = 0; i < this->servers.size(); ++i) {
+		std::cout << "Id: " << i << std::endl;
+		printServer(this->servers[i]);
+	}
+	// this->printLines();
 }

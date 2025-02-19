@@ -6,9 +6,11 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 11:50:46 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/13 17:42:31 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/02/19 13:33:50 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#pragma once
 
 #include <iostream>
 #include <fstream>
@@ -17,6 +19,8 @@
 #include "./header.hpp"
 #include "./FtPars.hpp"
 #include "./Server.hpp"
+#include "./debug.hpp"
+
 
 class	readConfig {
 	private:
