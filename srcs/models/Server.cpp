@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:56:06 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/19 14:51:27 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/02/24 12:40:33 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,25 @@
 
 Server::Server(void)
 {		
-	this->limitClientBodySize = 800000;
-	this->port = 8080;
-	this->serverName = "localhost";
+	this->limitClientBodySize = FtPars::limitBodySize;
+	this->port = FtPars::port;
+	this->serverName = "127.0.0.1";
 }
 
 static void	fillServerData(std::string& line, Server& srv) {
-	std::cout << " *********** + \n";
+	std::string str;
 	if (!line.compare(0, 11, "server_name")) {
-		std::string str = line.substr(line.find_first_of('=') + 1, line.length());
-		std::cout << "the server Name: " << str << std::endl;
+		str = line.substr(line.find_first_of('=') + 1, line.length());
+		str = FtPars::strTrim(str, " \"");
 		srv.setserverName(str);
-		std::cout << "Get server Name: " << srv.getserverName() << std::endl;
+	} else if (!line.compare(0, 4, "host")) {
+		std::string str = line.substr(line.find_first_of('=') + 1, line.length());
+		str = FtPars::strTrim(str, " \"");
+		srv.setHost(str);
+	} else if (!line.compare(0, 4, "port")) {
+		std::string str = line.substr(line.find_first_of('=') + 1, line.length());
+		str = FtPars::strTrim(str, " \"");
+		srv.setPort(std::atoi(str.c_str()));
 	}
 }
 
@@ -45,14 +52,8 @@ static void	setServer(std::vector<std::string>& arr, size_t& idx, Server& srv)
 
 Server::Server(std::vector<std::string>& arr, size_t& idx)
 {
-	(void) this->errorPage404;
-	(void) this->errorPage500;
-	(void) this->host;
-	(void) this->limitClientBodySize;
-	(void) this->port;
-	(void) this->serverName;
-	(void) arr;
-	(void) idx;
+	this->limitClientBodySize = FtPars::limitBodySize;
+	this->port = FtPars::port;
 	// printing(arr[idx]);
 	std::cout << "Setting new server.. \n";
 	setServer(arr, idx, *this);

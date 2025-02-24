@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:08:31 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/19 12:05:08 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/02/24 09:48:26 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,5 +36,16 @@ namespace	FtPars {
 				&& FtPars::charsCount(line, '[') == 1)
 			return (true);
 		return (false);
+	}
+
+	std::string&	strTrim(std::string&str, std::string set)
+	{
+		size_t	f = str.find_first_not_of(set);
+		if (f != std::string::npos)
+			str = str.erase(0, f);
+		size_t	l = str.find_last_not_of(set);
+		if (l != std::string::npos)
+			str = str.erase(l + 1, str.length());
+		return (str);
 	}
 }

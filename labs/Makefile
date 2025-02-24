@@ -1,6 +1,6 @@
 
 all:
-	c++ -Wall *.cpp -o app
+	c++ -Wall  *.cpp -o app
 
 clean:
 	rm -f app 

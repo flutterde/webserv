@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 11:50:19 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/19 18:59:25 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/02/24 10:16:23 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,12 +78,9 @@ void	readConfig::readFile(char *argFile)
 		std::cerr << e.what() << '\n';
 	}
 	for (size_t x = 0; x < this->servers.size();) {
-		std::cout << x << " Lenght: " << this->servers[x].getserverName().length() << std::endl;
 		if (this->servers[x].getserverName().empty())
-		{
-			std::cout << "Should be erase.\n";
 			this->servers.erase(this->servers.begin() + x);	
-		} else
+		else
 			++x;
 	}
 	std::cout << this->servers.size() << " ################################################### \n";
