@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:22:11 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/25 13:39:03 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/02/25 13:53:45 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@
 
 typedef	unsigned int	uint32_t;
 
+#define FT_LIMIT_BODY_SIZE 800001
+#define FT_PORT 8080
 namespace FtPars {
-	static uint32_t limitBodySize =  800001;
-	static uint32_t port =  8080;
 	size_t	charsCount(std::string& str, char c);
 	bool	strnCompare(std::string& str1, std::string str2, size_t n);
 	bool	isNewServer(std::string& line);

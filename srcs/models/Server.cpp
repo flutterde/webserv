@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:56:06 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/25 11:11:04 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/02/25 13:54:42 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 
 Server::Server(void)
 {		
-	this->limitClientBodySize = FtPars::limitBodySize;
-	this->port = FtPars::port;
+	this->limitClientBodySize = FT_LIMIT_BODY_SIZE;
+	this->port = FT_PORT;
 	this->serverName = "127.0.0.1";
 }
 
@@ -63,8 +63,8 @@ static void	setServer(std::vector<std::string>& arr, size_t& idx, Server& srv)
 
 Server::Server(std::vector<std::string>& arr, size_t& idx)
 {
-	this->limitClientBodySize = FtPars::limitBodySize;
-	this->port = FtPars::port;
+	this->limitClientBodySize = FT_LIMIT_BODY_SIZE;
+	this->port = FT_PORT;
 	this->allowedMethods["GET"] = false;
 	this->allowedMethods["POST"] = false;
 	this->allowedMethods["DELETE"] = false;
