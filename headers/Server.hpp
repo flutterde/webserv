@@ -6,13 +6,14 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 13:40:33 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/19 13:25:23 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/02/25 10:50:50 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 #include <iostream>
 #include <vector>
+#include <map>
 #include "FtPars.hpp"
 
 typedef	unsigned int	uint32_t;
@@ -25,6 +26,9 @@ class	Server {
 		uint32_t	limitClientBodySize;
 		std::string	errorPage404;
 		std::string	errorPage500;
+		std::map<std::string, bool> allowedMethods;
+		std::map<std::string, bool> indexes;
+		
 
 	public:
 		Server(std::vector<std::string>& arr, size_t& idx);

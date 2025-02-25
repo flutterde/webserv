@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:56:06 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/24 12:40:33 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/02/25 10:56:55 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,23 @@ static void	fillServerData(std::string& line, Server& srv) {
 		std::string str = line.substr(line.find_first_of('=') + 1, line.length());
 		str = FtPars::strTrim(str, " \"");
 		srv.setPort(std::atoi(str.c_str()));
+	} else if (!line.compare(0, 20, "client_max_body_size")) {
+		std::string str = line.substr(line.find_first_of('=') + 1, line.length());
+		str = FtPars::strTrim(str, " \"");
+		srv.setLimitClientBodySize(std::atoi(str.c_str()));
+	} else if (!line.compare(0, 14, "error_page_404")) {
+		std::string str = line.substr(line.find_first_of('=') + 1, line.length());
+		str = FtPars::strTrim(str, " \"");
+		srv.setErrorPage404(str);
+	} else if (!line.compare(0, 14, "error_page_500")) {
+		std::string str = line.substr(line.find_first_of('=') + 1, line.length());
+		str = FtPars::strTrim(str, " \"");
+		srv.setErrorPage500(str);
 	}
 }
 
 static void	setServer(std::vector<std::string>& arr, size_t& idx, Server& srv)
 {
-	(void)srv;
 	idx++;
 	for (size_t i = idx; i < arr.size(); ++i) {
 		if (FtPars::isNewServer(arr[i])) {
@@ -54,6 +65,9 @@ Server::Server(std::vector<std::string>& arr, size_t& idx)
 {
 	this->limitClientBodySize = FtPars::limitBodySize;
 	this->port = FtPars::port;
+	this->allowedMethods["GET"] = false;
+	this->allowedMethods["POST"] = false;
+	this->allowedMethods["DELETE"] = false;
 	// printing(arr[idx]);
 	std::cout << "Setting new server.. \n";
 	setServer(arr, idx, *this);
@@ -86,7 +100,7 @@ std::string	Server::getErrorPage404(void)	const
 
 std::string	Server::getErrorPage500(void)	const
 {
-	return (this->errorPage404);
+	return (this->errorPage500);
 }
 
 void	Server::setPort(uint32_t val)
@@ -116,5 +130,5 @@ void	Server::setErrorPage404(std::string& val)
 
 void	Server::setErrorPage500(std::string& val)
 {
-	this->errorPage404 = val;
+	this->errorPage500 = val;
 }
