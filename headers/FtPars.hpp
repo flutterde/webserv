@@ -6,13 +6,15 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:22:11 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/24 10:15:37 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/02/25 13:39:03 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 # include <iostream>
+
+typedef	unsigned int	uint32_t;
 
 namespace FtPars {
 	static uint32_t limitBodySize =  800001;

@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 13:40:33 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/25 10:50:50 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/02/25 11:11:09 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ class	Server {
 		uint32_t	getLimitClientBodySize(void)	const;
 		std::string	getErrorPage404(void)	const;
 		std::string	getErrorPage500(void)	const;
+		std::map<std::string, bool>	getAllowedMethods(void) const;
 		// Setters
 		void	setPort(uint32_t val);
 		void	setHost(std::string& val);

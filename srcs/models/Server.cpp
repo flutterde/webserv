@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:56:06 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/25 10:56:55 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/02/25 11:11:04 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ Server::Server(std::vector<std::string>& arr, size_t& idx)
 	this->allowedMethods["GET"] = false;
 	this->allowedMethods["POST"] = false;
 	this->allowedMethods["DELETE"] = false;
-	// printing(arr[idx]);
+	// printing(arr[idx]);//!
 	std::cout << "Setting new server.. \n";
 	setServer(arr, idx, *this);
 }
@@ -102,6 +102,11 @@ std::string	Server::getErrorPage500(void)	const
 {
 	return (this->errorPage500);
 }
+
+std::map<std::string, bool>	Server::getAllowedMethods(void) const {
+	return (this->allowedMethods);
+}
+
 
 void	Server::setPort(uint32_t val)
 {
