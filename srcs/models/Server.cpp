@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:56:06 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/25 13:54:42 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/02/26 09:52:54 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ Server::Server(std::vector<std::string>& arr, size_t& idx)
 	this->allowedMethods["GET"] = false;
 	this->allowedMethods["POST"] = false;
 	this->allowedMethods["DELETE"] = false;
+	this->indexes["index.html"] = false;
 	// printing(arr[idx]);//!
 	std::cout << "Setting new server.. \n";
 	setServer(arr, idx, *this);
@@ -107,6 +108,10 @@ std::map<std::string, bool>	Server::getAllowedMethods(void) const {
 	return (this->allowedMethods);
 }
 
+std::map<std::string, bool>	Server::getIndexes(void) const
+{
+	return (this->indexes);
+}
 
 void	Server::setPort(uint32_t val)
 {
@@ -136,4 +141,9 @@ void	Server::setErrorPage404(std::string& val)
 void	Server::setErrorPage500(std::string& val)
 {
 	this->errorPage500 = val;
+}
+
+void	Server::setIndex(std::string& key, bool val)
+{
+	this->indexes[key] = val;
 }

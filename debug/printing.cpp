@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 09:28:54 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/25 11:30:36 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/02/26 09:52:01 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,5 +39,7 @@ void	printServer(Server& srv) {
 	// std::cout << " SN lenght: " << srv.getserverName().length() << std::endl;
 	std::cout << " Methods: \n";
 	printMap(srv.getAllowedMethods());
+	std::cout << " Indexes: \n";
+	printMap(srv.getIndexes());
 	std::cout << " ------------------------------------- \n";
 }

@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 13:40:33 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/25 11:11:09 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/02/26 10:05:06 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include "FtPars.hpp"
 
 typedef	unsigned int	uint32_t;
-
+/// @brief server class that hold data for each website
 class	Server {
 	private:
 		std::string	host;
@@ -28,7 +28,6 @@ class	Server {
 		std::string	errorPage500;
 		std::map<std::string, bool> allowedMethods;
 		std::map<std::string, bool> indexes;
-		
 
 	public:
 		Server(std::vector<std::string>& arr, size_t& idx);
@@ -41,6 +40,7 @@ class	Server {
 		std::string	getErrorPage404(void)	const;
 		std::string	getErrorPage500(void)	const;
 		std::map<std::string, bool>	getAllowedMethods(void) const;
+		std::map<std::string, bool>	getIndexes(void) const;
 		// Setters
 		void	setPort(uint32_t val);
 		void	setHost(std::string& val);
@@ -48,4 +48,5 @@ class	Server {
 		void	setLimitClientBodySize(uint32_t val);
 		void	setErrorPage404(std::string& val);
 		void	setErrorPage500(std::string& val);
+		void	setIndex(std::string& key, bool val);
 };
