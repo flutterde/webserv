@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 09:27:31 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/19 13:33:41 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/03/01 17:31:49 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,3 +19,6 @@
 
 void	printing(std::string vr);
 void	printServer(Server& srv);
+
+template <typename T>
+void	dPrintln(T val);

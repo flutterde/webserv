@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 09:28:54 by ochouati          #+#    #+#             */
-/*   Updated: 2025/02/26 09:52:01 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/03/01 17:31:25 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,11 @@ void	printMap(std::map<std::string, T> mp) {
 	for (typename std::map<std::string, T>::iterator it = mp.begin(); it != mp.end(); ++it){
 		std::cout << "	->key is: " << it->first << " val: " << (it->second) << std::endl;	
 	}
+}
+
+template <typename T>
+void	dPrintln(T val) {
+	std::cout << val << std::endl;
 }
 
 void	printServer(Server& srv) {
