@@ -28,11 +28,6 @@ void	printMap(std::map<std::string, T> mp) {
 	}
 }
 
-template <typename T>
-void	dPrintln(T val) {
-	std::cout << val << std::endl;
-}
-
 void	printServer(Server& srv) {
 	std::cout << " ------------------------------------- \n";
 	std::cout << " Host: " << srv.getHost() << std::endl;

@@ -12,6 +12,7 @@
 
 #include "./../../../headers/FtPars.hpp"
 
+/// @brief collection of helper functions for parsing
 namespace	FtPars {
 	size_t	charsCount(std::string& str, char c) {
 		size_t	i = 0;
@@ -52,21 +53,26 @@ namespace	FtPars {
 	bool	isValidPattern(std::string& str)
 	{
 		if (str.empty() || str[0] != '"' || str[str.size() - 1] != '"' || str.size() < 3)
-			return (false);
+			throw std::runtime_error("invalid configs");
 		return (true);
 	}
 
 	bool	isValidIP4(std::string& str)
 	{
+		if (charsCount(str, '.') != 3)
+				throw std::runtime_error("invalid configs");
 		for (size_t i = 0; i < str.size(); i++)
 		{
 			if (str[i] != '.' && !std::isdigit(str[i]))
-				return (false);
+				throw std::runtime_error("invalid configs");
 		}
 		return (true);
 	}
 
-	uint32_t	ftInetPton(const std::string& str)//!< Convert an IPv4 address from its text representation to binary form
+	/// @brief Convert an IPv4 address from its text representation to binary form
+	/// @param const std::string& str
+	/// @return uint32_t (ip)
+	uint32_t	ftInetPton(const std::string& str)
 	{
 		std::vector<std::string> arr;
 		std::stringstream ss(str);
@@ -81,10 +87,9 @@ namespace	FtPars {
 		}
 		if (arr.size() != 4)
 			return (0);
-		for (size_t i = 0; i < arr.size(); i++)
-		{
+		 for (size_t i = 0; i < arr.size(); i++) {
 			byte = std::atoi(arr[i].c_str());
-			ip |= byte << (24 - (i * 8));//! error here
+			ip |= byte << (24 - (i * 8));
 		}
 		return (ip);
 	}

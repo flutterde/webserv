@@ -13,38 +13,49 @@
 #include "./../../headers/Server.hpp"
 #include "./../../headers/debug.hpp" //!
 
-Server::Server(void)
+Server::Server(void)//! why ?
 {		
 	this->limitClientBodySize = FT_LIMIT_BODY_SIZE;
 	this->port = FT_PORT;
 	this->serverName = "127.0.0.1";
 }
 
+static std::string&	validateAndTrim(std::string& str) {
+	try
+	{
+		str = str.substr(str.find_first_of('=') + 1, str.length());
+		str = FtPars::strTrim(str, " 	");
+		FtPars::isValidPattern(str);
+		str = FtPars::strTrim(str, "\"");
+	}
+	catch(const std::exception& e)
+	{
+		throw std::runtime_error(e.what());
+	}
+	return (str);
+}
+
 static void	fillServerData(std::string& line, Server& srv) {
 	std::string str;
+	str = line;
 	if (!line.compare(0, 11, "server_name")) {
-		str = line.substr(line.find_first_of('=') + 1, line.length());
-		str = FtPars::strTrim(str, " \"");
+		validateAndTrim(str);
 		srv.setserverName(str);
 	} else if (!line.compare(0, 4, "host")) {
-		std::string str = line.substr(line.find_first_of('=') + 1, line.length());
-		str = FtPars::strTrim(str, " \"");
+		validateAndTrim(str);
+		FtPars::isValidIP4(str);
 		srv.setHost(str);
 	} else if (!line.compare(0, 4, "port")) {
-		std::string str = line.substr(line.find_first_of('=') + 1, line.length());
-		str = FtPars::strTrim(str, " \"");
+		validateAndTrim(str);
 		srv.setPort(std::atoi(str.c_str()));
 	} else if (!line.compare(0, 20, "client_max_body_size")) {
-		std::string str = line.substr(line.find_first_of('=') + 1, line.length());
-		str = FtPars::strTrim(str, " \"");
+		validateAndTrim(str);
 		srv.setLimitClientBodySize(std::atoi(str.c_str()));
 	} else if (!line.compare(0, 14, "error_page_404")) {
-		std::string str = line.substr(line.find_first_of('=') + 1, line.length());
-		str = FtPars::strTrim(str, " \"");
+		validateAndTrim(str);
 		srv.setErrorPage404(str);
 	} else if (!line.compare(0, 14, "error_page_500")) {
-		std::string str = line.substr(line.find_first_of('=') + 1, line.length());
-		str = FtPars::strTrim(str, " \"");
+		validateAndTrim(str);
 		srv.setErrorPage500(str);
 	}
 }
@@ -70,7 +81,6 @@ Server::Server(std::vector<std::string>& arr, size_t& idx)
 	this->allowedMethods["DELETE"] = false;
 	this->indexes["index.html"] = false;
 	// printing(arr[idx]);//!
-	std::cout << "Setting new server.. \n";
 	setServer(arr, idx, *this);
 }
 

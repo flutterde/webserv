@@ -20,5 +20,8 @@
 void	printing(std::string vr);
 void	printServer(Server& srv);
 
+
 template <typename T>
-void	dPrintln(T val);
+void	ftPrintln(T val) {
+	std::cout << val << std::endl;
+}

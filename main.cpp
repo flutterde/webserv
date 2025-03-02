@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "headers/header.hpp"
+#include "headers/debug.hpp"//!
 #include "headers/readConfig.hpp"
 #include <string>
 #include <cstring>
@@ -21,20 +22,18 @@
 
 int	main(int ac, char **av)
 {
-	if (ac != 2)
-	{
+	if (ac != 2) {
 		std::cout << "config file require!" << std::endl;
 		return (1);
 	}
-    try
-    {
+    try {
         readConfig conf;
         std::ifstream fle;
         conf.readFile(av[1]);
     }
-    catch(const std::exception& e)
-    {
+    catch(const std::exception& e) {
         std::cerr << e.what() << '\n';
+        return (1);
     }
     return (0);
 }

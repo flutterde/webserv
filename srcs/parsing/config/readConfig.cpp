@@ -34,7 +34,6 @@ void	readConfig::parseConf(void)
 	Server srv;
 	for (size_t i = 0; i < this->lines->size(); ++i) {
 		if (FtPars::isNewServer((*this->lines)[i])) {
-			std::cout << " *************************************** \n";
 			srv = Server(*this->lines, i);
 			this->servers.push_back(srv);
 		}
@@ -75,7 +74,7 @@ void	readConfig::readFile(char *argFile)
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << e.what() << '\n';
+		throw std::runtime_error(e.what());
 	}
 	for (size_t x = 0; x < this->servers.size();) {
 		if (this->servers[x].getserverName().empty())
