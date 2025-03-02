@@ -21,7 +21,7 @@ clean:
 
 fclean: clean
 	rm -f $(NAME)
-test:
+tests:
 	bash test/test01.sh
 
 re: fclean all
