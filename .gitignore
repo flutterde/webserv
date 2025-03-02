@@ -30,7 +30,7 @@ test.txt
 *.lib
 .vscode/
 webserv
-
+testing/
 # Executables
 *.exe
 *.out

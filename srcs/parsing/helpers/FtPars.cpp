@@ -48,4 +48,44 @@ namespace	FtPars {
 			str = str.erase(l + 1, str.length());
 		return (str);
 	}
+
+	bool	isValidPattern(std::string& str)
+	{
+		if (str.empty() || str[0] != '"' || str[str.size() - 1] != '"' || str.size() < 3)
+			return (false);
+		return (true);
+	}
+
+	bool	isValidIP4(std::string& str)
+	{
+		for (size_t i = 0; i < str.size(); i++)
+		{
+			if (str[i] != '.' && !std::isdigit(str[i]))
+				return (false);
+		}
+		return (true);
+	}
+
+	uint32_t	ftInetPton(const std::string& str)//!< Convert an IPv4 address from its text representation to binary form
+	{
+		std::vector<std::string> arr;
+		std::stringstream ss(str);
+		uint32_t	ip = 0;
+		uint8_t		byte;
+
+		while (ss.good())
+		{
+			std::string substr;
+			getline(ss, substr, '.');
+			arr.push_back(substr);
+		}
+		if (arr.size() != 4)
+			return (0);
+		for (size_t i = 0; i < arr.size(); i++)
+		{
+			byte = std::atoi(arr[i].c_str());
+			ip |= byte << (24 - (i * 8));//! error here
+		}
+		return (ip);
+	}
 }
