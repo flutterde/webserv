@@ -20,7 +20,7 @@
 #include <unistd.h>
 #include <netinet/in.h>
 
-int	main(int ac, char **av)
+int	main(int ac, char **av, char **env)
 {
 	if (ac != 2) {
 		std::cout << "config file require!" << std::endl;
