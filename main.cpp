@@ -29,7 +29,7 @@ int	main(int ac, char **av, char **env)
     try {
         readConfig conf;
         std::ifstream fle;
-        conf.readFile(av[1]);
+        conf.readFile(av[1], env);
     }
     catch(const std::exception& e) {
         std::cerr << e.what() << '\n';

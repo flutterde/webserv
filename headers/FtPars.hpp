@@ -30,4 +30,5 @@ namespace FtPars {
 	bool	isValidPattern(std::string& str);
 	bool	isValidIP4(std::string& str);
 	uint32_t	ftInetPton(const std::string& str);
+	char	*stringToChar(std::string& str);
 }
