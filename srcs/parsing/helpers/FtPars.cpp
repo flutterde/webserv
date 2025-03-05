@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "./../../../headers/FtPars.hpp"
+#include <algorithm>
 
 /// @brief collection of helper functions for parsing
 namespace	FtPars {
@@ -140,7 +141,7 @@ namespace	FtPars {
 			else
 				throw std::runtime_error("Error parsing methods");
 		}
-		if (std::find(arr.begin(), arr.end(), "GET") == arr.end())
+		if (!std::count(arr.begin(), arr.end(), std::string("GET")))
 			mp["GET"] = false;
 		return (mp);
 	}
