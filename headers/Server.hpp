@@ -28,6 +28,8 @@ class	Server {
 		std::string	errorPage500;
 		std::map<std::string, bool> allowedMethods;
 		std::map<std::string, bool> indexes;
+		int			serverSocket;
+		int			serverBind;
 
 	public:
 		Server(std::vector<std::string>& arr, size_t& idx);
@@ -40,6 +42,7 @@ class	Server {
 		std::string	getErrorPage404(void)	const;
 		std::string	getErrorPage500(void)	const;
 		std::map<std::string, bool>	getAllowedMethods(void) const;
+		std::map<std::string, bool>&	getMethods(void); //!
 		std::map<std::string, bool>	getIndexes(void) const;
 		// Setters
 		void	setPort(uint32_t val);
@@ -49,4 +52,7 @@ class	Server {
 		void	setErrorPage404(std::string& val);
 		void	setErrorPage500(std::string& val);
 		void	setIndex(std::string& key, bool val);
+
+		// server_handlers
+		void	initServer(void);
 };

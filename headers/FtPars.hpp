@@ -14,11 +14,13 @@
 
 # include <iostream>
 # include <vector>
+# include <map>
 #include <sstream>
 #include <cstdlib>
 
 typedef	unsigned int	uint32_t;
 typedef unsigned char	uint8_t;
+
 
 #define FT_LIMIT_BODY_SIZE 800001
 #define FT_PORT 8080
@@ -31,4 +33,5 @@ namespace FtPars {
 	bool	isValidIP4(std::string& str);
 	uint32_t	ftInetPton(const std::string& str);
 	char	*stringToChar(std::string& str);
+	std::map<std::string, bool>& parseMethods(std::map<std::string, bool>& mp, std::string& str);
 }

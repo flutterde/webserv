@@ -14,6 +14,19 @@
 
 /// @brief collection of helper functions for parsing
 namespace	FtPars {
+
+	static bool	isMethodDouplicated(std::vector<std::string>& vec) {
+		if (vec.size() > 1) {
+			for (size_t i = 0; i < vec.size(); i++) {
+				for (size_t j = i + 1; j < vec.size(); j++) {
+					if (vec[i] == vec[j])
+						return (true);
+				}
+			}
+		}
+		return (false);
+	}
+
 	size_t	charsCount(std::string& str, char c) {
 		size_t	i = 0;
 		for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
@@ -101,5 +114,34 @@ namespace	FtPars {
 			newStr[i] = str[i];
 		newStr[i] = '\0';
 		return (newStr);
+	}
+
+	std::map<std::string, bool>& parseMethods(std::map<std::string, bool>& mp, std::string& str) {
+		std::stringstream	ss(str);
+		std::string		tmp;
+		std::vector<std::string> arr;
+
+		if (ss.fail())
+			throw std::runtime_error("Error parsing methods");
+		while (getline(ss, tmp, ','))
+			arr.push_back(tmp);
+		if (arr.empty() || arr.size() > 3)
+			throw std::runtime_error("Error parsing methods");
+		if (isMethodDouplicated(arr))
+			throw std::runtime_error("Error parsing methods douplicated");
+		for (size_t i = 0; i < arr.size(); i++) {
+			std::cout << "METoD: " << arr[i] << std::endl;
+			if (arr[i] == "GET")
+				mp["GET"] = true;
+			else if (arr[i] == "POST")
+				mp["POST"] = true;
+			else if (arr[i] == "DELETE")
+				mp["DELETE"] = true;
+			else
+				throw std::runtime_error("Error parsing methods");
+		}
+		if (std::find(arr.begin(), arr.end(), "GET") == arr.end())
+			mp["GET"] = false;
+		return (mp);
 	}
 }

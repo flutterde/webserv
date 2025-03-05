@@ -13,6 +13,8 @@
 #pragma once
 
 # include <iostream>
+# include <sys/socket.h>
+# include <unistd.h>
 # define FIRST_INDEX 0
 
-std::string&	strTrim(std::string&str, std::string set);
+std::string&	strTrim(std::string&str, std::string set); //!

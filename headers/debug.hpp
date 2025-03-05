@@ -16,7 +16,10 @@
 #include "header.hpp"
 #include "Server.hpp"
 #include "readConfig.hpp"
+#include <iostream>
+#include <vector>
 
+class Server;
 void	printing(std::string vr);
 void	printServer(Server& srv);
 

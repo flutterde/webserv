@@ -18,6 +18,8 @@ Server::Server(void)//! why ?
 	this->limitClientBodySize = FT_LIMIT_BODY_SIZE;
 	this->port = FT_PORT;
 	this->serverName = "127.0.0.1";
+	this->serverBind = -1;
+	this->serverSocket = -1;
 }
 
 static std::string&	validateAndTrim(std::string& str) {
@@ -57,6 +59,10 @@ static void	fillServerData(std::string& line, Server& srv) {
 	} else if (!line.compare(0, 14, "error_page_500")) {
 		validateAndTrim(str);
 		srv.setErrorPage500(str);
+	}else if (!line.compare(0, 15, "allowed_methods")) {
+		std::cout << "-----> allowed_methods: " << str << std::endl;
+		validateAndTrim(str);
+		srv.getMethods() = FtPars::parseMethods(srv.getMethods(), str);
 	}
 }
 
@@ -76,7 +82,7 @@ Server::Server(std::vector<std::string>& arr, size_t& idx)
 {
 	this->limitClientBodySize = FT_LIMIT_BODY_SIZE;
 	this->port = FT_PORT;
-	this->allowedMethods["GET"] = false;
+	this->allowedMethods["GET"] = true;
 	this->allowedMethods["POST"] = false;
 	this->allowedMethods["DELETE"] = false;
 	this->indexes["index.html"] = false;
@@ -123,6 +129,12 @@ std::map<std::string, bool>	Server::getIndexes(void) const
 	return (this->indexes);
 }
 
+std::map<std::string, bool>&	Server::getMethods(void)
+{
+	return (this->allowedMethods);
+}
+
+
 void	Server::setPort(uint32_t val)
 {
 	this->port = val;
@@ -156,4 +168,9 @@ void	Server::setErrorPage500(std::string& val)
 void	Server::setIndex(std::string& key, bool val)
 {
 	this->indexes[key] = val;
+}
+
+void	Server::initServer(void)
+{
+
 }

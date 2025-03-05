@@ -6,6 +6,7 @@ TOTAL_TESTS=20
 SUCCESS=0
 TIMEOUT=0.5  # Set timeout in seconds
 echo "-------------- ✅❇️❌ -----------------"
+./webserv configs/config.conf &
 
 for ((i=0; i < $TOTAL_TESTS; i++))
 do

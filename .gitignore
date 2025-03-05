@@ -22,7 +22,7 @@ labs/app
 *.smod
 test.cpp
 test.txt
-
+ts
 # Compiled Static libraries
 *.lai
 *.la

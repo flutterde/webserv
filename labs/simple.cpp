@@ -6,47 +6,81 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 19:07:27 by ochouati          #+#    #+#             */
-/*   Updated: 2025/03/02 11:11:36 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/03/05 18:14:11 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <fstream>
 #include <sys/socket.h>
+#include <unistd.h>
 #include <poll.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
-	uint32_t	ftInetPton(const std::string& str)//!< Convert an IPv4 address from its text representation to binary form
-	{
-		std::vector<std::string> arr;
-		std::stringstream ss(str);
-		uint32_t	ip = 0;
-		uint8_t		byte;
-
-		while (ss.good())
-		{
-			std::string substr;
-			getline(ss, substr, '.');
-			arr.push_back(substr);
-		}
-		if (arr.size() != 4)
-			return (0);
-		 for (size_t i = 0; i < arr.size(); i++) {
-        byte = std::atoi(arr[i].c_str());
-        ip |= byte << (24 - (i * 8));  // Shift each byte into the correct position
-    }
-		return (ip);
-	}
 
 int	main()
 {
-	std::string	ip = "246.88.246.216";
-	uint32_t	ipVal = ftInetPton(ip);
-	if (4133025496 == ipVal)
-		std::cout << "Yesssssssssss" << std::endl;
-	else
-		std::cout << "Noooooooooooo" << std::endl;
-	std::cout << "Val: " << ipVal << std::endl;
+	struct sockaddr_in	addr;
+	int		fsock_d = socket(AF_INET, SOCK_STREAM, 0);
+	if (fsock_d == -1)
+	{
+		std::cerr << "socket failed" << std::endl;
+		return (1);
+	}
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(8080);
+	addr.sin_addr.s_addr = INADDR_ANY;
+	int bind_res = bind(fsock_d, (struct sockaddr *)&addr, sizeof(addr));
+	if (bind_res == -1)
+	{
+		std::cerr << "bind failed" << std::endl;
+		return (1);
+	}
+	int listen_res = listen(fsock_d, 10);
+	if (listen_res == -1)
+	{
+		std::cerr << "listen failed" << std::endl;
+		return (1);
+	}
+	struct pollfd fds[1];
+	fds[0].fd = fsock_d;
+	fds[0].events = POLLIN;
+	while (1)
+	{
+		int poll_res = poll(fds, 1, -1);
+		if (poll_res == -1)
+		{
+			std::cerr << "poll failed" << std::endl;
+			return (1);
+		}
+		if (fds[0].revents & POLLIN)
+		{
+			int csock_d = accept(fsock_d, NULL, NULL);
+			if (csock_d == -1)
+			{
+				std::cerr << "accept failed" << std::endl;
+				return (1);
+			}
+			std::ifstream index("./index.html");
+			if (!index.is_open())
+			{
+				std::cerr << "index.html failed" << std::endl;
+				return (1);
+			}
+			std::string file;
+			std::string line;
+			while (getline(index, line))
+				file += line;
+			// return ./index.html file
+			std::string len = std::to_string(file.size());
+			std::string response = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: " + len + "\n\n" + file;
+			send(csock_d, response.c_str(), response.size(), 0);
+			close(csock_d);
+		}
+	}
 	return (0);
 }
 
