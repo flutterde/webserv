@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 19:07:27 by ochouati          #+#    #+#             */
-/*   Updated: 2025/03/05 18:14:11 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/03/05 19:13:54 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,18 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+void	printHeader(std::string header)
+{
+	std::vector<std::string> headers;
+	std::istringstream iss(header);
+	std::string line;
+
+	while (getline(iss, line, '\n'))
+		headers.push_back(line);
+	for (size_t i = 0; i < headers.size(); i++)
+		std::cout << h[i] << std::endl;
+}
+
 
 int	main()
 {
@@ -31,7 +43,7 @@ int	main()
 		return (1);
 	}
 	addr.sin_family = AF_INET;
-	addr.sin_port = htons(8080);
+	addr.sin_port = htons(8081);
 	addr.sin_addr.s_addr = INADDR_ANY;
 	int bind_res = bind(fsock_d, (struct sockaddr *)&addr, sizeof(addr));
 	if (bind_res == -1)
@@ -64,6 +76,17 @@ int	main()
 				std::cerr << "accept failed" << std::endl;
 				return (1);
 			}
+			char buffer[1024] = {0};
+			int read_res;
+			while ((read_res = read(csock_d, buffer, 1024)) > 0)
+			{
+				std::string header(buffer);
+				printHeader(header);
+				if (header.find("GET / HTTP/1.1") != std::string::npos)
+					break;
+				bzero(buffer, 1024);
+			}
+			
 			std::ifstream index("./index.html");
 			if (!index.is_open())
 			{
