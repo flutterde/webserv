@@ -117,10 +117,11 @@ namespace	FtPars {
 		return (newStr);
 	}
 
-	std::map<std::string, bool>& parseMethods(std::map<std::string, bool>& mp, std::string& str) {
+	std::map<std::string, bool> parseMethods(const std::map<std::string, bool>& oldMp, std::string& str) {
 		std::stringstream	ss(str);
 		std::string		tmp;
 		std::vector<std::string> arr;
+		std::map<std::string, bool> mp = oldMp;
 
 		if (ss.fail())
 			throw std::runtime_error("Error parsing methods");

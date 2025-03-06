@@ -42,7 +42,6 @@ class	Server {
 		std::string	getErrorPage404(void)	const;
 		std::string	getErrorPage500(void)	const;
 		std::map<std::string, bool>	getAllowedMethods(void) const;
-		std::map<std::string, bool>&	getMethods(void); //!
 		std::map<std::string, bool>	getIndexes(void) const;
 		// Setters
 		void	setPort(uint32_t val);
@@ -52,7 +51,7 @@ class	Server {
 		void	setErrorPage404(std::string& val);
 		void	setErrorPage500(std::string& val);
 		void	setIndex(std::string& key, bool val);
-
+		void	setMethods(std::map<std::string, bool> mp);
 		// server_handlers
 		void	initServer(void);
 };

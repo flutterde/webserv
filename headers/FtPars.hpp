@@ -33,5 +33,5 @@ namespace FtPars {
 	bool	isValidIP4(std::string& str);
 	uint32_t	ftInetPton(const std::string& str);
 	char	*stringToChar(std::string& str);
-	std::map<std::string, bool>& parseMethods(std::map<std::string, bool>& mp, std::string& str);
+	std::map<std::string, bool> parseMethods(const std::map<std::string, bool>& oldMp, std::string& str);
 }

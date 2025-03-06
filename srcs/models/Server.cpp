@@ -62,7 +62,8 @@ static void	fillServerData(std::string& line, Server& srv) {
 	}else if (!line.compare(0, 15, "allowed_methods")) {
 		std::cout << "-----> allowed_methods: " << str << std::endl;
 		validateAndTrim(str);
-		srv.getMethods() = FtPars::parseMethods(srv.getMethods(), str);
+		// srv.getMethods() = FtPars::parseMethods(srv.getAllowedMethods(), str);
+		srv.setMethods(FtPars::parseMethods(srv.getAllowedMethods(), str));
 	}
 }
 
@@ -129,10 +130,10 @@ std::map<std::string, bool>	Server::getIndexes(void) const
 	return (this->indexes);
 }
 
-std::map<std::string, bool>&	Server::getMethods(void)
-{
-	return (this->allowedMethods);
-}
+// std::map<std::string, bool>&	Server::getMethods(void)
+// {
+// 	return (this->allowedMethods);
+// }
 
 
 void	Server::setPort(uint32_t val)
@@ -169,6 +170,12 @@ void	Server::setIndex(std::string& key, bool val)
 {
 	this->indexes[key] = val;
 }
+
+void	Server::setMethods(std::map<std::string, bool> mp)
+{
+	this->allowedMethods = mp;
+}
+
 
 void	Server::initServer(void)
 {
