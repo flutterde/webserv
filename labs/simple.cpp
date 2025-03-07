@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 19:07:27 by ochouati          #+#    #+#             */
-/*   Updated: 2025/03/06 16:26:42 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/03/07 16:55:49 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,9 @@
 #include <unistd.h>
 #include <poll.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
+// #include <arpa/inet.h>
+
+#define PORT 8081
 
 void	printHeader(std::string header)
 {
@@ -43,7 +45,7 @@ int	main()
 		return (1);
 	}
 	addr.sin_family = AF_INET;
-	addr.sin_port = htons(8081);
+	addr.sin_port = htons(PORT);
 	addr.sin_addr.s_addr = INADDR_ANY;
 	int bind_res = bind(fsock_d, (struct sockaddr *)&addr, sizeof(addr));
 	if (bind_res == -1)

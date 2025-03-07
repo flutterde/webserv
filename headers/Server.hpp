@@ -11,25 +11,28 @@
 /* ************************************************************************** */
 
 #pragma once
-#include <iostream>
-#include <vector>
-#include <map>
-#include "FtPars.hpp"
+# include <iostream>
+# include <vector>
+# include <map>
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include "FtPars.hpp"
 
 typedef	unsigned int	uint32_t;
 /// @brief server class that hold data for each website
 class	Server {
 	private:
-		std::string	host;
-		uint32_t	port;
-		std::string	serverName;
-		uint32_t	limitClientBodySize;
-		std::string	errorPage404;
-		std::string	errorPage500;
+		std::string					host;
+		uint32_t					port;
+		std::string					serverName;
+		uint32_t					limitClientBodySize;
+		std::string					errorPage404;
+		std::string					errorPage500;
 		std::map<std::string, bool> allowedMethods;
 		std::map<std::string, bool> indexes;
-		int			serverSocket;
-		int			serverBind;
+		int							serverSocket;
+		int							serverBind;
+		struct sockaddr_in			addr;
 
 	public:
 		Server(std::vector<std::string>& arr, size_t& idx);
@@ -52,6 +55,6 @@ class	Server {
 		void	setErrorPage500(std::string& val);
 		void	setIndex(std::string& key, bool val);
 		void	setMethods(std::map<std::string, bool> mp);
-		// server_handlers
+		// Server_handlers
 		void	initServer(void);
 };

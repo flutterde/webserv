@@ -23,7 +23,7 @@
 typedef	unsigned int	uint32_t;
 typedef unsigned char	uint8_t;
 
-#define FT_LIMIT_BODY_SIZE 800001
+#define FT_LIMIT_BODY_SIZE 80000
 #define FT_PORT 8080
 
 class	Server;
