@@ -67,6 +67,9 @@ static void	fillServerData(std::string& line, Server& srv) {
 	} else if (!line.compare(0, 7, "indexes")) {
 		validateAndTrim(str);
 		FtPars::setServerIndexes(srv, str);
+	} else if (!line.compare(0, 9, "autoindex")) {
+		validateAndTrim(str);
+		FtPars::autoIndexHandler(srv, str);
 	}
 }
 
@@ -90,7 +93,7 @@ Server::Server(std::vector<std::string>& arr, size_t& idx)
 	this->allowedMethods["POST"] = false;
 	this->allowedMethods["DELETE"] = false;
 	this->indexes["index.html"] = false;
-	// printing(arr[idx]);//!
+	this->autoIndex = false;
 	setServer(arr, idx, *this);
 }
 
@@ -133,11 +136,10 @@ std::map<std::string, bool>	Server::getIndexes(void) const
 	return (this->indexes);
 }
 
-// std::map<std::string, bool>&	Server::getMethods(void)
-// {
-// 	return (this->allowedMethods);
-// }
-
+bool	Server::getAutoIndex(void) const
+{
+	return (this->autoIndex);
+}
 
 void	Server::setPort(uint32_t val)
 {
@@ -177,6 +179,11 @@ void	Server::setIndex(std::string& key, bool val)
 void	Server::setMethods(std::map<std::string, bool> mp)
 {
 	this->allowedMethods = mp;
+}
+
+void	Server::setAutoIndex(bool val)
+{
+	this->autoIndex = val;
 }
 
 

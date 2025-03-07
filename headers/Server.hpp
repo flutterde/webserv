@@ -30,9 +30,10 @@ class	Server {
 		std::string					errorPage500;
 		std::map<std::string, bool> allowedMethods;
 		std::map<std::string, bool> indexes;
+		bool						autoIndex;
 		int							serverSocket;
 		int							serverBind;
-		struct sockaddr_in			addr;
+		// struct sockaddr_in			addr;
 
 	public:
 		Server(std::vector<std::string>& arr, size_t& idx);
@@ -46,6 +47,7 @@ class	Server {
 		std::string	getErrorPage500(void)	const;
 		std::map<std::string, bool>	getAllowedMethods(void) const;
 		std::map<std::string, bool>	getIndexes(void) const;
+		bool		getAutoIndex(void) const;
 		// Setters
 		void	setPort(uint32_t val);
 		void	setHost(std::string& val);
@@ -55,6 +57,7 @@ class	Server {
 		void	setErrorPage500(std::string& val);
 		void	setIndex(std::string& key, bool val);
 		void	setMethods(std::map<std::string, bool> mp);
+		void	setAutoIndex(bool val);
 		// Server_handlers
 		void	initServer(void);
 };

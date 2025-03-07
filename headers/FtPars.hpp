@@ -39,4 +39,5 @@ namespace FtPars {
 	std::map<std::string, bool> parseMethods(const std::map<std::string, bool>& oldMp, std::string& str);
 	void	setServerIndexes(Server& server, std::string& line);
 	bool	containSpaces(std::string& str);
+	void	autoIndexHandler(Server& server, std::string& line);
 }

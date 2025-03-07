@@ -1,8 +1,9 @@
+ARGS = 8080
 
 run: all 
-	./app 
+	./app $(ARGS)
 all:
-	c++ -Wall  *.cpp -o app
+	c++ -Wall  webserv.cpp -o app
 
 clean:
 	rm -f app 

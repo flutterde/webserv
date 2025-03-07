@@ -41,5 +41,6 @@ void	printServer(Server& srv) {
 	printMap(srv.getAllowedMethods());
 	std::cout << " Indexes: \n";
 	printMap(srv.getIndexes());
+	std::cout << " AutoIndex: " << (srv.getAutoIndex() ? "true" : "false") << std::endl;
 	std::cout << " ------------------------------------- \n";
 }

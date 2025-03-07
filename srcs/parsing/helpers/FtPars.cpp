@@ -171,4 +171,13 @@ namespace	FtPars {
 				server.setIndex(arr[i], true);
 		}
 	}
+
+	void	autoIndexHandler(Server& server, std::string& line) {
+		if (line == "on")
+			server.setAutoIndex(true);
+		else if (line == "off")
+			server.setAutoIndex(false);
+		else
+			throw std::runtime_error("Error parsing autoindex");
+	}
 }
