@@ -64,6 +64,9 @@ static void	fillServerData(std::string& line, Server& srv) {
 		validateAndTrim(str);
 		// srv.getMethods() = FtPars::parseMethods(srv.getAllowedMethods(), str);
 		srv.setMethods(FtPars::parseMethods(srv.getAllowedMethods(), str));
+	} else if (!line.compare(0, 7, "indexes")) {
+		validateAndTrim(str);
+		FtPars::setServerIndexes(srv, str);
 	}
 }
 

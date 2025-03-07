@@ -37,6 +37,14 @@ namespace	FtPars {
 		return (i);
 	}
 
+	bool	containSpaces(std::string& str) {
+		for (size_t i = 0; i < str.size(); i++) {
+			if (std::isspace(str[i]))
+				return (true);
+		}
+		return (false);
+	}
+
 	bool	strnCompare(std::string& str1, std::string str2, size_t n) {
 		std::string	tmp = str1.substr(0, n);
 		if (tmp == str2)
@@ -145,5 +153,22 @@ namespace	FtPars {
 		if (!std::count(arr.begin(), arr.end(), std::string("GET")))
 			mp["GET"] = false;
 		return (mp);
+	}
+
+	void	setServerIndexes(Server& server, std::string& line) {
+		std::string		tmp;
+		std::stringstream	ss(line);
+		std::vector<std::string> arr;
+
+		if (ss.fail())
+			throw std::runtime_error("Error parsing server indexes");
+		while (getline(ss, tmp, ','))
+			arr.push_back(tmp);
+		for (size_t i = 0; i < arr.size(); i++) {
+			if (FtPars::containSpaces(arr[i]))
+				throw std::runtime_error("Error parsing server indexes");
+			else
+				server.setIndex(arr[i], true);
+		}
 	}
 }

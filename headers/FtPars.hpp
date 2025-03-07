@@ -15,15 +15,18 @@
 # include <iostream>
 # include <vector>
 # include <map>
-#include <sstream>
-#include <cstdlib>
+# include <sstream>
+# include <cstdlib>
+# include <cctype>
+# include "Server.hpp"
 
 typedef	unsigned int	uint32_t;
 typedef unsigned char	uint8_t;
 
-
 #define FT_LIMIT_BODY_SIZE 800001
 #define FT_PORT 8080
+
+class	Server;
 namespace FtPars {
 	size_t	charsCount(std::string& str, char c);
 	bool	strnCompare(std::string& str1, std::string str2, size_t n);
@@ -34,4 +37,6 @@ namespace FtPars {
 	uint32_t	ftInetPton(const std::string& str);
 	char	*stringToChar(std::string& str);
 	std::map<std::string, bool> parseMethods(const std::map<std::string, bool>& oldMp, std::string& str);
+	void	setServerIndexes(Server& server, std::string& line);
+	bool	containSpaces(std::string& str);
 }

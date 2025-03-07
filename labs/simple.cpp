@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 19:07:27 by ochouati          #+#    #+#             */
-/*   Updated: 2025/03/05 19:13:54 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/03/06 16:26:42 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	printHeader(std::string header)
 	while (getline(iss, line, '\n'))
 		headers.push_back(line);
 	for (size_t i = 0; i < headers.size(); i++)
-		std::cout << h[i] << std::endl;
+		std::cout << headers[i] << std::endl;
 }
 
 
