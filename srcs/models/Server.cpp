@@ -191,3 +191,30 @@ void	Server::initServer(void)
 {
 
 }
+
+// INET FUNCTIONS
+
+void	Server::ftSocket(void)
+{
+	this->serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+	if (this->serverSocket < 0)
+		throw std::runtime_error("Socket creation failed");
+}
+
+void	Server::ftBind(void)
+{
+	struct sockaddr_in addr;
+
+	addr.sin_family = AF_INET;
+	// addr.sin_addr.s_addr = inet_addr(this->host.c_str()); //!
+	addr.sin_port = htons(this->port);
+	this->serverBind = bind(this->serverSocket, (struct sockaddr *)&addr, sizeof(addr));
+	if (this->serverBind < 0)
+		throw std::runtime_error("Bind failed");
+}
+
+void	Server::ftListen(void)
+{
+	if (listen(this->serverSocket, 3) < 0)
+		throw std::runtime_error("Listen failed");
+}

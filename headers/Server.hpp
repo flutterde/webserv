@@ -34,6 +34,9 @@ class	Server {
 		int							serverSocket;
 		int							serverBind;
 		// struct sockaddr_in			addr;
+		void						ftSocket(void);
+		void						ftBind(void);
+		void						ftListen(void);
 
 	public:
 		Server(std::vector<std::string>& arr, size_t& idx);
