@@ -6,6 +6,8 @@
 *.lo
 *.o
 *.obj
+*.p
+./configs/php/*.cpp 
 
 # Precompiled Headers
 *.gch

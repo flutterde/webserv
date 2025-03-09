@@ -15,3 +15,12 @@ connect, getaddrinfo, freeaddrinfo, setsockopt,
 getsockname, getprotobyname, fcntl, close, read,
 write, waitpid, kill, signal, access, stat, open,
 opendir, readdir and closedir
+
+
+https://www.youtube.com/watch?v=9J1nJOivdyw
+
+https://www.youtube.com/watch?v=gk6NL1pZi1M
+
+
+
+#extensions:
