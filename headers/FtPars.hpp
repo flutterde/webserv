@@ -40,4 +40,5 @@ namespace FtPars {
 	void	setServerIndexes(Server& server, std::string& line);
 	bool	containSpaces(std::string& str);
 	void	autoIndexHandler(Server& server, std::string& line);
+	void	serverPortsHandler(Server& srv, std::string& line);
 }

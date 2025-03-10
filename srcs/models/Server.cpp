@@ -141,6 +141,12 @@ bool	Server::getAutoIndex(void) const
 	return (this->autoIndex);
 }
 
+const std::vector<uint32_t>&	Server::getPorts(void) const
+{
+	return (this->ports);
+}
+
+
 void	Server::setPort(uint32_t val)
 {
 	this->port = val;
@@ -185,7 +191,10 @@ void	Server::setAutoIndex(bool val)
 {
 	this->autoIndex = val;
 }
-
+void	Server::setPorts(uint32_t val)
+{
+	this->ports.push_back(val);
+}
 
 void	Server::initServer(void)
 {

@@ -37,6 +37,7 @@ class	readConfig {
 		void	setNewEnv(std::string& val);
 		char	**getEnv(void);
 		void	readFile(char *argFile, char **env);
+		void	seperateServers(void);
 		class OpenFileException : public std::exception {
 			public:
 				const char* what() const throw();

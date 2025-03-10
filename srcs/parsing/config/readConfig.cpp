@@ -89,8 +89,7 @@ void	readConfig::readFile(char *argFile, char **env)
 {
 	if (!argFile || !env || !*env)
 		throw std::runtime_error("no config file or no env provided");
-	try
-	{
+	try {
 		this->collectEnv(env);
 		std::ifstream	file(argFile);
 		if (file.fail())
@@ -98,8 +97,7 @@ void	readConfig::readFile(char *argFile, char **env)
 		this->lines = this->readLines(file);
 		parseConf();
 	}
-	catch(const std::exception& e)
-	{
+	catch(const std::exception& e) {
 		throw std::runtime_error(e.what());
 	}
 	delete this->lines;
@@ -115,4 +113,9 @@ void	readConfig::readFile(char *argFile, char **env)
 		std::cout << "Id: " << i << std::endl;
 		printServer(this->servers[i]);
 	}
+}
+
+void	readConfig::seperateServers(void)
+{
+	
 }

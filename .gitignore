@@ -7,8 +7,8 @@
 *.o
 *.obj
 *.p
-./configs/php/*.cpp 
-
+./configs/php/app 
+configs/php/app
 # Precompiled Headers
 *.gch
 *.pch

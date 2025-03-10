@@ -180,4 +180,21 @@ namespace	FtPars {
 		else
 			throw std::runtime_error("Error parsing autoindex");
 	}
+
+	void	serverPortsHandler(Server& srv, std::string& line) {
+		std::string		tmp;
+		std::stringstream	ss(line);
+		std::vector<std::string> arr;
+
+		if (ss.fail())
+			throw std::runtime_error("Error parsing server ports");
+		while (getline(ss, tmp, ','))
+			arr.push_back(tmp);
+		for (size_t i = 0; i < arr.size(); i++) {
+			if (FtPars::containSpaces(arr[i]))
+				throw std::runtime_error("Error parsing server ports");
+			else
+				srv.setPorts(std::atoi(arr[i].c_str()));
+		}
+	}
 }
