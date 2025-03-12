@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 01:13:52 by ochouati          #+#    #+#             */
-/*   Updated: 2025/03/09 16:26:29 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/03/11 14:53:35 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 
 int main(int ac, char **av, char **env) {
     std::vector<char *> envs;
+    // std::vector<char *> args;
     
     // Copy existing environment variables
     for (int i = 0; env[i]; i++) {
@@ -41,8 +42,8 @@ int main(int ac, char **av, char **env) {
     
     // Pass the GET parameter as an argument
     char *args[] = {"php", "-d", "register_argc_argv=1", "-d", "auto_globals_jit=0", 
-                    "-r", "parse_str('NAME=ochouati', $_GET); include('index.php');", NULL};
-    
+                    "-r", "parse_str('NAME=achakkaf', $_GET); include('index.php');", NULL};
+    // args.push_back("php");
     if (pid == 0) {
         execve(path, args, envs.data());
         // If execve returns, it failed

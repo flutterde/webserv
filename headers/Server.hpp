@@ -38,6 +38,7 @@ class	Server {
 		void						ftSocket(void);
 		void						ftBind(void);
 		void						ftListen(void);
+		Server(const Server& srv, uint32_t port);
 
 	public:
 		Server(std::vector<std::string>& arr, size_t& idx);

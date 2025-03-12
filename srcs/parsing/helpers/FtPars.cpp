@@ -182,6 +182,8 @@ namespace	FtPars {
 	}
 
 	void	serverPortsHandler(Server& srv, std::string& line) {
+
+			std::cout << "PORTS_HANDLER_CALLED: " << std::endl;
 		std::string		tmp;
 		std::stringstream	ss(line);
 		std::vector<std::string> arr;
@@ -189,12 +191,17 @@ namespace	FtPars {
 		if (ss.fail())
 			throw std::runtime_error("Error parsing server ports");
 		while (getline(ss, tmp, ','))
+		{
+			std::cout << "A new Port added: " << tmp << std::endl;
 			arr.push_back(tmp);
+		}
 		for (size_t i = 0; i < arr.size(); i++) {
 			if (FtPars::containSpaces(arr[i]))
 				throw std::runtime_error("Error parsing server ports");
 			else
 				srv.setPorts(std::atoi(arr[i].c_str()));
 		}
+		if (srv.getPorts().size())
+			srv.setPort(srv.getPorts()[0]);
 	}
 }

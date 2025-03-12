@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 19:07:27 by ochouati          #+#    #+#             */
-/*   Updated: 2025/03/07 17:31:08 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/03/11 14:48:24 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #include <netinet/in.h>
 // #include <arpa/inet.h>
 
-#define PORT 8080
+#define PORT 8081
 
 void	printHeader(std::string header)
 {

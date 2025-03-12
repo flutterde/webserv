@@ -22,6 +22,12 @@ Server::Server(void)//! why ?
 	this->serverSocket = -1;
 }
 
+Server(const Server& srv, uint32_t port) //! 
+{
+	(void)srv;
+	(void)port;
+}
+
 static std::string&	validateAndTrim(std::string& str) {
 	try
 	{
@@ -49,7 +55,8 @@ static void	fillServerData(std::string& line, Server& srv) {
 		srv.setHost(str);
 	} else if (!line.compare(0, 4, "port")) {
 		validateAndTrim(str);
-		srv.setPort(std::atoi(str.c_str()));
+		// srv.setPort(std::atoi(str.c_str()));
+		FtPars::serverPortsHandler(srv, str);
 	} else if (!line.compare(0, 20, "client_max_body_size")) {
 		validateAndTrim(str);
 		srv.setLimitClientBodySize(std::atoi(str.c_str()));

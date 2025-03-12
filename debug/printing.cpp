@@ -43,6 +43,8 @@ void	printServer(Server& srv) {
 	printMap(srv.getIndexes());
 	std::cout << " AutoIndex: " << (srv.getAutoIndex() ? "true" : "false") << std::endl;
 	std::vector<uint32_t> ports = srv.getPorts();
+	std::cout << "Ports: \n";
+	std::cout << "Ports__count: " << srv.getPorts().size() << " \n";
 	printContainer(ports);
 	std::cout << " ------------------------------------- \n";
 }
