@@ -2,10 +2,16 @@ CPP = c++
 CPPFLAGS = -Wall -Wextra -Werror -std=c++98 -I./headers/
 
 NAME=webserv
+
+# OTM
 SRCS=main.cpp srcs/parsing/config/readConfig.cpp srcs/parsing/helpers/strTrim.cpp \
-srcs/parsing/helpers/FtPars.cpp srcs/models/Server.cpp  debug/printing.cpp \
-srcs/models/Request.cpp srcs/models/Http.cpp srcs/models/Response.cpp \
-srcs/cgi/ft_cgi.cpp
+srcs/parsing/helpers/FtPars.cpp srcs/models/Server.cpp  debug/printing.cpp 
+
+# ACHAKKAF
+SRCS +=  srcs/cgi/ft_cgi.cpp
+
+# MOAD
+SRCS +=  
 
 HEADERS=headers/*.hpp
 OBJS=$(SRCS:.cpp=.o)
