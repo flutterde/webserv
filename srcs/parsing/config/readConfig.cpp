@@ -108,6 +108,7 @@ void	readConfig::readFile(char *argFile, char **env)
 		else
 			++x;
 	}
+	this->seperateServers();
 	std::cout << this->servers.size() << " ################################################### \n";
 	for (size_t i = 0; i < this->servers.size(); ++i) { //!
 		std::cout << "Id: " << i << std::endl;
@@ -117,5 +118,10 @@ void	readConfig::readFile(char *argFile, char **env)
 
 void	readConfig::seperateServers(void)
 {
-	
+	for (size_t i = 0; i < this->servers.size(); ++i) {
+		for (size_t j = 1; j < this->servers[i].getPorts().size(); j++) {
+			Server tmp = Server(this->servers[i], this->servers[i].getPorts()[j]);
+			this->servers.push_back(tmp);
+		}
+	}
 }

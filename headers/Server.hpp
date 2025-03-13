@@ -38,11 +38,11 @@ class	Server {
 		void						ftSocket(void);
 		void						ftBind(void);
 		void						ftListen(void);
-		Server(const Server& srv, uint32_t port);
 
 	public:
-		Server(std::vector<std::string>& arr, size_t& idx);
+		Server(const Server& srv, uint32_t port);
 		Server(void);
+		Server(std::vector<std::string>& arr, size_t& idx);
 		// Getters
 		uint32_t	getPort(void)	const;
 		std::string	getHost(void)	const;

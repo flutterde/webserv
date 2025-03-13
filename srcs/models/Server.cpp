@@ -22,10 +22,19 @@ Server::Server(void)//! why ?
 	this->serverSocket = -1;
 }
 
-Server(const Server& srv, uint32_t port) //! 
+Server::Server(const Server& srv, uint32_t port) //! 
 {
-	(void)srv;
-	(void)port;
+	this->host = srv.host;
+	this->port = port;
+	this->serverName = srv.serverName;
+	this->limitClientBodySize = srv.limitClientBodySize;
+	this->errorPage404 = srv.errorPage404;
+	this->errorPage500 = srv.errorPage500;
+	this->allowedMethods = srv.allowedMethods;
+	this->indexes = srv.indexes;
+	this->autoIndex = srv.autoIndex;
+	this->serverBind = -1;
+	this->serverSocket = -1;
 }
 
 static std::string&	validateAndTrim(std::string& str) {
