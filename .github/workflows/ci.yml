@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+      - otm
+      - achakkaf
+      - mboujama
   pull_request:
     branches:
       - main
