@@ -3,6 +3,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include "request.hpp"
 
 #define PORT 8080
 
@@ -18,7 +19,7 @@ int main()
 
 	bind(socketFd, (struct sockaddr *)&address, sizeof(address));
 	listen(socketFd, 5);
-	std::cout << "Server is listening on port " << PORT << std::endl;
+	// std::cout << "Server is listening on port " << PORT << std::endl;
 
 	socklen_t addrlen = sizeof(address);
 	int new_socket;
@@ -41,28 +42,29 @@ int main()
 		"    <p>This is a basic webpage served from C++.</p>\n"
 		"</body>\n"
 		"</html>\n";
-	while (true)
+	// while (true)
 	{
 		new_socket = accept(socketFd, (struct sockaddr *)&address, &addrlen);
 		if (new_socket < 0)
 		{
-			std::cerr << "Accept failed" << std::endl;
+			// std::cerr << "Accept failed" << std::endl;
 			close(socketFd);
 			return EXIT_FAILURE;
 		}
 
-		std::cout << "Waiting for data..." << std::endl;
+		// std::cout << "Waiting for data..." << std::endl;
 		// Read the request
 		ssize_t valread = read(new_socket, buffer, sizeof(buffer) - 1);
 		if (valread < 0)
 		{
-			std::cerr << "Read failed" << std::endl;
+			// std::cerr << "Read failed" << std::endl;
 		}
 		else
 		{
 			buffer[valread] = '\0';
 			std::cout << "Received request:\n"
 					  << buffer << std::endl;
+			Request r(buffer);
 		}
 
 		// Close the sockets
