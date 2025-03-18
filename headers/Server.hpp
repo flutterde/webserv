@@ -42,6 +42,7 @@ class	Server {
 	public:
 		Server(const Server& srv, uint32_t port);
 		Server(void);
+		~Server(void);
 		Server(std::vector<std::string>& arr, size_t& idx);
 		// Getters
 		uint32_t	getPort(void)	const;

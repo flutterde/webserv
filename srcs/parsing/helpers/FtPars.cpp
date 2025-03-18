@@ -192,6 +192,8 @@ namespace	FtPars {
 			throw std::runtime_error("Error parsing server ports");
 		while (getline(ss, tmp, ','))
 		{
+			if (!FtPars::isNumbersOnly(tmp))
+				throw std::runtime_error("Error parsing server ports");
 			std::cout << "A new Port added: " << tmp << std::endl;
 			arr.push_back(tmp);
 		}
@@ -203,5 +205,13 @@ namespace	FtPars {
 		}
 		if (srv.getPorts().size())
 			srv.setPort(srv.getPorts()[0]);
+	}
+
+	bool	isNumbersOnly(const std::string& str) {
+		for (size_t i = 0; i < str.size(); i++) {
+			if (!std::isdigit(str[i]))
+				return (false);
+		}
+		return (true);
 	}
 }

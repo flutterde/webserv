@@ -41,4 +41,5 @@ namespace FtPars {
 	bool	containSpaces(std::string& str);
 	void	autoIndexHandler(Server& server, std::string& line);
 	void	serverPortsHandler(Server& srv, std::string& line);
+	bool	isNumbersOnly(const std::string& str);
 }

@@ -22,6 +22,14 @@ Server::Server(void)//! why ?
 	this->serverSocket = -1;
 }
 
+Server::~Server(void)
+{
+	if (this->serverSocket != -1)
+		close(this->serverSocket);
+	if (this->serverBind != -1)
+		close(this->serverBind);
+}
+
 Server::Server(const Server& srv, uint32_t port) //! 
 {
 	this->host = srv.host;
@@ -56,9 +64,13 @@ static void	fillServerData(std::string& line, Server& srv) {
 	std::string str;
 	str = line;
 	if (!line.compare(0, 11, "server_name")) {
+		if (!srv.getserverName().empty())
+			throw std::runtime_error("server_name already set");
 		validateAndTrim(str);
 		srv.setserverName(str);
 	} else if (!line.compare(0, 4, "host")) {
+		if (!srv.getHost().empty())
+			throw std::runtime_error("host already set");
 		validateAndTrim(str);
 		FtPars::isValidIP4(str);
 		srv.setHost(str);
