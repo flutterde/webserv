@@ -1,9 +1,9 @@
-ARGS = 8080
+
 
 run: all 
-	./app $(ARGS)
+	./app 
 all:
-	c++ -Wall -std=c++98  simple.cpp -o app
+	c++ -Wall -std=c++98  server.cpp -o app
 
 clean:
 	rm -f app 
