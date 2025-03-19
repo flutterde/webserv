@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - otm
   pull_request:
     branches:
       - main
