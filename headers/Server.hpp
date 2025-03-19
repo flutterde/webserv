@@ -12,6 +12,7 @@
 
 #pragma once
 # include <iostream>
+#include <string>
 # include <vector>
 # include <map>
 # include <sys/socket.h>
@@ -28,10 +29,12 @@ class	Server {
 		uint32_t					limitClientBodySize;
 		std::string					errorPage404;
 		std::string					errorPage500;
+		std::string					uploadsPath;
 		std::map<std::string, bool> allowedMethods;
 		std::map<std::string, bool> indexes;
 		std::vector<uint32_t>		ports;
 		bool						autoIndex;
+		bool						enableUploads;
 		int							serverSocket;
 		int							serverBind;
 		// struct sockaddr_in			addr;
@@ -55,6 +58,7 @@ class	Server {
 		std::map<std::string, bool>	getIndexes(void) const;
 		bool		getAutoIndex(void) const;
 		const std::vector<uint32_t>&	getPorts(void) const;
+		bool	getEnableUploads(void) const;
 		// Setters
 		void	setPort(uint32_t val);
 		void	setHost(std::string& val);
@@ -66,6 +70,7 @@ class	Server {
 		void	setMethods(std::map<std::string, bool> mp);
 		void	setAutoIndex(bool val);
 		void	setPorts(uint32_t val);
+		void	setEnableUploads(bool val);
 		// Server_handlers
 		void	initServer(void);
 };

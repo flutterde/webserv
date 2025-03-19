@@ -42,6 +42,7 @@ void	printServer(Server& srv) {
 	std::cout << " Indexes: \n";
 	printMap(srv.getIndexes());
 	std::cout << " AutoIndex: " << (srv.getAutoIndex() ? "true" : "false") << std::endl;
+	std::cout << " EnableUploads: " << (srv.getEnableUploads() ? "true" : "false") << std::endl;
 	std::vector<uint32_t> ports = srv.getPorts();
 	std::cout << "Ports: \n";
 	std::cout << "Ports__count: " << srv.getPorts().size() << " \n";

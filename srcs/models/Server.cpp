@@ -98,6 +98,9 @@ static void	fillServerData(std::string& line, Server& srv) {
 	} else if (!line.compare(0, 9, "autoindex")) {
 		validateAndTrim(str);
 		FtPars::autoIndexHandler(srv, str);
+	} else if (!line.compare(0, 14, "upload_enabled")) {
+		validateAndTrim(str);
+		FtPars::enableUploadsHandler(srv, str);
 	}
 }
 
@@ -122,6 +125,8 @@ Server::Server(std::vector<std::string>& arr, size_t& idx)
 	this->allowedMethods["DELETE"] = false;
 	this->indexes["index.html"] = false;
 	this->autoIndex = false;
+	this->enableUploads = false;
+	// this->uploadPath = "uploads";
 	setServer(arr, idx, *this);
 }
 
@@ -174,6 +179,10 @@ const std::vector<uint32_t>&	Server::getPorts(void) const
 	return (this->ports);
 }
 
+bool	Server::getEnableUploads(void) const
+{
+	return (this->enableUploads);
+}
 
 void	Server::setPort(uint32_t val)
 {
@@ -222,6 +231,11 @@ void	Server::setAutoIndex(bool val)
 void	Server::setPorts(uint32_t val)
 {
 	this->ports.push_back(val);
+}
+
+void	Server::setEnableUploads(bool val)
+{
+	this->enableUploads = val;
 }
 
 void	Server::initServer(void)

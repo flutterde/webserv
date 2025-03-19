@@ -140,7 +140,6 @@ namespace	FtPars {
 		if (isMethodDouplicated(arr))
 			throw std::runtime_error("Error parsing methods douplicated");
 		for (size_t i = 0; i < arr.size(); i++) {
-			std::cout << "METoD: " << arr[i] << std::endl;
 			if (arr[i] == "GET")
 				mp["GET"] = true;
 			else if (arr[i] == "POST")
@@ -183,7 +182,6 @@ namespace	FtPars {
 
 	void	serverPortsHandler(Server& srv, std::string& line) {
 
-			std::cout << "PORTS_HANDLER_CALLED: " << std::endl;
 		std::string		tmp;
 		std::stringstream	ss(line);
 		std::vector<std::string> arr;
@@ -213,5 +211,16 @@ namespace	FtPars {
 				return (false);
 		}
 		return (true);
+	}
+
+	void	enableUploadsHandler(Server& server, std::string& line) {
+
+		std::cout << "enableUploadsHandler: " << line << std::endl;
+		if (line == "on")
+			server.setEnableUploads(true);
+		else if (line == "off")
+			server.setEnableUploads(false);
+		else
+			throw std::runtime_error("Error parsing enable uploads");
 	}
 }
