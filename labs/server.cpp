@@ -6,23 +6,50 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 22:31:18 by ochouati          #+#    #+#             */
-/*   Updated: 2025/03/19 23:33:21 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/03/20 18:21:26 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <netinet/in.h>
+#include <ostream>
 #include <sys/poll.h>
 #include <vector>
 #include <cstring> // For memset
 #include <unistd.h>
+#include <sstream>
+#include <fstream>
+#include <ctime>
 
-#define PORT 8081
+#define PORT 8080
 #define MAX_CLIENTS 10
 
 void printError(const char* message) {
     std::cerr << "====> Error: " << message << std::endl;
     exit(1);
+}
+
+std::string int2String(size_t nbr) {
+    std::cout << "the time now: " << std::time(NULL) << std::endl;
+    std::stringstream ss;
+    ss << nbr;
+    return ss.str();
+}
+
+std::string getRespone() {
+    std::string body;
+    std::string line;
+    std::ifstream file("index.html");
+    if (file.is_open()) {
+        while (getline(file, line)) {
+            body += line + "\n";
+        }
+        file.close();
+    } else {
+        body = "<html><body><h1>404 Not Found</h1></body></html>";
+    }
+    std::string header = "HTTP/1.1 200 OK\r\nContent-Length: " + int2String(body.length()) + "\r\nContent-Type: text/html\r\n\r\n";
+    return (header + body);
 }
 
 int main() {
@@ -62,7 +89,7 @@ int main() {
     fds.push_back(fdPoll);
 
     char buffer[1024];
-    const char* response = "HTTP/1.1 200 OK\r\nContent-Length: 12\r\n\r\nHello World!";
+    const char* response = getRespone().c_str();
 
     while (true) {
         // Wait for events
