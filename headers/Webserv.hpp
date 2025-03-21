@@ -6,12 +6,13 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:49:53 by ochouati          #+#    #+#             */
-/*   Updated: 2025/03/21 18:02:10 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/03/21 23:43:53 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 # include "Server.hpp"
+#include <map>
 #include <sys/poll.h>
 # include <vector>
 # include <poll.h>
@@ -26,11 +27,13 @@ class Webserv {
 		std::vector<struct pollfd>	_pollfds;
 		std::vector<int>			_fds;
 		int							_nbrEvents;
+		std::map<int, int>		_clientToServer;
 		void					_closeClients();
 
 	public:
 		Webserv();
 		~Webserv();
+		Server					getServerByFd(const int clientFd) const;
 		void	run();
 
 };
