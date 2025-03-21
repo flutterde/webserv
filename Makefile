@@ -7,6 +7,9 @@ srcs/parsing/helpers/FtPars.cpp srcs/models/Server.cpp  debug/printing.cpp \
 srcs/models/Request.cpp srcs/models/Http.cpp srcs/models/Response.cpp \
 srcs/cgi/ft_cgi.cpp
 
+#OTM
+SRCS += srcs/models/Webserv.cpp 
+
 HEADERS=headers/*.hpp
 OBJS=$(SRCS:.cpp=.o)
 

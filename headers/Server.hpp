@@ -16,6 +16,7 @@
 # include <vector>
 # include <map>
 # include <sys/socket.h>
+# include <fcntl.h>
 # include <netinet/in.h>
 # include "FtPars.hpp"
 
@@ -41,6 +42,7 @@ class	Server {
 		void						ftSocket(void);
 		void						ftBind(void);
 		void						ftListen(void);
+		void						setNonBlocking(void);
 
 	public:
 		Server(const Server& srv, uint32_t port);

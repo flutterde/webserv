@@ -12,6 +12,7 @@
 
 #include "./../../headers/Server.hpp"
 #include "./../../headers/debug.hpp" //!
+#include <sys/fcntl.h>
 
 Server::Server(void)//! why ?
 {		
@@ -268,4 +269,9 @@ void	Server::ftListen(void)
 {
 	if (listen(this->serverSocket, 3) < 0)
 		throw std::runtime_error("Listen failed");
+}
+
+void	Server::setNonBlocking(void) {
+	if (fcntl(this->serverSocket, F_SETFL, O_NONBLOCK) < 0)
+		throw std::runtime_error("Set non blocking failed");
 }
