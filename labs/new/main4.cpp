@@ -19,7 +19,7 @@
 #define MAX_EVENTS 64
 #define INDEX_FILE "index.html"
 #define INDEX_FILE2 "app.html"
-#define BUFFER_SIZE 64
+#define BUFFER_SIZE 4096
 
 void printError(const std::string &msg) {
     std::cerr << msg << std::endl;
@@ -193,20 +193,17 @@ class WebServer {
             if (headerEnd == std::string::npos) {
                 return false;
             }
-            
             // Check if there's a Content-Length header
             size_t contentLengthPos = request.find("Content-Length:");
             if (contentLengthPos == std::string::npos) {
                 // No Content-Length header, request is complete at end of headers
                 return true;
             }
-            
             // Find the value of Content-Length
             size_t valueStart = request.find_first_not_of(" ", contentLengthPos + 15);
             size_t valueEnd = request.find("\r\n", valueStart);
             std::string lengthStr = request.substr(valueStart, valueEnd - valueStart);
             int contentLength = atoi(lengthStr.c_str());
-            
             // Check if we have received the full body
             return (request.length() >= headerEnd + 4 + contentLength);
         }
@@ -357,5 +354,5 @@ int main() {
     
     webserver.run();
     
-    return 0;
+    return (0);
 }

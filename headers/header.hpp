@@ -18,6 +18,5 @@
 # include <sys/socket.h>
 # include <unistd.h>
 # define FIRST_INDEX 0
-# define END_OF_HEADERS "\r\n\r\n"
 
 std::string&	strTrim(std::string&str, std::string set); //!

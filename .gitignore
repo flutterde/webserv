@@ -13,7 +13,7 @@ configs/php/app
 *.gch
 *.pch
 labs/app
-
+*.log
 # Compiled Dynamic libraries
 *.so
 *.dylib

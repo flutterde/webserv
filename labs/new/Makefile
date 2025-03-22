@@ -6,7 +6,7 @@ all: clean $(NAME)
 
 $(NAME): 
 	rm -f $(NAME)
-	c++ -std=c++98 -o $(NAME) *.cpp
+	c++ -std=c++98 -o $(NAME) main4.cpp
 
 clean:
 	rm -f $(NAME)

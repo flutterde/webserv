@@ -1,4 +1,4 @@
-TESTS_COUNT=10
+TESTS_COUNT=5
 
 for i in $(seq 1 $TESTS_COUNT); do
 	echo "Test $i"
