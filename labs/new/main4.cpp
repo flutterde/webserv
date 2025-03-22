@@ -13,12 +13,13 @@
 #include <fstream>
 #include <sstream>
 #include <map>
+#include <errno.h>
 
 #define RUNNING 1
 #define MAX_EVENTS 64
 #define INDEX_FILE "index.html"
 #define INDEX_FILE2 "app.html"
-#define BUFFER_SIZE 4096
+#define BUFFER_SIZE 64
 
 void printError(const std::string &msg) {
     std::cerr << msg << std::endl;
@@ -87,6 +88,14 @@ class Server {
         }
 };
 
+// Structure to store client data
+struct ClientData {
+    std::string request;
+    bool requestComplete;
+    
+    ClientData() : requestComplete(false) {}
+};
+
 //! WebServer class
 class WebServer {
     private:
@@ -95,6 +104,8 @@ class WebServer {
         std::vector<int> clientFds;
         // Map to track which client belongs to which server
         std::map<int, int> clientToServerMap;
+        // Map to store client request data
+        std::map<int, ClientData> clientData;
         bool running;
 
     public:
@@ -155,6 +166,9 @@ class WebServer {
             // Add mapping of client to server
             clientToServerMap[clientFd] = serverIdx;
             
+            // Initialize client data
+            clientData[clientFd] = ClientData();
+            
             char clientIP[INET_ADDRSTRLEN];
             inet_ntop(AF_INET, &(clientAddr.sin_addr), clientIP, INET_ADDRSTRLEN);
             std::cout << "New connection from " << clientIP << ":" << ntohs(clientAddr.sin_port) 
@@ -172,8 +186,92 @@ class WebServer {
             return buffer.str();
         }
         
-        // Helper function to close and remove client
-        void closeAndRemoveClient(int clientFd, int pollIdx) {
+        // Check if HTTP request is complete
+        bool isRequestComplete(const std::string& request) {
+            // Simple check: look for the end of headers marked by "\r\n\r\n"
+            size_t headerEnd = request.find("\r\n\r\n");
+            if (headerEnd == std::string::npos) {
+                return false;
+            }
+            
+            // Check if there's a Content-Length header
+            size_t contentLengthPos = request.find("Content-Length:");
+            if (contentLengthPos == std::string::npos) {
+                // No Content-Length header, request is complete at end of headers
+                return true;
+            }
+            
+            // Find the value of Content-Length
+            size_t valueStart = request.find_first_not_of(" ", contentLengthPos + 15);
+            size_t valueEnd = request.find("\r\n", valueStart);
+            std::string lengthStr = request.substr(valueStart, valueEnd - valueStart);
+            int contentLength = atoi(lengthStr.c_str());
+            
+            // Check if we have received the full body
+            return (request.length() >= headerEnd + 4 + contentLength);
+        }
+        
+        void handleClient(int pollIdx) {
+            int clientFd = pollfds[pollIdx].fd;
+            
+            // Get the server index this client belongs to
+            int serverIdx = clientToServerMap[clientFd];
+            
+            Server *srv = servers[serverIdx];
+            
+            char buffer[BUFFER_SIZE];
+            ssize_t bytesRead = recv(clientFd, buffer, BUFFER_SIZE - 1, 0);
+
+            if (bytesRead <= 0) {
+                if (bytesRead == 0) {
+                    std::cout << "Client disconnected" << std::endl;
+                } else {
+                    std::cerr << "Error reading from client: " << strerror(errno) << std::endl;
+                }
+                closeClient(clientFd, pollIdx);
+                return;
+            }
+            
+            buffer[bytesRead] = '\0';
+            
+            // Append the new data to the client's request
+            clientData[clientFd].request.append(buffer, bytesRead);
+            
+            // Check if the request is complete
+            if (isRequestComplete(clientData[clientFd].request)) {
+                clientData[clientFd].requestComplete = true;
+                
+                // Print the complete request
+                std::cout << "Complete request received from client on port " << srv->port << ":" << std::endl;
+                std::cout << "-----BEGIN REQUEST-----" << std::endl;
+                std::cout << clientData[clientFd].request << std::endl;
+                std::cout << "-----END REQUEST-----" << std::endl;
+                
+                // Send response (the index file)
+                std::string content = readFile(srv->indexFile);
+                if (content.empty()) {
+                    content = "<html><body><h1>Error: index.html not found</h1></body></html>";
+                }
+                
+                // Prepare HTTP response
+                std::stringstream response;
+                response << "HTTP/1.1 200 OK\r\n";
+                response << "Content-Type: text/html\r\n";
+                response << "Content-Length: " << content.size() << "\r\n";
+                response << "Connection: close\r\n";
+                response << "\r\n";
+                response << content;
+                
+                // Send response
+                std::string responseStr = response.str();
+                send(clientFd, responseStr.c_str(), responseStr.size(), 0);
+                
+                // Close connection after sending response
+                closeClient(clientFd, pollIdx);
+            }
+        }
+        
+        void closeClient(int clientFd, int pollIdx) {
             close(clientFd);
             
             // Remove client from poll list
@@ -189,193 +287,9 @@ class WebServer {
             
             // Remove from the client-server map
             clientToServerMap.erase(clientFd);
-        }
-        
-        // Send a 404 Not Found response
-        void sendNotFoundResponse(int clientFd) {
-            std::string content = "<html><body><h1>404 Not Found</h1><p>The requested resource could not be found.</p></body></html>";
             
-            std::stringstream response;
-            response << "HTTP/1.1 404 Not Found\r\n";
-            response << "Content-Type: text/html\r\n";
-            response << "Content-Length: " << content.size() << "\r\n";
-            response << "Connection: close\r\n";
-            response << "\r\n";
-            response << content;
-            
-            std::string responseStr = response.str();
-            send(clientFd, responseStr.c_str(), responseStr.size(), 0);
-        }
-        
-        // Send a 405 Method Not Allowed response
-        void sendMethodNotAllowedResponse(int clientFd) {
-            std::string content = "<html><body><h1>405 Method Not Allowed</h1><p>The requested method is not supported.</p></body></html>";
-            
-            std::stringstream response;
-            response << "HTTP/1.1 405 Method Not Allowed\r\n";
-            response << "Content-Type: text/html\r\n";
-            response << "Content-Length: " << content.size() << "\r\n";
-            response << "Allow: GET, POST\r\n";
-            response << "Connection: close\r\n";
-            response << "\r\n";
-            response << content;
-            
-            std::string responseStr = response.str();
-            send(clientFd, responseStr.c_str(), responseStr.size(), 0);
-        }
-        
-        // Handle GET requests
-        void handleGetRequest(int clientFd, const std::string& path, Server* srv) {
-            std::string filePath;
-            
-            if (path == "/" || path == "/index.html") {
-                filePath = srv->indexFile;
-            } else {
-                // Remove leading slash and handle other files
-                filePath = path.substr(1);
-            }
-            
-            std::string content = readFile(filePath);
-            if (content.empty()) {
-                sendNotFoundResponse(clientFd);
-                return;
-            }
-            
-            // Determine content type based on file extension
-            std::string contentType = "text/html";
-            size_t dotPos = filePath.find_last_of('.');
-            if (dotPos != std::string::npos) {
-                std::string extension = filePath.substr(dotPos + 1);
-                if (extension == "css") contentType = "text/css";
-                else if (extension == "js") contentType = "application/javascript";
-                else if (extension == "json") contentType = "application/json";
-                else if (extension == "png") contentType = "image/png";
-                else if (extension == "jpg" || extension == "jpeg") contentType = "image/jpeg";
-                else if (extension == "gif") contentType = "image/gif";
-            }
-            
-            // Send response
-            std::stringstream response;
-            response << "HTTP/1.1 200 OK\r\n";
-            response << "Content-Type: " << contentType << "\r\n";
-            response << "Content-Length: " << content.size() << "\r\n";
-            response << "Connection: close\r\n";
-            response << "\r\n";
-            response << content;
-            
-            std::string responseStr = response.str();
-            send(clientFd, responseStr.c_str(), responseStr.size(), 0);
-        }
-        
-        // Handle POST requests
-        void handlePostRequest(int clientFd, const std::string& path, const std::string& body, Server* srv) {
-            // Example implementation - you can customize based on your needs
-            std::cout << "Handling POST request to " << path << std::endl;
-            
-            // Here you can process the POST data, store it, etc.
-            // For this example, we'll just echo back the received data
-            
-            std::stringstream response;
-            response << "HTTP/1.1 200 OK\r\n";
-            response << "Content-Type: application/json\r\n";
-            response << "Content-Length: " << body.size() << "\r\n";
-            response << "Connection: close\r\n";
-            response << "\r\n";
-            response << body;  // Echo back the received body
-            
-            std::string responseStr = response.str();
-            send(clientFd, responseStr.c_str(), responseStr.size(), 0);
-        }
-        
-        void handleClient(int pollIdx) {
-            int clientFd = pollfds[pollIdx].fd;
-            
-            // Get the server index this client belongs to
-            int serverIdx = clientToServerMap[clientFd];
-            
-            Server *srv = servers[serverIdx];
-            std::cout << "Handling client on server port: " << srv->port << std::endl;
-            
-            char buffer[BUFFER_SIZE];
-            ssize_t bytesRead = recv(clientFd, buffer, BUFFER_SIZE - 1, 0);
-
-            if (bytesRead <= 0) {
-                if (bytesRead == 0) {
-                    std::cout << "Client disconnected" << std::endl;
-                } else {
-                    std::cerr << "Error reading from client: " << strerror(errno) << std::endl;
-                }
-                closeAndRemoveClient(clientFd, pollIdx);
-                return;
-            }
-            buffer[bytesRead] = '\0';
-            
-            // Parse the HTTP request
-            std::string request(buffer);
-            std::string method, path, httpVersion;
-            std::map<std::string, std::string> headers;
-            std::string body;
-            
-            // Parse request line
-            std::istringstream requestStream(request);
-            std::string requestLine;
-            std::getline(requestStream, requestLine);
-            std::istringstream requestLineStream(requestLine);
-            requestLineStream >> method >> path >> httpVersion;
-            
-            // Parse headers
-            std::string headerLine;
-            while (std::getline(requestStream, headerLine) && headerLine != "\r") {
-                size_t colonPos = headerLine.find(':');
-                if (colonPos != std::string::npos) {
-                    std::string headerName = headerLine.substr(0, colonPos);
-                    std::string headerValue = headerLine.substr(colonPos + 1);
-                    
-                    // Trim whitespace
-                    headerValue.erase(0, headerValue.find_first_not_of(" \t"));
-                    headerValue.erase(headerValue.find_last_not_of("\r\n") + 1);
-                    
-                    headers[headerName] = headerValue;
-                }
-            }
-            
-            // Extract body if present
-            if (headers.find("Content-Length") != headers.end()) {
-                int contentLength = std::stoi(headers["Content-Length"]);
-                if (contentLength > 0) {
-                    // Find the start of the body
-                    size_t bodyStart = request.find("\r\n\r\n");
-                    if (bodyStart != std::string::npos) {
-                        body = request.substr(bodyStart + 4);
-                    }
-                }
-            }
-            
-            // Log request details
-            std::cout << "Method: " << method << std::endl;
-            std::cout << "Path: " << path << std::endl;
-            std::cout << "HTTP Version: " << httpVersion << std::endl;
-            
-            std::cout << "Headers:" << std::endl;
-            for (const auto& header : headers) {
-                std::cout << "  " << header.first << ": " << header.second << std::endl;
-            }
-            
-            if (!body.empty()) {
-                std::cout << "Body: " << body << std::endl;
-            }
-            
-            // Handle the request based on method
-            if (method == "GET") {
-                handleGetRequest(clientFd, path, srv);
-            } else if (method == "POST") {
-                handlePostRequest(clientFd, path, body, srv);
-            } else {
-                sendMethodNotAllowedResponse(clientFd);
-            }
-            
-            // After handling the request, close the connection
-            closeAndRemoveClient(clientFd, pollIdx);
+            // Remove from client data map
+            clientData.erase(clientFd);
         }
         
         bool isServerSocket(int fd) {
