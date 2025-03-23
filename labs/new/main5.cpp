@@ -22,6 +22,8 @@
 #define BUFFER_SIZE 4096
 #define CHUNK_SIZE 1024 // Size of each chunk to send
 
+
+// Printing error message and exit
 void printError(const std::string &msg) {
     std::cerr << msg << std::endl;
     std::exit(1);
