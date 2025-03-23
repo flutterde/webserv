@@ -23,12 +23,13 @@ Request::Request(const std::string &requestString)
 	
 	if (this->path.find_first_of("?") != std::string::npos)
 	{
+		this->query = this->path.substr(this->path.find_first_of("?"));
 		size_t q_start = this->path.find_first_of("?") + 1;
 		while (true)
 		{
 			size_t q_end = this->path.find_first_of("&", q_start);
 			if (q_end != q_start)
-				this->query.push_back(this->path.substr(q_start, q_end - q_start));
+				this->vQuery.push_back(this->path.substr(q_start, q_end - q_start));
 			if (q_end == std::string::npos)
 				break ;
 			q_start = ++q_end;
@@ -56,6 +57,34 @@ Request::Request(const std::string &requestString)
 		this->headerPairs[key] = value;
 	}
 	this->body = requestString.substr(start + 2, requestString.size() - start);
+	this->convertToEnv();
+}
+
+void Request::convertToEnv(void)
+{
+	vEnv.push_back("REQUEST_METHOD="+ method);
+	vEnv.push_back("SCRIPT_FILENAME="+ path);
+	if (!query.empty())
+		vEnv.push_back("QUERY_STRING="+ query);
+	if (!headerPairs["Content-Type"].empty())
+		vEnv.push_back("CONTENT_TYPE="+ headerPairs["Content-Type"]);
+	if (!headerPairs["Content-Length"].empty())
+		vEnv.push_back("CONTENT_LENGTH="+ headerPairs["Content-Length"]);
+	if (!headerPairs["Host"].empty())
+		vEnv.push_back("HTTP_HOST="+ headerPairs["Host"]);
+	if (!headerPairs["User-Agent"].empty())
+		vEnv.push_back("HTTP_USER_AGENT="+ headerPairs["User-Agent"]);
+	if (!headerPairs["Cookie"].empty())
+		vEnv.push_back("HTTP_COOKIE="+ headerPairs["Cookie"]);
+	if (!headerPairs["Authorization"].empty())
+		vEnv.push_back("HTTP_AUTHORIZATION="+ headerPairs["Authorization"]);
+}
+
+std::string Request::getEnv(size_t i) const
+{
+	if (i >= vEnv.size())
+		return "";
+	return vEnv[i];
 }
 
 std::string Request::getMethod(void) const
@@ -88,14 +117,19 @@ std::string Request::getHeader(const std::string &key) const
 
 std::string Request::getQuery(const size_t i) const
 {
-	if (i >= this->query.size())
+	if (i >= this->vQuery.size())
 		return "";
-	return this->query[i];
+	return this->vQuery[i];
+}
+
+std::string Request::getQuery() const
+{
+	return this->query;
 }
 
 size_t Request::getQuerySize(void) const
 {
-	return this->query.size();
+	return this->vQuery.size();
 }
 
 void Request::printHeaders(void) const
@@ -104,5 +138,11 @@ void Request::printHeaders(void) const
 	for (it = this->headerPairs.begin(); it != this->headerPairs.end(); ++it)
 		std::cout << it->first << ": " << it->second << std::endl;
 }
+
+size_t Request::getEnvSize(void) const
+{
+	return vEnv.size();
+}
+
 
 Request::~Request() {}
