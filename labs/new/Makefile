@@ -6,7 +6,10 @@ all: clean $(NAME)
 
 $(NAME): 
 	rm -f $(NAME)
-	c++ -std=c++98 -o $(NAME) main4.cpp
+	c++ -std=c++98 -Wall -Wextra -o $(NAME) main5.cpp
 
 clean:
 	rm -f $(NAME)
+
+
+# ./scripts /php /hfghj/hgfhghjg.php

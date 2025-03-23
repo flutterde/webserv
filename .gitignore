@@ -1,6 +1,13 @@
 # Prerequisites
 *.d
 
+
+
+
+
+labs/intern/
+
+
 # Compiled Object files
 *.slo
 *.lo

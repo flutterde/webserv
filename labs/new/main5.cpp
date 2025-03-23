@@ -10,7 +10,6 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <fcntl.h>
-#include <fstream>
 #include <sstream>
 #include <map>
 #include <errno.h>
@@ -21,7 +20,7 @@
 #define INDEX_FILE2 "app.html"
 #define VIDEO_PATH "/Users/ochouati/Downloads/abuobayda.mp4"
 #define BUFFER_SIZE 4096
-#define CHUNK_SIZE 8192
+#define CHUNK_SIZE 1024 // Size of each chunk to send
 
 void printError(const std::string &msg) {
     std::cerr << msg << std::endl;
@@ -33,6 +32,13 @@ void setNonBlocking(int sockfd) {
     if (fcntl(sockfd, F_SETFL, O_NONBLOCK) == -1) {
         printError("fcntl F_SETFL error");
     }
+}
+
+// Convert integer to hexadecimal string for chunked encoding
+std::string toHex(size_t num) {
+    std::stringstream ss;
+    ss << std::hex << num;
+    return ss.str();
 }
 
 class Server {
@@ -94,8 +100,11 @@ class Server {
 struct ClientData {
     std::string request;
     bool requestComplete;
+    std::string responseContent;    // Full content to be sent
+    size_t bytesTransferred;        // Tracks how many bytes have been sent
+    bool responseHeadersSent;       // Tracks if headers have been sent
     
-    ClientData() : requestComplete(false) {}
+    ClientData() : requestComplete(false), bytesTransferred(0), responseHeadersSent(false) {}
 };
 
 //! WebServer class
@@ -155,13 +164,11 @@ class WebServer {
             
             // Make client socket non-blocking
             setNonBlocking(clientFd);
-            
-            // Add client to poll list
+            // Add client to poll list for both reading and writing
             struct pollfd pfd;
             pfd.fd = clientFd;
             pfd.events = POLLIN;
             pollfds.push_back(pfd);
-            
             // Add client to client list
             clientFds.push_back(clientFd);
             
@@ -177,15 +184,28 @@ class WebServer {
                       << " on server port " << servers[serverIdx]->port << std::endl;
         }
         
+        // Read file content into a string
         std::string readFile(const std::string &filename) {
-            std::ifstream file(filename.c_str());
-            if (!file.is_open()) {
-                return ""; // Return empty string if file can't be opened
+            // Use open system call which is in the allowed list
+            int fd = open(filename.c_str(), O_RDONLY);
+            if (fd < 0) {
+                std::cerr << "Error opening file " << filename << ": " << strerror(errno) << std::endl;
+                return "";
             }
-
-            std::stringstream buffer;
-            buffer << file.rdbuf();
-            return buffer.str();
+            std::string content;
+            char buffer[BUFFER_SIZE];
+            ssize_t bytesRead;
+            
+            // Use read system call to read file content
+            while ((bytesRead = read(fd, buffer, BUFFER_SIZE - 1)) > 0) {
+                buffer[bytesRead] = '\0';
+                content.append(buffer, bytesRead);
+            }
+            
+            // Close file descriptor
+            close(fd);
+            
+            return content;
         }
         
         // Check if HTTP request is complete
@@ -246,27 +266,97 @@ class WebServer {
                 std::cout << clientData[clientFd].request << std::endl;
                 std::cout << "-----END REQUEST-----" << std::endl;
                 
-                // Send response (the index file)
+                // Get the content to send
                 std::string content = readFile(srv->indexFile);
                 if (content.empty()) {
-                    content = "<html><body><h1>Error: index.html not found</h1></body></html>";
+                    content = "<html><body><h1>Error: " + srv->indexFile + " not found</h1></body></html>";
                 }
                 
-                // Prepare HTTP response
-                std::string contentType = (srv->indexFile.find(",mp4") != std::string::npos) ? "video/mp4" : "text/html";
-                std::stringstream response;
-                response << "HTTP/1.1 200 OK\r\n";
-                response << "Content-Type: " + contentType +"\r\n";
-                response << "Content-Length: " << content.size() << "\r\n";
-                response << "Connection: close\r\n";
-                response << "\r\n";
-                response << content;
+                // Store the response content for chunked sending
+                clientData[clientFd].responseContent = content;
                 
-                // Send response
-                std::string responseStr = response.str();
-                send(clientFd, responseStr.c_str(), responseStr.size(), 0);
+                // Mark that we need to send data
+                pollfds[pollIdx].events = POLLIN | POLLOUT;
+            }
+        }
+        
+        // Send response in chunks
+        void sendChunkedResponse(int pollIdx) {
+            int clientFd = pollfds[pollIdx].fd;
+            ClientData &client = clientData[clientFd];
+            
+            // Get the server this client belongs to
+            int serverIdx = clientToServerMap[clientFd];
+            Server *srv = servers[serverIdx];
+            
+            // If headers haven't been sent yet, send them first
+            if (!client.responseHeadersSent) {
+                std::string contentType = (srv->indexFile.find(".mp4") != std::string::npos) ? "video/mp4" : "text/html";
+                std::stringstream headers;
+                headers << "HTTP/1.1 200 OK\r\n";
+                headers << "Content-Type: " + contentType + "\r\n";
+                headers << "Transfer-Encoding: chunked\r\n";  // Use chunked encoding
+                headers << "Connection: close\r\n";
+                headers << "\r\n";  // End of headers
                 
-                // Close connection after sending response
+                std::string headersStr = headers.str();
+                ssize_t sent = send(clientFd, headersStr.c_str(), headersStr.size(), 0);
+                
+                if (sent <= 0) {
+                    if (errno != EAGAIN && errno != EWOULDBLOCK) {
+                        std::cerr << "Error sending headers: " << strerror(errno) << std::endl;
+                        closeClient(clientFd, pollIdx);
+                    }
+                    return;
+                }
+                
+                client.responseHeadersSent = true;
+                std::cout << "Sent headers to client on port " << srv->port << std::endl;
+            }
+            
+            // If we have content left to send
+            if (client.bytesTransferred < client.responseContent.size()) {
+                // Calculate chunk size
+                size_t remaining = client.responseContent.size() - client.bytesTransferred;
+                size_t chunkSize = (remaining < CHUNK_SIZE) ? remaining : CHUNK_SIZE;
+                
+                // Prepare chunk
+                std::string chunkHeader = toHex(chunkSize) + "\r\n";  // Chunk size in hex
+                std::string chunkData = client.responseContent.substr(client.bytesTransferred, chunkSize);
+                std::string chunk = chunkHeader + chunkData + "\r\n";  // Chunk format: size\r\ndata\r\n
+                
+                // Send chunk
+                ssize_t sent = send(clientFd, chunk.c_str(), chunk.size(), 0);
+                
+                if (sent <= 0) {
+                    if (errno != EAGAIN && errno != EWOULDBLOCK) {
+                        std::cerr << "Error sending chunk: " << strerror(errno) << std::endl;
+                        closeClient(clientFd, pollIdx);
+                    }
+                    return;
+                }
+                
+                // Update bytes transferred
+                client.bytesTransferred += chunkSize;
+                std::cout << "Sent chunk of size " << chunkSize << " to client on port " << srv->port 
+                          << " (" << client.bytesTransferred << "/" << client.responseContent.size() << ")" << std::endl;
+            } 
+            // If all content is sent, send the final empty chunk
+            else if (client.bytesTransferred == client.responseContent.size()) {
+                // Send the final empty chunk to indicate the end of the response
+                std::string finalChunk = "0\r\n\r\n";  // Empty chunk with trailer
+                ssize_t sent = send(clientFd, finalChunk.c_str(), finalChunk.size(), 0);
+                
+                if (sent <= 0) {
+                    if (errno != EAGAIN && errno != EWOULDBLOCK) {
+                        std::cerr << "Error sending final chunk: " << strerror(errno) << std::endl;
+                    }
+                    // Close client after sending the final chunk
+                    closeClient(clientFd, pollIdx);
+                    return;
+                }
+                
+                std::cout << "Completed chunked transfer to client on port " << srv->port << std::endl;
                 closeClient(clientFd, pollIdx);
             }
         }
@@ -323,6 +413,7 @@ class WebServer {
                 
                 // Process events
                 for (size_t i = 0; i < pollfds.size() && numEvents > 0; i++) {
+                    // Handle incoming data (POLLIN)
                     if (pollfds[i].revents & POLLIN) {
                         numEvents--;
                         if (isServerSocket(pollfds[i].fd)) {
@@ -332,6 +423,15 @@ class WebServer {
                         } else {
                             // Client socket has activity - handle client
                             handleClient(i);
+                        }
+                    }
+                    
+                    // Handle outgoing data (POLLOUT) - for chunked response
+                    if (pollfds[i].revents & POLLOUT) {
+                        numEvents--;
+                        // Send next chunk of data
+                        if (!isServerSocket(pollfds[i].fd)) {
+                            sendChunkedResponse(i);
                         }
                     }
                 }
@@ -344,14 +444,14 @@ class WebServer {
 };
 
 int main() {
-    std::cout << "Starting webserver..." << std::endl;
+    std::cout << "Starting webserver with chunked transfer encoding..." << std::endl;
     
     WebServer webserver;
     webserver.addServer(8080, INDEX_FILE);
     webserver.addServer(8081, INDEX_FILE2);
     webserver.addServer(8082, INDEX_FILE);
     webserver.addServer(8083, INDEX_FILE2);
-    webserver.addServer(8083, VIDEO_PATH);
+    webserver.addServer(8084, VIDEO_PATH);
     
     std::cout << "Webserver running on ports 8080, 8081, 8082, and 8083" << std::endl;
     std::cout << "Press Ctrl+C to stop" << std::endl;
