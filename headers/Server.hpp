@@ -34,8 +34,8 @@ class	Server {
 		std::map<std::string, bool> allowedMethods;
 		std::map<std::string, bool> indexes;
 		std::vector<uint32_t>		ports;
-		bool						autoIndex;
 		bool						enableUploads;
+		bool						autoIndex;
 		int							serverSocket;
 		int							serverBind;
 		// struct sockaddr_in			addr;

@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/03/22 23:53:39 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/03/24 23:51:57 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,16 +28,27 @@ void	Webserv::_closeClients() {
 	}
 }
 
+Webserv::Webserv(readConfig& config) {
+	this->_config = config;
+}
+
+void	Webserv::_init() {
+	std::cout << "init............" << std::endl;
+}
+
 void	Webserv::run() {
+	_init();
 	while (RUNNING) {
-		if ((this->_nbrEvents = poll(_pollfds.data(), _pollfds.size(), POLL_TIMEOUT) < 0)) {
-			throw std::runtime_error("poll failed");
-		}
-		for (size_t i = 0; i < this->_pollfds.size(); ++i) {
-			if (this->_pollfds[i].revents & POLLIN) {
-				// read from client
-			}
-		}
+		// if ((this->_nbrEvents = poll(_pollfds.data(), _pollfds.size(), POLL_TIMEOUT) < 0)) {
+		// 	throw std::runtime_error("poll failed");
+		// }
+		// for (size_t i = 0; i < this->_pollfds.size(); ++i) {
+		// 	if (this->_pollfds[i].revents & POLLIN) {
+		// 		// read from client
+		// 	}
+		// }
+		sleep(2);
+		std::cout << "running.." << std::endl;
 	}
 }
 

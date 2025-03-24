@@ -15,7 +15,7 @@
 #include <errno.h>
 
 #define RUNNING 1
-#define MAX_EVENTS 64
+#define MAX_EVENTS 32
 #define INDEX_FILE "index.html"
 #define INDEX_FILE2 "app.html"
 #define VIDEO_PATH "/Users/ochouati/Downloads/abuobayda.mp4"
@@ -284,9 +284,24 @@ class WebServer {
         
         // Send response in chunks
         void sendChunkedResponse(int pollIdx) {
+            signal(SIGPIPE, SIG_IGN);  // Ignore SIGPIPE to prevent crashing on broken connections
             int clientFd = pollfds[pollIdx].fd;
             ClientData &client = clientData[clientFd];
-            
+
+            // Check if connection is still valid before sending
+            int errorCode;
+            socklen_t errorCodeLen = sizeof(errorCode);
+            if (getsockopt(clientFd, SOL_SOCKET, SO_ERROR, &errorCode, &errorCodeLen) < 0) {
+                std::cerr << "Socket error check failed" << std::endl;
+                closeClient(clientFd, pollIdx);
+                return;
+            }
+    
+            if (errorCode != 0) {
+                std::cerr << "Socket in error state: " << strerror(errorCode) << std::endl;
+                closeClient(clientFd, pollIdx);
+                return;
+            }
             // Get the server this client belongs to
             int serverIdx = clientToServerMap[clientFd];
             Server *srv = servers[serverIdx];
@@ -297,13 +312,14 @@ class WebServer {
                 std::stringstream headers;
                 headers << "HTTP/1.1 200 OK\r\n";
                 headers << "Content-Type: " + contentType + "\r\n";
+                headers << "Content-Length: " << client.responseContent.size() << "\r\n";
                 headers << "Transfer-Encoding: chunked\r\n";  // Use chunked encoding
-                headers << "Connection: close\r\n";
+                // headers << "Connection: close\r\n";
+                headers << "Connection: keep-alive\r\n";
                 headers << "\r\n";  // End of headers
                 
                 std::string headersStr = headers.str();
-                ssize_t sent = send(clientFd, headersStr.c_str(), headersStr.size(), 0);
-                
+                ssize_t sent = send(clientFd, headersStr.c_str(), headersStr.size(), MSG_DONTWAIT);
                 if (sent <= 0) {
                     if (errno != EAGAIN && errno != EWOULDBLOCK) {
                         std::cerr << "Error sending headers: " << strerror(errno) << std::endl;

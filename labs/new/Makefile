@@ -6,7 +6,7 @@ all: clean $(NAME)
 
 $(NAME): 
 	rm -f $(NAME)
-	c++ -std=c++98 -Wall -Wextra -o $(NAME) main5.cpp
+	c++ -std=c++98 -Wall -Wextra -o $(NAME) main5.cpp -g -fsanitize=address
 
 clean:
 	rm -f $(NAME)
