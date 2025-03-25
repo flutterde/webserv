@@ -106,9 +106,9 @@ class WebServer {
             }
             
             // Clean up servers
-            for (size_t i = 0; i < servers.size(); i++) {
-                delete servers[i];
-            }
+            // for (size_t i = 0; i < servers.size(); i++) {
+            //     delete servers[i];
+            // }
         }
         
         void addServer(int port) {

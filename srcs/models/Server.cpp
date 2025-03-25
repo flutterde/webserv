@@ -185,6 +185,11 @@ bool	Server::getEnableUploads(void) const
 	return (this->enableUploads);
 }
 
+int	Server::getSocket() const
+{
+	return (this->serverSocket);
+}
+
 void	Server::setPort(uint32_t val)
 {
 	this->port = val;

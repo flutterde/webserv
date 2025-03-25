@@ -22,11 +22,15 @@
 #include <unistd.h>
 #include <netinet/in.h>
 
+void    ll(){ //! DELETE ME
+    system("leaks webserv");
+}
+
 int server(char *argFile, char **env) {
     try {
         readConfig conf;
-        conf.readFile(argFile, env);
-        Webserv webserv(conf);
+        conf.readFile(argFile);
+        Webserv webserv(conf, env);
         webserv.run();
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
@@ -37,6 +41,7 @@ int server(char *argFile, char **env) {
 
 int	main(int ac, char **av, char **env)
 {
+    atexit(ll); //! -->delete
 	if (ac != 2) {
 		std::cout << "config file require!" << std::endl;
 		return (1);

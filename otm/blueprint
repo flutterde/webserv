@@ -44,3 +44,9 @@ https://www.linuxhowtos.org/C_C++/socket.htm
 
 1. config
 2. 
+
+
+
+# WEBSERV::RUN()
+-> init(): init servers
+-> poll(): poll pollfds to monitor them

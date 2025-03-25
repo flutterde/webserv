@@ -116,15 +116,6 @@ namespace	FtPars {
 		return (ip);
 	}
 
-	char	*stringToChar(std::string& str) {
-		size_t	i;
-		char	*newStr = new char[str.size() + 1]();
-		for (i = 0; i < str.size(); i++)
-			newStr[i] = str[i];
-		newStr[i] = '\0';
-		return (newStr);
-	}
-
 	std::map<std::string, bool> parseMethods(const std::map<std::string, bool>& oldMp, std::string& str) {
 		std::stringstream	ss(str);
 		std::string		tmp;

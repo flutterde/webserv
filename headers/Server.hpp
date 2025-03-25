@@ -61,6 +61,7 @@ class	Server {
 		bool		getAutoIndex(void) const;
 		const std::vector<uint32_t>&	getPorts(void) const;
 		bool	getEnableUploads(void) const;
+		int		getSocket() const;
 		// Setters
 		void	setPort(uint32_t val);
 		void	setHost(std::string& val);

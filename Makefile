@@ -1,5 +1,5 @@
 CPP = c++
-CPPFLAGS = -Wall -Wextra -Werror -std=c++98 -I./headers/
+CPPFLAGS = -Wall -Wextra -Werror -std=c++98 -I./headers/ #-fsanitize=address
 
 NAME=webserv
 SRCS=main.cpp srcs/parsing/config/readConfig.cpp srcs/parsing/helpers/strTrim.cpp \

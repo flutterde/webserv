@@ -14,44 +14,27 @@
 
 readConfig::readConfig(void)
 {
+	std::cout << "Default conf Constructor...\n";
 	this->lines = new std::vector<std::string>();
 	if (!this->lines)
 		throw std::runtime_error("No ressources");
 }
 
+std::vector<Server>&	readConfig::getServers()
+{
+	return (this->servers);
+}
+
 readConfig::~readConfig(void)
 {
+	std::cout << "The Destructor of Conf.....\n";
 	delete	this->lines;
-	delete	this->env;
+
 }
 
 const char *readConfig::OpenFileException::what() const throw()
 {
 	return ("can't open that file");
-}
-
-void	readConfig::collectEnv(char **env)
-{
-	this->env = new std::vector<std::string>();
-	for (size_t i = 0; env[i]; i++)
-		this->env->push_back(env[i]);
-}
-
-void	readConfig::setNewEnv(std::string& val)
-{
-	this->env->push_back(val);
-}
-
-char	**readConfig::getEnv(void) //!
-{
-	size_t	i;
-	char	**strs = new char*[this->env->size() + 1]();
-	for (i = 0; i < this->env->size(); i++)
-	{
-		strs[i] = FtPars::stringToChar((*this->env)[i]);
-	}
-	strs[i] = NULL;
-	return (strs);
 }
 
 void	readConfig::parseConf(void)
@@ -85,12 +68,11 @@ void	readConfig::printLines() const
 		std::cout << "-> " << *it << std::endl;
 }
 
-void	readConfig::readFile(char *argFile, char **env)
+void	readConfig::readFile(char *argFile)
 {
-	if (!argFile || !env || !*env)
-		throw std::runtime_error("no config file or no env provided");
+	if (!argFile)
+		throw std::runtime_error("no config file provided");
 	try {
-		this->collectEnv(env);
 		std::ifstream	file(argFile);
 		if (file.fail())
 			throw std::runtime_error("can't open file");
