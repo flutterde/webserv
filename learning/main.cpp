@@ -12,7 +12,7 @@ void cgi(Request&, char**);
 int main(int ac, char** av, char **env)
 {
 	std::string req = 
-    "POST /path/to/file?name=achakkaf&filetype=.c HTTP/1.1\r\n"
+	"POST tst.php?name=achakkaf&filetype=.c HTTP/1.1\r\n"
     "Host: localhost\r\n"
     "Connection: close\r\n"
     "Content-Type: multipart/form-data; boundary=----WebKitFormBoundary12345\r\n"
@@ -39,7 +39,7 @@ int main(int ac, char** av, char **env)
 	// r.printHeaders();
 	// std::cout << "body |" << r.getBody() << "|" << std::endl 
 	std::cout << "ENV:\n";
-	for (size_t i = 0; i < r.getEnvSize() ; ++i) std::cout << r.getEnv(i) << std::endl;
+	// for (size_t i = 0; i < r.getEnvSize() ; ++i) std::cout << r.getEnv(i) << std::endl;
 	cgi(r, env);
 
 	// int socketFd = socket(AF_INET, SOCK_STREAM, 0);
