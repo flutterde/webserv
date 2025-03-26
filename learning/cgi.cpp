@@ -11,111 +11,114 @@
 // 		HTTP_USER_AGENT → User-Agent: Mozilla/5.0
 // 		HTTP_HOST → Host: example.com
 
-// std::vector<std::string> prepareEnv(Request &r)
-// {
 
-// }
-
-// void cgi(Request &r)
-
-char **makeEnv(Request &r, char **mainEnv)
+char **createEnvironmentVariables(Request &request, char **systemEnv)
 {
-	size_t i = 0;
-	while (mainEnv[i])
-		++i;
-	char **env = new char *[i + r.getEnvSize()]; // free this
-	i = 0;
-	while (mainEnv[i])
+	size_t systemEnvCount = 0;
+	while (systemEnv[systemEnvCount])
+		++systemEnvCount;
+
+	char **envVariables = new char *[systemEnvCount + request.getEnvSize()]; // free this
+	size_t index = 0;
+
+	while (systemEnv[index])
 	{
-		env[i] = strdup(mainEnv[i]);
-		++i;
+		envVariables[index] = strdup(systemEnv[index]);
+		++index;
 	}
-	for (size_t j = 0; !r.getEnv(j).empty(); ++j)
-		env[i++] = strdup(r.getEnv(j).c_str());
-	env[i] = NULL;
-	return env;
+
+	for (size_t j = 0; !request.getEnv(j).empty(); ++j)
+		envVariables[index++] = strdup(request.getEnv(j).c_str());
+
+	envVariables[index] = NULL;
+	return envVariables;
 }
 
-std::vector<std::string> splitPath(char **mainEnv)
+std::vector<std::string> extractBinaryPaths(char **environmentVariables)
 {
-	std::vector<std::string> binPath;
-	for (size_t i = 0; mainEnv[i]; ++i)
+	std::vector<std::string> binaryPaths;
+	for (size_t i = 0; environmentVariables[i]; ++i)
 	{
-		std::string tmp = mainEnv[i];
-		if (tmp.compare(0, 5, "PATH=") == 0)
+		std::string envEntry = environmentVariables[i];
+		if (envEntry.compare(0, 5, "PATH=") == 0)
 		{
-			size_t start = 5;
-			size_t end;
+			size_t startPos = 5;
+			size_t delimiterPos;
 			while (true)
 			{
-				end = tmp.find_first_of(":", start);
-				if (end == std::string::npos)
+				delimiterPos = envEntry.find_first_of(":", startPos);
+				if (delimiterPos == std::string::npos)
 					break;
-				binPath.push_back(tmp.substr(start, end - start));
-				start = end + 1;
+				binaryPaths.push_back(envEntry.substr(startPos, delimiterPos - startPos));
+				startPos = delimiterPos + 1;
 			}
-			binPath.push_back(tmp.substr(start));
+			binaryPaths.push_back(envEntry.substr(startPos));
 			break;
 		}
 	}
-	return binPath;
+	return binaryPaths;
 }
 
-std::string findExecutablePath(const std::vector<std::string> &binPath, const std::string &executable)
+std::string locateExecutable(const std::vector<std::string> &searchPaths, const std::string &executableName)
 {
-	for (size_t i = 0; i < binPath.size(); ++i)
+	for (size_t i = 0; i < searchPaths.size(); ++i)
 	{
-		std::string path = binPath[i] + "/" + executable;
-		if (access(path.c_str(), X_OK) == 0)
-			return path;
+		std::string fullPath = searchPaths[i] + "/" + executableName;
+		if (access(fullPath.c_str(), X_OK) == 0)
+			return fullPath;
 	}
 	return "";
 }
 
-void cgi(Request &r, char **mainEnv)
+void executeCgiScript(Request &request, char **systemEnv)
 {
-	char **env = makeEnv(r, mainEnv);
-	std::vector<std::string> binPath = splitPath(mainEnv);
-	std::string fileExtension;
-	std::string executablePath;
-	size_t t;
-	t = r.getPath().find_last_of(".");
-	if (t != std::string::npos)
-		fileExtension = r.getPath().substr(t);
+	char **envVariables = createEnvironmentVariables(request, systemEnv);
+	std::vector<std::string> binaryPaths = extractBinaryPaths(systemEnv);
+	std::string scriptExtension;
+	std::string interpreterPath;
+	size_t extensionPos;
+	extensionPos = request.getPath().find_last_of(".");
+	if (extensionPos != std::string::npos)
+		scriptExtension = request.getPath().substr(extensionPos);
 	else
-		fileExtension = "";
-	if (fileExtension == ".php")
-		executablePath = findExecutablePath(binPath, "php");
-	else if (fileExtension == ".py")
-		executablePath = findExecutablePath(binPath, "python3");
+		scriptExtension = "";
+	if (scriptExtension == ".php")
+		interpreterPath = locateExecutable(binaryPaths, "php");
+	else if (scriptExtension == ".py")
+		interpreterPath = locateExecutable(binaryPaths, "python3");
 
-	int pip[2];
-	if (pipe(pip) < 0)
-		std::cerr << "pipe failed\n";
-	pid_t pid = fork();
-	if (pid == 0)
+	int pipeFd[2];
+	if (pipe(pipeFd) < 0)
+		std::cerr << "Error: pipe creation failed\n";
+	pid_t processId = fork();
+	if (processId == 0)
 	{
-		close(pip[0]);
-		dup2(pip[1], STDOUT_FILENO);
-		dup2(pip[1], STDERR_FILENO);
-		close(pip[1]);
-		char *args[3] = {strdup(executablePath.c_str()), strdup(r.getPath().c_str()), NULL};
-		execve(args[0], args, env);
+		close(pipeFd[0]);
+		dup2(pipeFd[1], STDOUT_FILENO);
+		dup2(pipeFd[1], STDERR_FILENO);
+		close(pipeFd[1]);
+		char *arguments[3] = {strdup(interpreterPath.c_str()), strdup(request.getPath().c_str()), NULL};
+		execve(arguments[0], arguments, envVariables);
 		std::cerr << "Error: execve failed\n";
 	}
-	else if (pid > 0)
+	else if (processId > 0)
 	{
-		close(pip[1]);
-		char buffer[1024];
+		close(pipeFd[1]);
+		char outputBuffer[1024];
 		ssize_t bytesRead;
-		while ((bytesRead = read(pip[0], buffer, sizeof(buffer) - 1)) > 0)
+		while ((bytesRead = read(pipeFd[0], outputBuffer, sizeof(outputBuffer) - 1)) > 0)
 		{
-			buffer[bytesRead] = '\0';
-			std::cout << buffer;
+			outputBuffer[bytesRead] = '\0';
+			std::cout << outputBuffer;
 		}
-		close(pip[0]);
-		waitpid(pid, NULL, 0);
+		close(pipeFd[0]);
+		waitpid(processId, NULL, 0);
 	}
 	else
 		exit(EXIT_FAILURE);
+	for(size_t i = 0; envVariables[i]; ++i)
+	{
+		delete envVariables[i];
+	}
+	delete[] envVariables;
 }
