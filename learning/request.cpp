@@ -14,49 +14,49 @@
 
 Request::Request(const std::string &requestString)
 {
-	size_t start = requestString.find_first_of(" \t");
-	this->method = requestString.substr(0, start);
+	size_t methodEnd = requestString.find_first_of(" \t");
+	this->method = requestString.substr(0, methodEnd);
 
-	start = requestString.find_first_not_of(" \t", start);
-	size_t end = requestString.find_first_of(" \t", start);
-	this->path = requestString.substr(start, end - start);
+	size_t pathStart = requestString.find_first_not_of(" \t", methodEnd);
+	size_t pathEnd = requestString.find_first_of(" \t", pathStart);
+	this->path = requestString.substr(pathStart, pathEnd - pathStart);
 	
 	if (this->path.find_first_of("?") != std::string::npos)
 	{
 		this->query = this->path.substr(this->path.find_first_of("?"));
-		size_t q_start = this->path.find_first_of("?") + 1;
+		size_t queryStart = this->path.find_first_of("?") + 1;
 		while (true)
 		{
-			size_t q_end = this->path.find_first_of("&", q_start);
-			if (q_end != q_start)
-				this->vQuery.push_back(this->path.substr(q_start, q_end - q_start));
-			if (q_end == std::string::npos)
-				break ;
-			q_start = ++q_end;
+			size_t queryEnd = this->path.find_first_of("&", queryStart);
+			if (queryEnd != queryStart)
+				this->vQuery.push_back(this->path.substr(queryStart, queryEnd - queryStart));
+			if (queryEnd == std::string::npos)
+				break;
+			queryStart = ++queryEnd;
 		}
 		this->path = this->path.substr(0, this->path.find_first_of("?"));
 	}
 
-	start = requestString.find_last_of(" \t", end) + 1;
-	end = requestString.find_first_of("\n", start);
-	this->version = requestString.substr(start, end - start - 1); // -1 for /r before \n in the request
+	size_t versionStart = requestString.find_last_of(" \t", pathEnd) + 1;
+	size_t versionEnd = requestString.find_first_of("\n", versionStart);
+	this->version = requestString.substr(versionStart, versionEnd - versionStart - 1); // -1 for /r before \n in the request
 
-	std::string key, value;
+	std::string headerKey, headerValue;
 	while (true)
 	{
-		start = requestString.find_first_not_of(" \t", end + 1);
-		if (start == std::string::npos || requestString[start] == '\r' || requestString[start] == '\n')
+		size_t headerStart = requestString.find_first_not_of(" \t", versionEnd + 1);
+		if (headerStart == std::string::npos || requestString[headerStart] == '\r' || requestString[headerStart] == '\n')
 			break;
-		end = requestString.find_first_of(":", start);
-		if (end == std::string::npos)
+		size_t headerKeyEnd = requestString.find_first_of(":", headerStart);
+		if (headerKeyEnd == std::string::npos)
 			break;
-		key = requestString.substr(start, end - start);
-		start = requestString.find_first_not_of(": \t", end);
-		end = requestString.find_first_of("\n", start);
-		value = requestString.substr(start, end - start);
-		this->headerPairs[key] = value;
+		headerKey = requestString.substr(headerStart, headerKeyEnd - headerStart);
+		size_t headerValueStart = requestString.find_first_not_of(": \t", headerKeyEnd);
+		versionEnd = requestString.find_first_of("\n", headerValueStart);
+		headerValue = requestString.substr(headerValueStart, versionEnd - headerValueStart);
+		this->headerPairs[headerKey] = headerValue;
 	}
-	this->body = requestString.substr(start + 2, requestString.size() - start);
+	this->body = requestString.substr(versionEnd + 2, requestString.size() - versionEnd);
 	this->convertToEnv();
 }
 
