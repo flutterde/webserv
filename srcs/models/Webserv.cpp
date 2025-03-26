@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/03/25 22:20:45 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/03/26 21:34:19 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,18 +17,33 @@
 #include <ostream>
 #include <stdexcept>
 #include <sys/poll.h>
+#include <sys/socket.h>
 
 Webserv::Webserv() {
 }
 
 Webserv::~Webserv() {
-	_closeClients();
+
 }
 
 void	Webserv::_closeClients() {
-	for (size_t i = 0; i < _pollfds.size(); i++) {
-		close(_pollfds[i].fd);
+	// for (size_t i = 0; i < _pollfds.size(); i++) {
+	// 	close(_pollfds[i].fd);
+	// }
+}
+
+void	Webserv::_closeClient(int fd)
+{
+	// remove from pollfds
+	for (size_t i = 0; i < _pollfds.size(); ++i) {
+		if (_pollfds[i].fd == fd) {
+			_pollfds.erase(_pollfds.begin() + i);
+			break;
+		}
 	}
+	// remove from requests
+	_requests.erase(fd);
+	close(fd);
 }
 
 Webserv::Webserv(readConfig& config, char **env) {
@@ -45,7 +60,11 @@ Webserv::Webserv(readConfig& config, char **env) {
 
 void	Webserv::_init() {
 	std::cout << "init............" << std::endl;
-	std::cout << "The Servers count: " << _servers.size() << std::endl;
+	for (size_t i = 0; i < this->_servers.size(); ++i) {
+		// init server //! add this
+		// ... 
+		this->_pollfds.push_back((struct pollfd){this->_servers[i].getSocket(), POLLIN, 0});
+	}
 }
 
 void	Webserv::run() {
@@ -53,12 +72,14 @@ void	Webserv::run() {
 	while (RUNNING) {
 		if ((this->_nbrEvents = poll(_pollfds.data(), _pollfds.size(), POLL_TIMEOUT)) < 0)
 			throw std::runtime_error("poll exception error");
-		for (size_t i = 0; i < this->_pollfds.size() && this->_nbrEvents > 0; ++i) {
-			if (this->_pollfds[i].revents & POLLIN) {
-				this->_nbrEvents--;
-				if (isServerSocket(_pollfds[i].fd))
-					return ;
+		for (size_t i = 0; i < _pollfds.size() && this->_nbrEvents > 0; ++i) {
+			if (_pollfds[i].revents & POLLIN) {
+				--this->_nbrEvents;
+				if (isServerSocket(_pollfds[i].fd)) {
 					// acceptNewConnection
+				} else {
+					// handle client request
+				}
 			}
 		}
 		sleep(1);//! remove this
@@ -66,9 +87,9 @@ void	Webserv::run() {
 	}
 }
 
-Server	Webserv::getServerByFd(const int clientFd) const {
+Server	Webserv::getServerByFd(int fd) const {
 	for (size_t i = 0; i < _servers.size(); ++i)
-		if (_servers[i].getSocket() == clientFd)
+		if (_servers[i].getSocket() == fd)
 			return (_servers[i]);
 	throw std::runtime_error("Error while handling new connection");
 }
@@ -95,11 +116,26 @@ bool	Webserv::isServerSocket(int fd) const
 	return (false);
 }
 
+void	Webserv::setNonBlocking(int fd) {
+	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
+		throw std::runtime_error("Set non blocking failed");
+}
+
 void	Webserv::acceptNewConnection(int fd)
 {
+	ClientData	newClient;
 	try {
 		Server	srv = this->getServerByFd(fd);
-		// accept new client
+		struct sockaddr_in clientAddress;
+		socklen_t clientAddressSize = sizeof(clientAddress);
+		int clientFd = accept(fd, (struct sockaddr *)&clientAddress, &clientAddressSize);
+		if (clientFd < 0)
+			throw std::runtime_error("Error while accepting new connection");
+		this->setNonBlocking(clientFd);
+		this->_pollfds.push_back((struct pollfd){clientFd, POLLIN, 0});
+		newClient.fd = clientFd;
+		newClient.server = &srv;
+		this->_requests[clientFd] = newClient;
 	} catch (const std::exception& e) {
 		std::cerr << e.what() << std::endl;
 	}

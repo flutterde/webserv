@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:49:53 by ochouati          #+#    #+#             */
-/*   Updated: 2025/03/25 22:04:37 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/03/26 21:33:20 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,13 @@
 # define READ_SIZE 4096
 # define CHUNCK_SIZE 4096
 
-struct clientData {
-	std::string	request;
+struct ClientData {
+	int			fd;
 	bool		isRequestComplete;
-	Server		*server;
 	size_t		bytesSent;
-	clientData() : isRequestComplete(false), server(NULL) {}
+	std::string	request;
+	Server		*server;
+	ClientData() : isRequestComplete(false), bytesSent(0), server(NULL) {}
 };
 
 class Webserv {
@@ -43,16 +44,18 @@ class Webserv {
 		std::vector<int>			_fds;
 		std::vector<char *>			_envs;
 		int							_nbrEvents;
-		std::map<int, clientData>	_requests;
+		std::map<int, ClientData>	_requests;
 		void					_closeClients();
+		void					_closeClient(int fd);
 		bool					_isRequestComplete(const std::string& request) const;
 		void					_init();
+		void					setNonBlocking(int fd);
 
 	public:
 		Webserv();
 		Webserv(readConfig& config, char **env);
 		~Webserv();
-		Server	getServerByFd(const int clientFd) const;
+		Server	getServerByFd(int fd) const;
 		void	run();
 		bool	isServerSocket(int fd) const;
 		void	acceptNewConnection(int fd);

@@ -38,11 +38,12 @@ class	Server {
 		bool						autoIndex;
 		int							serverSocket;
 		int							serverBind;
+		int							serverListenFd;
 		// struct sockaddr_in			addr;
 		void						ftSocket(void);
 		void						ftBind(void);
 		void						ftListen(void);
-		void						setNonBlocking(void);
+		// void						setNonBlocking(void);
 
 	public:
 		Server(const Server& srv, uint32_t port);

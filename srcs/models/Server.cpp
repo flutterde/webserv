@@ -264,6 +264,7 @@ void	Server::ftBind(void)
 
 	addr.sin_family = AF_INET;
 	// addr.sin_addr.s_addr = inet_addr(this->host.c_str()); //!
+	addr.sin_addr.s_addr = INADDR_ANY; //!
 	addr.sin_port = htons(this->port);
 	this->serverBind = bind(this->serverSocket, (struct sockaddr *)&addr, sizeof(addr));
 	if (this->serverBind < 0)
@@ -272,11 +273,11 @@ void	Server::ftBind(void)
 
 void	Server::ftListen(void)
 {
-	if (listen(this->serverSocket, 3) < 0)
+	if ((this->serverListenFd = listen(this->serverSocket, 3)) < 0)
 		throw std::runtime_error("Listen failed");
 }
 
-void	Server::setNonBlocking(void) {
-	if (fcntl(this->serverSocket, F_SETFL, O_NONBLOCK) < 0)
-		throw std::runtime_error("Set non blocking failed");
-}
+// void	Server::setNonBlocking(void) {
+// 	if (fcntl(this->serverSocket, F_SETFL, O_NONBLOCK) < 0)
+// 		throw std::runtime_error("Set non blocking failed");
+// }
