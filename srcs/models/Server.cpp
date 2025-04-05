@@ -246,7 +246,11 @@ void	Server::setEnableUploads(bool val)
 
 void	Server::initServer(void)
 {
-
+	this->ftSocket();
+	this->setSocketOptions();
+	this->ftBind();
+	this->ftListen();
+	this->setNonBlocking(this->serverSocket);
 }
 
 // INET FUNCTIONS
@@ -256,28 +260,42 @@ void	Server::ftSocket(void)
 	this->serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->serverSocket < 0)
 		throw std::runtime_error("Socket creation failed");
+	std::cout << "Socket created: " << this->serverSocket << std::endl; //! remove this
 }
+
+void	Server::setSocketOptions(void)
+{
+	int opt = 1;
+	if (setsockopt(this->serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
+		throw std::runtime_error("Set socket options REUSEADDR failed");
+	std::cout << "Socket options set for server " << this->serverSocket << std::endl; //! remove this
+}
+
 
 void	Server::ftBind(void)
 {
 	struct sockaddr_in addr;
 
+	std::memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
-	// addr.sin_addr.s_addr = inet_addr(this->host.c_str()); //!
 	addr.sin_addr.s_addr = INADDR_ANY; //!
 	addr.sin_port = htons(this->port);
 	this->serverBind = bind(this->serverSocket, (struct sockaddr *)&addr, sizeof(addr));
 	if (this->serverBind < 0)
 		throw std::runtime_error("Bind failed");
+	std::cout << "Binded to port " << this->port << std::endl; //! remove this
 }
 
 void	Server::ftListen(void)
 {
 	if ((this->serverListenFd = listen(this->serverSocket, 3)) < 0)
 		throw std::runtime_error("Listen failed");
+	std::cout << "Listening on port " << this->port << std::endl; //! remove this
 }
 
-// void	Server::setNonBlocking(void) {
-// 	if (fcntl(this->serverSocket, F_SETFL, O_NONBLOCK) < 0)
-// 		throw std::runtime_error("Set non blocking failed");
-// }
+void	Server::setNonBlocking(int fd) //! Duplicate code in Webserv.cpp 
+{
+	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
+		throw std::runtime_error("Set non blocking failed");
+	std::cout << "Set non blocking for " << fd << std::endl; //! remove this
+}

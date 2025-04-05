@@ -39,16 +39,16 @@ class	Server {
 		int							serverSocket;
 		int							serverBind;
 		int							serverListenFd;
-		// struct sockaddr_in			addr;
 		void						ftSocket(void);
 		void						ftBind(void);
 		void						ftListen(void);
-		// void						setNonBlocking(void);
+		void						setSocketOptions(void);
 
 	public:
 		Server(const Server& srv, uint32_t port);
 		Server(void);
 		~Server(void);
+		static void						setNonBlocking(int fd);
 		Server(std::vector<std::string>& arr, size_t& idx);
 		// Getters
 		uint32_t	getPort(void)	const;

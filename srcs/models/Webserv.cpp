@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/03/26 21:34:19 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/04/05 18:43:45 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,13 @@
 #include <cstddef>
 #include <cstdlib>
 #include <exception>
+#include <iostream>
 #include <ostream>
 #include <stdexcept>
+#include <sys/_types/_ssize_t.h>
 #include <sys/poll.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 
 Webserv::Webserv() {
 }
@@ -59,16 +62,19 @@ Webserv::Webserv(readConfig& config, char **env) {
 }
 
 void	Webserv::_init() {
-	std::cout << "init............" << std::endl;
+	std::cout << "initing............" << std::endl;
 	for (size_t i = 0; i < this->_servers.size(); ++i) {
 		// init server //! add this
+		this->_servers[i].initServer();
+		// printServer(this->_servers[i]); //! remove this
 		// ... 
+		std::cout << "server socket: " << this->_servers[i].getSocket() << std::endl;
 		this->_pollfds.push_back((struct pollfd){this->_servers[i].getSocket(), POLLIN, 0});
 	}
 }
 
 void	Webserv::run() {
-	_init();
+	this->_init();
 	while (RUNNING) {
 		if ((this->_nbrEvents = poll(_pollfds.data(), _pollfds.size(), POLL_TIMEOUT)) < 0)
 			throw std::runtime_error("poll exception error");
@@ -77,13 +83,16 @@ void	Webserv::run() {
 				--this->_nbrEvents;
 				if (isServerSocket(_pollfds[i].fd)) {
 					// acceptNewConnection
+					this->acceptNewConnection(_pollfds[i].fd);
 				} else {
 					// handle client request
+					this->handleClientRequest(i, _pollfds[i].fd);
 				}
 			}
 		}
-		sleep(1);//! remove this
-		std::cout << "running.." << std::endl;
+		// exit(0);
+		// sleep(1);//! remove this
+		// std::cout << "running.." << std::endl; //! remove this
 	}
 }
 
@@ -116,27 +125,63 @@ bool	Webserv::isServerSocket(int fd) const
 	return (false);
 }
 
-void	Webserv::setNonBlocking(int fd) {
-	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
-		throw std::runtime_error("Set non blocking failed");
-}
+// void	Webserv::setNonBlocking(int fd) {
+// 	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
+// 		throw std::runtime_error("Set non blocking failed");
+// }
 
 void	Webserv::acceptNewConnection(int fd)
 {
+	std::cout << "(" << fd << ")"<< " accepting new connection..." << std::endl;
 	ClientData	newClient;
 	try {
 		Server	srv = this->getServerByFd(fd);
 		struct sockaddr_in clientAddress;
 		socklen_t clientAddressSize = sizeof(clientAddress);
 		int clientFd = accept(fd, (struct sockaddr *)&clientAddress, &clientAddressSize);
-		if (clientFd < 0)
+		std::cout << "client fd: " << clientFd << std::endl; //! remove this
+		if (clientFd < 0) //? Should really exit here?
 			throw std::runtime_error("Error while accepting new connection");
-		this->setNonBlocking(clientFd);
+		// this->setNonBlocking(clientFd);
+		Server::setNonBlocking(clientFd);
 		this->_pollfds.push_back((struct pollfd){clientFd, POLLIN, 0});
 		newClient.fd = clientFd;
 		newClient.server = &srv;
 		this->_requests[clientFd] = newClient;
+		//! delete this at the end
+		char clientIP[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, &(clientAddress.sin_addr), clientIP, INET_ADDRSTRLEN);
+        std::cout << "New connection from " << clientIP << ":" << ntohs(clientAddress.sin_port) 
+                    << " on server port " << _servers[fd].getPort() << std::endl;
+		//! end delete
 	} catch (const std::exception& e) {
 		std::cerr << e.what() << std::endl;
 	}
 }
+void	Webserv::handleClientRequest(int pollIdx, int fd)
+{
+	(void)pollIdx;
+	std::string	htmlExample = "<html><body><h1> <center> Welcome to 1337 Webserv </center></h1></body></html>";
+	std::string response = "HTTP/1.1 200 OK\r\n"
+							"Content-Type: text/html\r\n"
+							"Content-Length: " + std::to_string(htmlExample.size()) + "\r\n"
+							"\r\n" + htmlExample;
+	char buffer[READ_SIZE];
+	ssize_t	bytesRead = recv(fd, buffer, READ_SIZE - 1, 0);
+	if (bytesRead <= 0) { //! check this
+		if (bytesRead == 0) {
+			std::cout << "Client disconnected" << std::endl;
+		} else {
+			std::cerr << "Error while reading from client" << std::endl;
+		}
+		this->_closeClient(fd);
+	}
+	buffer[bytesRead] = '\0';
+	this->_requests[fd].request += buffer;
+	if (this->_isRequestComplete(this->_requests[fd].request)) {
+		//!
+		std::cout << "Request complete: " << this->_requests[fd].request << std::endl;
+		send(fd, response.c_str(), response.size(), 0); //! check send length
+	}
+}
+

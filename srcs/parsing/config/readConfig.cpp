@@ -92,10 +92,10 @@ void	readConfig::readFile(char *argFile)
 	}
 	this->seperateServers();
 	std::cout << this->servers.size() << " ################################################### \n";
-	for (size_t i = 0; i < this->servers.size(); ++i) { //!
-		std::cout << "Id: " << i << std::endl;
-		printServer(this->servers[i]);
-	}
+	// for (size_t i = 0; i < this->servers.size(); ++i) { //!
+	// 	std::cout << "Id: " << i << std::endl;
+	// 	printServer(this->servers[i]);
+	// }
 }
 
 void	readConfig::seperateServers(void)

@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:49:53 by ochouati          #+#    #+#             */
-/*   Updated: 2025/03/26 21:33:20 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/04/05 17:57:55 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ class Webserv {
 		void					_closeClient(int fd);
 		bool					_isRequestComplete(const std::string& request) const;
 		void					_init();
-		void					setNonBlocking(int fd);
+		// void					setNonBlocking(int fd);
 
 	public:
 		Webserv();
@@ -59,5 +59,6 @@ class Webserv {
 		void	run();
 		bool	isServerSocket(int fd) const;
 		void	acceptNewConnection(int fd);
+		void	handleClientRequest(int pollIdx, int fd);
 
 };

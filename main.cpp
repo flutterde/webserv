@@ -33,7 +33,7 @@ int server(char *argFile, char **env) {
         Webserv webserv(conf, env);
         webserv.run();
     } catch (const std::exception &e) {
-        std::cerr << e.what() << std::endl;
+        std::cerr << "\033[0;91m ** " << e.what() << "  ** \033[0m" << std::endl;
         return (1);
     }
     return (0);
