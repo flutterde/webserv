@@ -12,7 +12,8 @@
 
 #pragma once
 # include <iostream>
-#include <string>
+# include <string>
+# include <cstring>
 # include <vector>
 # include <map>
 # include <sys/socket.h>
