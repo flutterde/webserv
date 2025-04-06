@@ -25,10 +25,10 @@ Server::Server(void)//! why ?
 
 Server::~Server(void)
 {
-	if (this->serverSocket != -1)
-		close(this->serverSocket);
-	if (this->serverBind != -1)
-		close(this->serverBind);
+	// if (this->serverSocket != -1)
+	// 	// close(this->serverSocket);
+	// if (this->serverBind != -1)
+		// close(this->serverBind);
 }
 
 Server::Server(const Server& srv, uint32_t port) //! 
@@ -244,6 +244,8 @@ void	Server::setEnableUploads(bool val)
 	this->enableUploads = val;
 }
 
+// INET FUNCTIONS
+
 void	Server::initServer(void)
 {
 	this->ftSocket();
@@ -252,8 +254,6 @@ void	Server::initServer(void)
 	this->ftListen();
 	this->setNonBlocking(this->serverSocket);
 }
-
-// INET FUNCTIONS
 
 void	Server::ftSocket(void)
 {
@@ -266,7 +266,8 @@ void	Server::ftSocket(void)
 void	Server::setSocketOptions(void)
 {
 	int opt = 1;
-	if (setsockopt(this->serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
+	// socketFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)
+	if (this->serverSocket < 0 || setsockopt(this->serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
 		throw std::runtime_error("Set socket options REUSEADDR failed");
 	std::cout << "Socket options set for server " << this->serverSocket << std::endl; //! remove this
 }
@@ -278,17 +279,16 @@ void	Server::ftBind(void)
 
 	std::memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = INADDR_ANY; //!
 	addr.sin_port = htons(this->port);
-	this->serverBind = bind(this->serverSocket, (struct sockaddr *)&addr, sizeof(addr));
-	if (this->serverBind < 0)
+	addr.sin_addr.s_addr = INADDR_ANY; //!
+	if ((this->serverBind = bind(this->serverSocket, (struct sockaddr *)&addr, sizeof(addr))) < 0)
 		throw std::runtime_error("Bind failed");
 	std::cout << "Binded to port " << this->port << std::endl; //! remove this
 }
 
 void	Server::ftListen(void)
 {
-	if ((this->serverListenFd = listen(this->serverSocket, 3)) < 0)
+	if ((this->serverListenFd = listen(this->serverSocket, LISTEN_BACKLOG)) < 0)
 		throw std::runtime_error("Listen failed");
 	std::cout << "Listening on port " << this->port << std::endl; //! remove this
 }

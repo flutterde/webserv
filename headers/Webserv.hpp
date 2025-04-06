@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:49:53 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/05 17:57:55 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/04/06 18:58:50 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ class Webserv {
 		std::vector<char *>			_envs;
 		int							_nbrEvents;
 		std::map<int, ClientData>	_requests;
-		void					_closeClients();
 		void					_closeClient(int fd);
 		bool					_isRequestComplete(const std::string& request) const;
 		void					_init();
@@ -58,7 +57,7 @@ class Webserv {
 		Server	getServerByFd(int fd) const;
 		void	run();
 		bool	isServerSocket(int fd) const;
-		void	acceptNewConnection(int fd);
+		void	acceptNewConnection(int srvfd);
 		void	handleClientRequest(int pollIdx, int fd);
 
 };

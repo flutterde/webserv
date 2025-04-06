@@ -351,7 +351,7 @@ int main() {
     webserver.addServer(8081, INDEX_FILE2);
     webserver.addServer(8082, INDEX_FILE);
     webserver.addServer(8083, INDEX_FILE2);
-    webserver.addServer(8083, VIDEO_PATH);
+    webserver.addServer(8084, VIDEO_PATH);
     
     std::cout << "Webserver running on ports 8080, 8081, 8082, and 8083" << std::endl;
     std::cout << "Press Ctrl+C to stop" << std::endl;

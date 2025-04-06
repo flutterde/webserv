@@ -41,8 +41,6 @@ int server(char *argFile, char **env) {
 
 int	main(int ac, char **av, char **env)
 {
-    std::cout << "the nbr: " << FtPars::toString(10) << std::endl;
-    std::exit(0);
     atexit(ll); //! -->delete
 	if (ac != 2) {
 		std::cout << "config file require!" << std::endl;

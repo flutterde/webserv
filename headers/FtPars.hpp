@@ -26,6 +26,13 @@ typedef unsigned char	uint8_t;
 #define FT_LIMIT_BODY_SIZE 80000
 #define FT_PORT 8080
 
+# define COL_RED "\033[0;91m"
+# define COL_GREEN "\033[0;92m"
+# define COL_YELLOW "\033[0;93m"
+# define COL_BLUE "\033[0;94m"
+# define COL_MAGENTA "\033[0;95m"
+# define END_COL "\033[0m"
+
 class	Server;
 namespace FtPars {
 	size_t	charsCount(std::string& str, char c);

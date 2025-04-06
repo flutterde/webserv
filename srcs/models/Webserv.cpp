@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/05 18:43:45 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/04/06 19:41:45 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include <sys/poll.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <vector>
 
 Webserv::Webserv() {
 }
@@ -29,24 +30,22 @@ Webserv::~Webserv() {
 
 }
 
-void	Webserv::_closeClients() {
-	// for (size_t i = 0; i < _pollfds.size(); i++) {
-	// 	close(_pollfds[i].fd);
-	// }
-}
 
 void	Webserv::_closeClient(int fd)
 {
+	std::cout << COL_YELLOW << "Closing client fd: " << fd << END_COL << std::endl;
 	// remove from pollfds
 	for (size_t i = 0; i < _pollfds.size(); ++i) {
 		if (_pollfds[i].fd == fd) {
-			_pollfds.erase(_pollfds.begin() + i);
+			close(fd);
+			std::vector<struct pollfd>::iterator tmp = _pollfds.begin() + i;
+			std::cout << "Removing fd: " << tmp->fd << std::endl;
+			_pollfds.erase(tmp);
+			_requests.erase(fd);
 			break;
 		}
 	}
 	// remove from requests
-	_requests.erase(fd);
-	close(fd);
 }
 
 Webserv::Webserv(readConfig& config, char **env) {
@@ -76,9 +75,10 @@ void	Webserv::_init() {
 void	Webserv::run() {
 	this->_init();
 	while (RUNNING) {
-		if ((this->_nbrEvents = poll(_pollfds.data(), _pollfds.size(), POLL_TIMEOUT)) < 0)
+		if ((this->_nbrEvents = poll(_pollfds.data(), _pollfds.size(), -1)) < 0)
 			throw std::runtime_error("poll exception error");
 		for (size_t i = 0; i < _pollfds.size() && this->_nbrEvents > 0; ++i) {
+			// std::cout << "NBR OF ENV: " << this->_nbrEvents << std::endl;
 			if (_pollfds[i].revents & POLLIN) {
 				--this->_nbrEvents;
 				if (isServerSocket(_pollfds[i].fd)) {
@@ -88,11 +88,13 @@ void	Webserv::run() {
 					// handle client request
 					this->handleClientRequest(i, _pollfds[i].fd);
 				}
+				std::cout << COL_BLUE << "Events nbr: " << this->_nbrEvents << ":" << _pollfds[i].fd << END_COL << std::endl;
 			}
+			// std::cout << "pollfd: " << _pollfds[i].fd << std::endl;
 		}
 		// exit(0);
 		// sleep(1);//! remove this
-		// std::cout << "running.." << std::endl; //! remove this
+		//  std::cout << "running.." << _pollfds.size() << std::endl; //! remove this
 	}
 }
 
@@ -136,6 +138,7 @@ void	Webserv::acceptNewConnection(int fd)
 	ClientData	newClient;
 	try {
 		Server	srv = this->getServerByFd(fd);
+		std::cout << "server port: " << srv.getPort() << "Server name: " << srv.getserverName() << std::endl;
 		struct sockaddr_in clientAddress;
 		socklen_t clientAddressSize = sizeof(clientAddress);
 		int clientFd = accept(fd, (struct sockaddr *)&clientAddress, &clientAddressSize);
@@ -152,7 +155,7 @@ void	Webserv::acceptNewConnection(int fd)
 		char clientIP[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &(clientAddress.sin_addr), clientIP, INET_ADDRSTRLEN);
         std::cout << "New connection from " << clientIP << ":" << ntohs(clientAddress.sin_port) 
-                    << " on server port " << _servers[fd].getPort() << std::endl;
+                    << " on server port " << srv.getPort() << std::endl;
 		//! end delete
 	} catch (const std::exception& e) {
 		std::cerr << e.what() << std::endl;
@@ -175,6 +178,7 @@ void	Webserv::handleClientRequest(int pollIdx, int fd)
 			std::cerr << "Error while reading from client" << std::endl;
 		}
 		this->_closeClient(fd);
+		return;
 	}
 	buffer[bytesRead] = '\0';
 	this->_requests[fd].request += buffer;
@@ -182,6 +186,6 @@ void	Webserv::handleClientRequest(int pollIdx, int fd)
 		//!
 		std::cout << "Request complete: " << this->_requests[fd].request << std::endl;
 		send(fd, response.c_str(), response.size(), 0); //! check send length
+		this->_closeClient(fd);
 	}
 }
-

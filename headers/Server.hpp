@@ -12,7 +12,6 @@
 
 #pragma once
 # include <iostream>
-# include <string>
 # include <cstring>
 # include <vector>
 # include <map>
@@ -20,6 +19,8 @@
 # include <fcntl.h>
 # include <netinet/in.h>
 # include "FtPars.hpp"
+
+#define LISTEN_BACKLOG 12
 
 typedef	unsigned int	uint32_t;
 /// @brief server class that hold data for each website
