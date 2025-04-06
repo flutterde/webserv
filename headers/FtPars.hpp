@@ -43,4 +43,5 @@ namespace FtPars {
 	void	serverPortsHandler(Server& srv, std::string& line);
 	bool	isNumbersOnly(const std::string& str);
 	void	enableUploadsHandler(Server& server, std::string& line);
+	std::string	toString(size_t nbr);
 }

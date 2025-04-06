@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #pragma once
-# include "Server.hpp"
+# include "FtPars.hpp"
 # include "readConfig.hpp"
 #include <cstddef>
 #include <map>

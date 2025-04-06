@@ -214,4 +214,11 @@ namespace	FtPars {
 		else
 			throw std::runtime_error("Error parsing enable uploads");
 	}
+
+	std::string	toString(size_t nbr) {
+		std::stringstream	ss;
+
+		ss << nbr;
+		return (ss.str());
+	}
 }

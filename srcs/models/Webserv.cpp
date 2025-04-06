@@ -17,7 +17,7 @@
 #include <iostream>
 #include <ostream>
 #include <stdexcept>
-#include <sys/_types/_ssize_t.h>
+// #include <sys/_types/_ssize_t.h>
 #include <sys/poll.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -164,7 +164,7 @@ void	Webserv::handleClientRequest(int pollIdx, int fd)
 	std::string	htmlExample = "<html><body><h1> <center> Welcome to 1337 Webserv </center></h1></body></html>";
 	std::string response = "HTTP/1.1 200 OK\r\n"
 							"Content-Type: text/html\r\n"
-							"Content-Length: " + std::to_string(htmlExample.size()) + "\r\n"
+							"Content-Length: " + FtPars::toString(htmlExample.size()) + "\r\n"
 							"\r\n" + htmlExample;
 	char buffer[READ_SIZE];
 	ssize_t	bytesRead = recv(fd, buffer, READ_SIZE - 1, 0);
