@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/06 19:41:45 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/04/08 14:55:19 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 #include <iostream>
 #include <ostream>
 #include <stdexcept>
-// #include <sys/_types/_ssize_t.h>
 #include <sys/poll.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -88,7 +87,7 @@ void	Webserv::run() {
 					// handle client request
 					this->handleClientRequest(i, _pollfds[i].fd);
 				}
-				std::cout << COL_BLUE << "Events nbr: " << this->_nbrEvents << ":" << _pollfds[i].fd << END_COL << std::endl;
+				printTime(); std::cout << COL_BLUE << " Events nbr: " << this->_nbrEvents << ":" << _pollfds[i].fd << END_COL << std::endl;
 			}
 			// std::cout << "pollfd: " << _pollfds[i].fd << std::endl;
 		}
@@ -98,10 +97,10 @@ void	Webserv::run() {
 	}
 }
 
-Server	Webserv::getServerByFd(int fd) const {
+Server*	Webserv::getServerByFd(int fd) {
 	for (size_t i = 0; i < _servers.size(); ++i)
 		if (_servers[i].getSocket() == fd)
-			return (_servers[i]);
+			return (&(_servers[i]));
 	throw std::runtime_error("Error while handling new connection");
 }
 
@@ -137,8 +136,8 @@ void	Webserv::acceptNewConnection(int fd)
 	std::cout << "(" << fd << ")"<< " accepting new connection..." << std::endl;
 	ClientData	newClient;
 	try {
-		Server	srv = this->getServerByFd(fd);
-		std::cout << "server port: " << srv.getPort() << "Server name: " << srv.getserverName() << std::endl;
+		Server	*srv = this->getServerByFd(fd);
+		std::cout << "server port: " << srv->getPort() << "Server name: " << srv->getserverName() << std::endl;
 		struct sockaddr_in clientAddress;
 		socklen_t clientAddressSize = sizeof(clientAddress);
 		int clientFd = accept(fd, (struct sockaddr *)&clientAddress, &clientAddressSize);
@@ -149,13 +148,13 @@ void	Webserv::acceptNewConnection(int fd)
 		Server::setNonBlocking(clientFd);
 		this->_pollfds.push_back((struct pollfd){clientFd, POLLIN, 0});
 		newClient.fd = clientFd;
-		newClient.server = &srv;
+		newClient.server = srv;
 		this->_requests[clientFd] = newClient;
 		//! delete this at the end
 		char clientIP[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &(clientAddress.sin_addr), clientIP, INET_ADDRSTRLEN);
         std::cout << "New connection from " << clientIP << ":" << ntohs(clientAddress.sin_port) 
-                    << " on server port " << srv.getPort() << std::endl;
+                    << " on server port " << srv->getPort() << std::endl;
 		//! end delete
 	} catch (const std::exception& e) {
 		std::cerr << e.what() << std::endl;
@@ -181,6 +180,9 @@ void	Webserv::handleClientRequest(int pollIdx, int fd)
 		return;
 	}
 	buffer[bytesRead] = '\0';
+	std::cout << COL_RED << " --------------------------------- " << END_COL << std::endl; //! remove this
+	std::cout << "Received request: \n" << buffer << std::endl; //! remove this
+	std::cout << COL_RED << " --------------------------------- " << END_COL << std::endl; //! remove this
 	this->_requests[fd].request += buffer;
 	if (this->_isRequestComplete(this->_requests[fd].request)) {
 		//!

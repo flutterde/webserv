@@ -269,6 +269,8 @@ void	Server::setSocketOptions(void)
 	// socketFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)
 	if (this->serverSocket < 0 || setsockopt(this->serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
 		throw std::runtime_error("Set socket options REUSEADDR failed");
+	if (this->serverSocket < 0 || setsockopt(this->serverSocket, SOL_SOCKET, SO_NOSIGPIPE, &opt, sizeof(opt)) < 0)
+		throw std::runtime_error("Set socket options REUSEADDR failed");
 	std::cout << "Socket options set for server " << this->serverSocket << std::endl; //! remove this
 }
 
@@ -280,7 +282,7 @@ void	Server::ftBind(void)
 	std::memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(this->port);
-	addr.sin_addr.s_addr = INADDR_ANY; //!
+	addr.sin_addr.s_addr = INADDR_ANY; //! use getaddrinfo and freeaddrinfo
 	if ((this->serverBind = bind(this->serverSocket, (struct sockaddr *)&addr, sizeof(addr))) < 0)
 		throw std::runtime_error("Bind failed");
 	std::cout << "Binded to port " << this->port << std::endl; //! remove this

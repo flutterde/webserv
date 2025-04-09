@@ -6,12 +6,13 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:49:53 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/06 18:58:50 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/04/09 15:39:30 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
-# include "FtPars.hpp"
+
+# include "WebservHandler.hpp"
 # include "readConfig.hpp"
 #include <cstddef>
 #include <map>
@@ -23,19 +24,12 @@
 # define RUNNING 1
 # define POLL_TIMEOUT 0
 # define END_OF_HEADERS "\r\n\r\n"
-# define READ_SIZE 4096
+# define READ_SIZE 809600
 # define CHUNCK_SIZE 4096
 
-struct ClientData {
-	int			fd;
-	bool		isRequestComplete;
-	size_t		bytesSent;
-	std::string	request;
-	Server		*server;
-	ClientData() : isRequestComplete(false), bytesSent(0), server(NULL) {}
-};
 
-class Webserv {
+
+class Webserv : public WebservHandler {
 	private:
 		readConfig					*_config;
 		// char						_buffer[READ_SIZE];
@@ -54,7 +48,7 @@ class Webserv {
 		Webserv();
 		Webserv(readConfig& config, char **env);
 		~Webserv();
-		Server	getServerByFd(int fd) const;
+		Server*	getServerByFd(int fd);
 		void	run();
 		bool	isServerSocket(int fd) const;
 		void	acceptNewConnection(int srvfd);

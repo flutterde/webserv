@@ -20,7 +20,7 @@ run_with_timeout() {
 }
 
 echo "Test should work✅......."
-run_with_timeout "./webserv configs/config.conf" $TIMEOUT_DURATION
+run_with_timeout "../webserv ../configs/config.conf" $TIMEOUT_DURATION
 if [ $? -eq 137 ]; then
     echo "Error: webserv test01 - 01 timed out"
 elif [ $? -ne 0 ]; then

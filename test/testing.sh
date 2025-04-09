@@ -1,17 +1,17 @@
 #!/usr/bin/bash
 
 PORT_1=8080
-PORT_2=8081
-PORT_3=8082
+PORT_2=5555
+PORT_3=9090
+PORT_4=8081
 
 HOST="127.0.0.1"
 
-NUMBER_OF_RETRIES=10000
+NUMBER_OF_RETRIES=50
 SUCCESS=0
 FAILED=0
-TIMEOUT=0.1
+TIMEOUT=2
 # This script is used to run the tests for the project.
-
 
 for ((i=0; i < $NUMBER_OF_RETRIES; i++))
 do
@@ -34,10 +34,18 @@ do
 	else
 		SUCCESS=$((SUCCESS + 1))
 	fi
+	curl --max-time $TIMEOUT -s $HOST:$PORT_4 1>/dev/null
+	if [ $? -ne 0 ]; then
+		FAILED=$((FAILED + 1))
+	else
+		SUCCESS=$((SUCCESS + 1))
+	fi
 	echo "Test ($i) All services are up and running.."
-	 echo "Success: $SUCCESS"
-	 echo "Failed: $FAILED"
+	echo "Success: $SUCCESS"
+	echo "Failed: $FAILED"
+
 done
+
 echo " =================== RESULTS ======================"
 
 echo "Test ($i) All services are up and running.."

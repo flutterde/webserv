@@ -37,3 +37,5 @@ void printContainer(T& cont)
 		std::cout << *it << std::endl;
 	std::cout << "\n --------------------END_PINT_ENV---------------- "<< std::endl;
 }
+
+void	printTime();

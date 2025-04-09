@@ -8,7 +8,7 @@ srcs/models/Request.cpp srcs/models/Http.cpp srcs/models/Response.cpp \
 srcs/cgi/ft_cgi.cpp
 
 #OTM
-SRCS += srcs/models/Webserv.cpp 
+SRCS += srcs/models/Webserv.cpp srcs/models/WebservHandler.cpp
 
 HEADERS=headers/*.hpp
 OBJS=$(SRCS:.cpp=.o)

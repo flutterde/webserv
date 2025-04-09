@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <map>
+#include <ctime>
 #include "../headers/debug.hpp"
 
 void	printing(std::string vr)
@@ -48,4 +49,11 @@ void	printServer(Server& srv) {
 	std::cout << "Ports__count: " << srv.getPorts().size() << " \n";
 	printContainer(ports);
 	std::cout << " ------------------------------------- \n";
+}
+
+void	printTime() {
+	time_t now = time(0);
+	tm *ltm = localtime(&now);
+	std::cout << "Time: " << ltm->tm_hour << ":" << ltm->tm_min << ":" << ltm->tm_sec;
+
 }
