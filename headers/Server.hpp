@@ -20,6 +20,10 @@
 # include <netinet/in.h>
 # include "FtPars.hpp"
 
+#ifndef SO_NOSIGPIPE
+#define SO_NOSIGPIPE    0x1022  
+#endif
+
 #define LISTEN_BACKLOG 12
 
 typedef	unsigned int	uint32_t;
