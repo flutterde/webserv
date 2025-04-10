@@ -6,21 +6,12 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/08 14:55:19 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/04/10 14:16:13 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../../headers/Webserv.hpp"
-#include <cstddef>
-#include <cstdlib>
-#include <exception>
-#include <iostream>
-#include <ostream>
-#include <stdexcept>
-#include <sys/poll.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <vector>
+
 
 Webserv::Webserv() {
 }
@@ -30,22 +21,22 @@ Webserv::~Webserv() {
 }
 
 
-void	Webserv::_closeClient(int fd)
-{
-	std::cout << COL_YELLOW << "Closing client fd: " << fd << END_COL << std::endl;
-	// remove from pollfds
-	for (size_t i = 0; i < _pollfds.size(); ++i) {
-		if (_pollfds[i].fd == fd) {
-			close(fd);
-			std::vector<struct pollfd>::iterator tmp = _pollfds.begin() + i;
-			std::cout << "Removing fd: " << tmp->fd << std::endl;
-			_pollfds.erase(tmp);
-			_requests.erase(fd);
-			break;
-		}
-	}
-	// remove from requests
-}
+// void	Webserv::_closeClient(int fd)
+// {
+// 	std::cout << COL_YELLOW << "Closing client fd: " << fd << END_COL << std::endl;
+// 	// remove from pollfds
+// 	for (size_t i = 0; i < _pollfds.size(); ++i) {
+// 		if (_pollfds[i].fd == fd) {
+// 			close(fd);
+// 			std::vector<struct pollfd>::iterator tmp = _pollfds.begin() + i;
+// 			std::cout << "Removing fd: " << tmp->fd << std::endl;
+// 			_pollfds.erase(tmp);
+// 			_requests.erase(fd);
+// 			break;
+// 		}
+// 	}
+// 	// remove from requests
+// }
 
 Webserv::Webserv(readConfig& config, char **env) {
 	
@@ -104,18 +95,15 @@ Server*	Webserv::getServerByFd(int fd) {
 	throw std::runtime_error("Error while handling new connection");
 }
 
-bool	Webserv::_isRequestComplete(const std::string& request) const {
-	size_t headersEnd = request.find(END_OF_HEADERS);
-	if (headersEnd == std::string::npos)
-		return (false);
-	size_t contentLength = request.find("Content-Length: ");
-	if (contentLength == std::string::npos)
-		return (true);
-	size_t vStart = request.find(" ", contentLength + 15);
-	size_t vEnd = request.find("\r\n", vStart);
-	std::string value = request.substr(vStart, vEnd - vStart);
-	int	lengthNbr = std::atoi(value.c_str());
-	return (request.size() >= headersEnd + 4 + lengthNbr);
+bool	Webserv::_isRequestComplete(ClientData& client) {
+	if (!client.isHeaderComplete) {
+		this->isHeaderComplete(client);
+	}
+	this->setRequestType(client);
+	this->setContentLength(client);
+	//! Validate request
+	//! ...
+	return (this->isRequestComplete(client));
 }
 
 bool	Webserv::isServerSocket(int fd) const
@@ -125,11 +113,6 @@ bool	Webserv::isServerSocket(int fd) const
 			return (true);
 	return (false);
 }
-
-// void	Webserv::setNonBlocking(int fd) {
-// 	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
-// 		throw std::runtime_error("Set non blocking failed");
-// }
 
 void	Webserv::acceptNewConnection(int fd)
 {
@@ -160,14 +143,17 @@ void	Webserv::acceptNewConnection(int fd)
 		std::cerr << e.what() << std::endl;
 	}
 }
+
+//! Handle Client Request
+//! 1. Read request from socket to buffer
+//! 2. Append buffer to request
+//! 3. Check if request is complete
 void	Webserv::handleClientRequest(int pollIdx, int fd)
 {
 	(void)pollIdx;
-	std::string	htmlExample = "<html><body><h1> <center> Welcome to 1337 Webserv </center></h1></body></html>";
-	std::string response = "HTTP/1.1 200 OK\r\n"
-							"Content-Type: text/html\r\n"
-							"Content-Length: " + FtPars::toString(htmlExample.size()) + "\r\n"
-							"\r\n" + htmlExample;
+	//! delete this
+
+	//! end delete
 	char buffer[READ_SIZE];
 	ssize_t	bytesRead = recv(fd, buffer, READ_SIZE - 1, 0);
 	if (bytesRead <= 0) { //! check this
@@ -184,10 +170,19 @@ void	Webserv::handleClientRequest(int pollIdx, int fd)
 	std::cout << "Received request: \n" << buffer << std::endl; //! remove this
 	std::cout << COL_RED << " --------------------------------- " << END_COL << std::endl; //! remove this
 	this->_requests[fd].request += buffer;
-	if (this->_isRequestComplete(this->_requests[fd].request)) {
-		//!
-		std::cout << "Request complete: " << this->_requests[fd].request << std::endl;
-		send(fd, response.c_str(), response.size(), 0); //! check send length
-		this->_closeClient(fd);
+	std::map<int, ClientData>::iterator it = this->_requests.find(fd);
+	if (it == this->_requests.end()) {
+		std::cerr << "Error: client not found" << std::endl;
+		return;
 	}
+	
+	// if (this->_isRequestComplete(this->_requests[fd].request)) {
+	// 	//!
+	// 	std::cout << "Request complete: " << this->_requests[fd].request << std::endl;
+	// 	send(fd, response.c_str(), response.size(), 0); //! check send length
+	// 	this->_closeClient(fd);
+	// }
+	if (this->_isRequestComplete(it->second))
+		this->handleRequest(it->second);
+	
 }

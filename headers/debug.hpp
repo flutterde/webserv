@@ -39,3 +39,7 @@ void printContainer(T& cont)
 }
 
 void	printTime();
+
+void	printWarning(std::string str);
+
+void	printRequestType(int nbr);

@@ -89,7 +89,7 @@ static void	fillServerData(std::string& line, Server& srv) {
 		validateAndTrim(str);
 		srv.setErrorPage500(str);
 	}else if (!line.compare(0, 15, "allowed_methods")) {
-		std::cout << "-----> allowed_methods: " << str << std::endl;
+		// std::cout << "-----> allowed_methods: " << str << std::endl;
 		validateAndTrim(str);
 		// srv.getMethods() = FtPars::parseMethods(srv.getAllowedMethods(), str);
 		srv.setMethods(FtPars::parseMethods(srv.getAllowedMethods(), str));
@@ -260,7 +260,7 @@ void	Server::ftSocket(void)
 	this->serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->serverSocket < 0)
 		throw std::runtime_error("Socket creation failed");
-	std::cout << "Socket created: " << this->serverSocket << std::endl; //! remove this
+	// std::cout << "Socket created: " << this->serverSocket << std::endl; //! remove this
 }
 
 void	Server::setSocketOptions(void)
@@ -271,7 +271,7 @@ void	Server::setSocketOptions(void)
 		throw std::runtime_error("Set socket options REUSEADDR failed");
 	if (this->serverSocket < 0 || setsockopt(this->serverSocket, SOL_SOCKET, SO_NOSIGPIPE, &opt, sizeof(opt)) < 0)
 		throw std::runtime_error("Set socket options REUSEADDR failed");
-	std::cout << "Socket options set for server " << this->serverSocket << std::endl; //! remove this
+	// std::cout << "Socket options set for server " << this->serverSocket << std::endl; //! remove this
 }
 
 
@@ -285,19 +285,19 @@ void	Server::ftBind(void)
 	addr.sin_addr.s_addr = INADDR_ANY; //! use getaddrinfo and freeaddrinfo
 	if ((this->serverBind = bind(this->serverSocket, (struct sockaddr *)&addr, sizeof(addr))) < 0)
 		throw std::runtime_error("Bind failed");
-	std::cout << "Binded to port " << this->port << std::endl; //! remove this
+	// std::cout << "Binded to port " << this->port << std::endl; //! remove this
 }
 
 void	Server::ftListen(void)
 {
 	if ((this->serverListenFd = listen(this->serverSocket, LISTEN_BACKLOG)) < 0)
 		throw std::runtime_error("Listen failed");
-	std::cout << "Listening on port " << this->port << std::endl; //! remove this
+	// std::cout << "Listening on port " << this->port << std::endl; //! remove this
 }
 
 void	Server::setNonBlocking(int fd) //! Duplicate code in Webserv.cpp 
 {
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
 		throw std::runtime_error("Set non blocking failed");
-	std::cout << "Set non blocking for " << fd << std::endl; //! remove this
+	// std::cout << "Set non blocking for " << fd << std::endl; //! remove this
 }
