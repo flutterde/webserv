@@ -1,0 +1,116 @@
+#include <iostream>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include "request.hpp"
+
+#define PORT 8080
+
+void executeCgiScript(Request&, char**);
+
+void leaks(void) {
+	system("leaks -q a.out");
+}
+int main(int ac, char** av, char **env)
+{
+	// atexit(leaks);
+	std::string req = 
+	"POST tst.py?name=achakkaf&filetype=.c HTTP/1.1\r\n"
+    "Host: localhost\r\n"
+    "Connection: close\r\n"
+    "Content-Type: multipart/form-data; boundary=----WebKitFormBoundary12345\r\n"
+    "Content-Length: 173\r\n"
+    "\r\n"
+    "------WebKitFormBoundary12345\r\n"
+    "Content-Disposition: form-data; name=\"field1\"\r\n"
+    "\r\n"
+    "Hello, World!\r\n"
+    "------WebKitFormBoundary12345\r\n"
+    "Content-Disposition: form-data; name=\"field2\"; filename=\"example.txt\"\r\n"
+    "Content-Type: text/plain\r\n"
+    "\r\n"
+    "File content here...\r\n"
+    "------WebKitFormBoundary12345--\r\n";
+	Request r(req);
+	
+	// std::cout << "Method: " << r.getMethod() << std::endl;
+	// std::cout << "path: " << r.getPath() << std::endl;
+	// for (size_t i = 0; i < r.getQuerySize(); ++i)
+		// std::cout << r.getQuery(i) << std::endl;
+	// std::cout << "query: " << r.getQuery() << std::endl;
+	// std::cout << "version: " << r.getVersion() << std::endl;
+	// r.printHeaders();
+	// std::cout << "body |" << r.getBody() << "|" << std::endl 
+	std::cout << "ENV:\n";
+	// for (size_t i = 0; i < r.getEnvSize() ; ++i) std::cout << r.getEnv(i) << std::endl;
+	executeCgiScript(r, env);
+
+	// int socketFd = socket(AF_INET, SOCK_STREAM, 0);
+	// std::cerr << "socket number: " << socketFd << std::endl;
+
+	// struct sockaddr_in address;
+	// address.sin_family = AF_INET;
+	// address.sin_addr.s_addr = INADDR_ANY;
+	// address.sin_port = htons(PORT);
+
+	// bind(socketFd, (struct sockaddr *)&address, sizeof(address));
+	// listen(socketFd, 5);
+	// // std::cout << "Server is listening on port " << PORT << std::endl;
+
+	// socklen_t addrlen = sizeof(address);
+	// int new_socket;
+	// char buffer[204800];
+	// // Accept a connection
+	// const char *http_response =
+	// 	"HTTP/1.1 200 OK\r\n"
+	// 	"Content-Type: text/html\r\n"
+	// 	"Content-Length: 311\r\n"
+	// 	"Connection: close\r\n\r\n"
+	// 	"<!DOCTYPE html>\n"
+	// 	"<html lang=\"en\">\n"
+	// 	"<head>\n"
+	// 	"    <meta charset=\"UTF-8\">\n"
+	// 	"    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
+	// 	"    <title>Simple Webpage</title>\n"
+	// 	"</head>\n"
+	// 	"<body>\n"
+	// 	"    <h1>Welcome to My Simple Webpage</h1>\n"
+	// 	"    <p>This is a basic webpage served from C++.</p>\n"
+	// 	"</body>\n"
+	// 	"</html>\n";
+	// // while (true)
+	// {
+	// 	new_socket = accept(socketFd, (struct sockaddr *)&address, &addrlen);
+	// 	if (new_socket < 0)
+	// 	{
+	// 		// std::cerr << "Accept failed" << std::endl;
+	// 		close(socketFd);
+	// 		return EXIT_FAILURE;
+	// 	}
+
+	// 	// std::cout << "Waiting for data..." << std::endl;
+	// 	// Read the request
+	// 	ssize_t valread = read(new_socket, buffer, sizeof(buffer) - 1);
+	// 	if (valread < 0)
+	// 	{
+	// 		// std::cerr << "Read failed" << std::endl;
+	// 	}
+	// 	else
+	// 	{
+	// 		buffer[valread] = '\0';
+	// 		std::cout << "Received request:\n"
+	// 				  << buffer << std::endl;
+	// 		Request r(buffer);
+	// 	}
+
+	// 	// Close the sockets
+
+	// 	// std::cout << http_response;
+	// 	send(new_socket, http_response, strlen(http_response), 0);
+	// 	close(new_socket);
+	// }
+
+	// close(socketFd);
+	// return EXIT_SUCCESS;
+}

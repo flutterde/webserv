@@ -12,11 +12,19 @@
 
 #pragma once
 # include <iostream>
+# include <cstring>
 # include <vector>
 # include <map>
 # include <sys/socket.h>
+# include <fcntl.h>
 # include <netinet/in.h>
 # include "FtPars.hpp"
+
+#ifndef SO_NOSIGPIPE
+#define SO_NOSIGPIPE    0x1022  
+#endif
+
+#define LISTEN_BACKLOG 12
 
 typedef	unsigned int	uint32_t;
 /// @brief server class that hold data for each website
@@ -28,20 +36,25 @@ class	Server {
 		uint32_t					limitClientBodySize;
 		std::string					errorPage404;
 		std::string					errorPage500;
+		std::string					uploadsPath;
 		std::map<std::string, bool> allowedMethods;
 		std::map<std::string, bool> indexes;
 		std::vector<uint32_t>		ports;
+		bool						enableUploads;
 		bool						autoIndex;
 		int							serverSocket;
 		int							serverBind;
-		// struct sockaddr_in			addr;
+		int							serverListenFd;
 		void						ftSocket(void);
 		void						ftBind(void);
 		void						ftListen(void);
+		void						setSocketOptions(void);
 
 	public:
 		Server(const Server& srv, uint32_t port);
 		Server(void);
+		~Server(void);
+		static void						setNonBlocking(int fd);
 		Server(std::vector<std::string>& arr, size_t& idx);
 		// Getters
 		uint32_t	getPort(void)	const;
@@ -54,6 +67,8 @@ class	Server {
 		std::map<std::string, bool>	getIndexes(void) const;
 		bool		getAutoIndex(void) const;
 		const std::vector<uint32_t>&	getPorts(void) const;
+		bool	getEnableUploads(void) const;
+		int		getSocket() const;
 		// Setters
 		void	setPort(uint32_t val);
 		void	setHost(std::string& val);
@@ -65,6 +80,7 @@ class	Server {
 		void	setMethods(std::map<std::string, bool> mp);
 		void	setAutoIndex(bool val);
 		void	setPorts(uint32_t val);
+		void	setEnableUploads(bool val);
 		// Server_handlers
 		void	initServer(void);
 };
