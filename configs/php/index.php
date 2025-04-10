@@ -14,7 +14,9 @@
 		<hr>
 		<?php
 		$name = $_GET['NAME'];
+		$age = $_GET['age'];
 		echo "<br><br>Hi, $name";
+		echo "<br><br>Hi, $age";
 		?>
 	</p>
 </body>

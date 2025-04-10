@@ -12,6 +12,7 @@
 
 #include "./../../headers/Server.hpp"
 #include "./../../headers/debug.hpp" //!
+#include <sys/fcntl.h>
 
 Server::Server(void)//! why ?
 {		
@@ -20,6 +21,14 @@ Server::Server(void)//! why ?
 	this->serverName = "127.0.0.1";
 	this->serverBind = -1;
 	this->serverSocket = -1;
+}
+
+Server::~Server(void)
+{
+	// if (this->serverSocket != -1)
+	// 	// close(this->serverSocket);
+	// if (this->serverBind != -1)
+		// close(this->serverBind);
 }
 
 Server::Server(const Server& srv, uint32_t port) //! 
@@ -56,9 +65,13 @@ static void	fillServerData(std::string& line, Server& srv) {
 	std::string str;
 	str = line;
 	if (!line.compare(0, 11, "server_name")) {
+		if (!srv.getserverName().empty())
+			throw std::runtime_error("server_name already set");
 		validateAndTrim(str);
 		srv.setserverName(str);
 	} else if (!line.compare(0, 4, "host")) {
+		if (!srv.getHost().empty())
+			throw std::runtime_error("host already set");
 		validateAndTrim(str);
 		FtPars::isValidIP4(str);
 		srv.setHost(str);
@@ -76,7 +89,7 @@ static void	fillServerData(std::string& line, Server& srv) {
 		validateAndTrim(str);
 		srv.setErrorPage500(str);
 	}else if (!line.compare(0, 15, "allowed_methods")) {
-		std::cout << "-----> allowed_methods: " << str << std::endl;
+		// std::cout << "-----> allowed_methods: " << str << std::endl;
 		validateAndTrim(str);
 		// srv.getMethods() = FtPars::parseMethods(srv.getAllowedMethods(), str);
 		srv.setMethods(FtPars::parseMethods(srv.getAllowedMethods(), str));
@@ -86,6 +99,9 @@ static void	fillServerData(std::string& line, Server& srv) {
 	} else if (!line.compare(0, 9, "autoindex")) {
 		validateAndTrim(str);
 		FtPars::autoIndexHandler(srv, str);
+	} else if (!line.compare(0, 14, "upload_enabled")) {
+		validateAndTrim(str);
+		FtPars::enableUploadsHandler(srv, str);
 	}
 }
 
@@ -110,6 +126,8 @@ Server::Server(std::vector<std::string>& arr, size_t& idx)
 	this->allowedMethods["DELETE"] = false;
 	this->indexes["index.html"] = false;
 	this->autoIndex = false;
+	this->enableUploads = false;
+	// this->uploadPath = "uploads";
 	setServer(arr, idx, *this);
 }
 
@@ -162,6 +180,15 @@ const std::vector<uint32_t>&	Server::getPorts(void) const
 	return (this->ports);
 }
 
+bool	Server::getEnableUploads(void) const
+{
+	return (this->enableUploads);
+}
+
+int	Server::getSocket() const
+{
+	return (this->serverSocket);
+}
 
 void	Server::setPort(uint32_t val)
 {
@@ -212,34 +239,65 @@ void	Server::setPorts(uint32_t val)
 	this->ports.push_back(val);
 }
 
-void	Server::initServer(void)
+void	Server::setEnableUploads(bool val)
 {
-
+	this->enableUploads = val;
 }
 
 // INET FUNCTIONS
+
+void	Server::initServer(void)
+{
+	this->ftSocket();
+	this->setSocketOptions();
+	this->ftBind();
+	this->ftListen();
+	this->setNonBlocking(this->serverSocket);
+}
 
 void	Server::ftSocket(void)
 {
 	this->serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->serverSocket < 0)
 		throw std::runtime_error("Socket creation failed");
+	// std::cout << "Socket created: " << this->serverSocket << std::endl; //! remove this
 }
+
+void	Server::setSocketOptions(void)
+{
+	int opt = 1;
+	// socketFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)
+	if (this->serverSocket < 0 || setsockopt(this->serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
+		throw std::runtime_error("Set socket options REUSEADDR failed");
+	if (this->serverSocket < 0 || setsockopt(this->serverSocket, SOL_SOCKET, SO_NOSIGPIPE, &opt, sizeof(opt)) < 0)
+		throw std::runtime_error("Set socket options REUSEADDR failed");
+	// std::cout << "Socket options set for server " << this->serverSocket << std::endl; //! remove this
+}
+
 
 void	Server::ftBind(void)
 {
 	struct sockaddr_in addr;
 
+	std::memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
-	// addr.sin_addr.s_addr = inet_addr(this->host.c_str()); //!
 	addr.sin_port = htons(this->port);
-	this->serverBind = bind(this->serverSocket, (struct sockaddr *)&addr, sizeof(addr));
-	if (this->serverBind < 0)
+	addr.sin_addr.s_addr = INADDR_ANY; //! use getaddrinfo and freeaddrinfo
+	if ((this->serverBind = bind(this->serverSocket, (struct sockaddr *)&addr, sizeof(addr))) < 0)
 		throw std::runtime_error("Bind failed");
+	// std::cout << "Binded to port " << this->port << std::endl; //! remove this
 }
 
 void	Server::ftListen(void)
 {
-	if (listen(this->serverSocket, 3) < 0)
+	if ((this->serverListenFd = listen(this->serverSocket, LISTEN_BACKLOG)) < 0)
 		throw std::runtime_error("Listen failed");
+	// std::cout << "Listening on port " << this->port << std::endl; //! remove this
+}
+
+void	Server::setNonBlocking(int fd) //! Duplicate code in Webserv.cpp 
+{
+	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
+		throw std::runtime_error("Set non blocking failed");
+	// std::cout << "Set non blocking for " << fd << std::endl; //! remove this
 }

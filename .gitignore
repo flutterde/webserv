@@ -1,6 +1,13 @@
 # Prerequisites
 *.d
 
+
+
+
+
+labs/intern/
+
+
 # Compiled Object files
 *.slo
 *.lo
@@ -13,7 +20,7 @@ configs/php/app
 *.gch
 *.pch
 labs/app
-
+*.log
 # Compiled Dynamic libraries
 *.so
 *.dylib

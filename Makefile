@@ -1,5 +1,5 @@
 CPP = c++
-CPPFLAGS = -Wall -Wextra -Werror -std=c++98 -I./headers/
+CPPFLAGS = -Wall -Wextra -Werror -std=c++98 -I./headers/ #-fsanitize=address
 
 NAME=webserv
 
@@ -12,6 +12,9 @@ SRCS +=  srcs/cgi/ft_cgi.cpp
 
 # MOAD
 SRCS +=  
+
+#OTM
+SRCS += srcs/models/Webserv.cpp srcs/models/WebservHandler.cpp
 
 HEADERS=headers/*.hpp
 OBJS=$(SRCS:.cpp=.o)

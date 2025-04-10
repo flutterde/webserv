@@ -26,18 +26,15 @@ class	readConfig {
 	private:
 		std::vector<Server>			servers;
 		std::vector<std::string>	*lines;
-		std::vector<std::string>	*env;
 		std::vector<std::string>*	readLines(std::ifstream& file);
 		void						parseConf(void);
 		void						printLines(void) const; //!
 	public:
 		readConfig(void);
 		~readConfig(void);
-		void	collectEnv(char **env);
-		void	setNewEnv(std::string& val);
-		char	**getEnv(void);
-		void	readFile(char *argFile, char **env);
+		void	readFile(char *argFile);
 		void	seperateServers(void);
+		std::vector<Server>&	getServers();
 		class OpenFileException : public std::exception {
 			public:
 				const char* what() const throw();

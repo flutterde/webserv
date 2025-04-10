@@ -1,0 +1,52 @@
+
+# Read Config file:
+	1. open the file 
+	2. 
+
+
+
+# Allowed functions
+execve, dup, dup2, pipe, strerror, gai_strerror,
+errno, dup, dup2, fork, socketpair, htons, htonl,
+ntohs, ntohl, select, poll, epoll (epoll_create,
+epoll_ctl, epoll_wait), kqueue (kqueue, kevent),
+socket, accept, listen, send, recv, chdir bind,
+connect, getaddrinfo, freeaddrinfo, setsockopt,
+getsockname, getprotobyname, fcntl, close, read,
+write, waitpid, kill, signal, access, stat, open,
+opendir, readdir and closedir
+
+# # stat !!!!! || istream getw
+https://www.youtube.com/watch?v=9J1nJOivdyw
+
+https://www.youtube.com/watch?v=gk6NL1pZi1M
+
+https://daverecycles.tumblr.com/post/3104767110/explain-event-driven-web-servers-to-your-grandma
+
+https://www.ibm.com/docs/en/i/7.4?topic=designs-using-poll-instead-select
+
+https://dev.to/sanjayrv/a-beginners-guide-to-socket-programming-in-c-5an5
+
+https://www.scaler.com/topics/socket-programming-in-c/
+
+https://www.codequoi.com/en/sockets-and-network-programming-in-c/
+
+
+https://www.linuxhowtos.org/C_C++/socket.htm
+
+
+
+# images:
+->ME:	https://cdn.intra.42.fr/users/a711a9f84150b908fab68560cd104a88/ochouati.jpg
+->ACHAKKAF:	https://cdn.intra.42.fr/users/6c955d7acbbe4d4742a144f3ccb36cb1/achakkaf.jpg
+->MBOUJAMA:	https://cdn.intra.42.fr/users/e59c85d7bf28db4223c76f57c6e536ac/mboujama.jpg
+
+
+1. config
+2. 
+
+
+
+# WEBSERV::RUN()
+-> init(): init servers
+-> poll(): poll pollfds to monitor them

@@ -116,15 +116,6 @@ namespace	FtPars {
 		return (ip);
 	}
 
-	char	*stringToChar(std::string& str) {
-		size_t	i;
-		char	*newStr = new char[str.size() + 1]();
-		for (i = 0; i < str.size(); i++)
-			newStr[i] = str[i];
-		newStr[i] = '\0';
-		return (newStr);
-	}
-
 	std::map<std::string, bool> parseMethods(const std::map<std::string, bool>& oldMp, std::string& str) {
 		std::stringstream	ss(str);
 		std::string		tmp;
@@ -140,7 +131,6 @@ namespace	FtPars {
 		if (isMethodDouplicated(arr))
 			throw std::runtime_error("Error parsing methods douplicated");
 		for (size_t i = 0; i < arr.size(); i++) {
-			std::cout << "METoD: " << arr[i] << std::endl;
 			if (arr[i] == "GET")
 				mp["GET"] = true;
 			else if (arr[i] == "POST")
@@ -183,7 +173,6 @@ namespace	FtPars {
 
 	void	serverPortsHandler(Server& srv, std::string& line) {
 
-			std::cout << "PORTS_HANDLER_CALLED: " << std::endl;
 		std::string		tmp;
 		std::stringstream	ss(line);
 		std::vector<std::string> arr;
@@ -192,6 +181,8 @@ namespace	FtPars {
 			throw std::runtime_error("Error parsing server ports");
 		while (getline(ss, tmp, ','))
 		{
+			if (!FtPars::isNumbersOnly(tmp))
+				throw std::runtime_error("Error parsing server ports");
 			std::cout << "A new Port added: " << tmp << std::endl;
 			arr.push_back(tmp);
 		}
@@ -203,5 +194,31 @@ namespace	FtPars {
 		}
 		if (srv.getPorts().size())
 			srv.setPort(srv.getPorts()[0]);
+	}
+
+	bool	isNumbersOnly(const std::string& str) {
+		for (size_t i = 0; i < str.size(); i++) {
+			if (!std::isdigit(str[i]))
+				return (false);
+		}
+		return (true);
+	}
+
+	void	enableUploadsHandler(Server& server, std::string& line) {
+
+		std::cout << "enableUploadsHandler: " << line << std::endl;
+		if (line == "on")
+			server.setEnableUploads(true);
+		else if (line == "off")
+			server.setEnableUploads(false);
+		else
+			throw std::runtime_error("Error parsing enable uploads");
+	}
+
+	std::string	toString(size_t nbr) {
+		std::stringstream	ss;
+
+		ss << nbr;
+		return (ss.str());
 	}
 }

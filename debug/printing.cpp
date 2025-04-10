@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <map>
+#include <ctime>
 #include "../headers/debug.hpp"
 
 void	printing(std::string vr)
@@ -42,9 +43,56 @@ void	printServer(Server& srv) {
 	std::cout << " Indexes: \n";
 	printMap(srv.getIndexes());
 	std::cout << " AutoIndex: " << (srv.getAutoIndex() ? "true" : "false") << std::endl;
+	std::cout << " EnableUploads: " << (srv.getEnableUploads() ? "true" : "false") << std::endl;
 	std::vector<uint32_t> ports = srv.getPorts();
 	std::cout << "Ports: \n";
 	std::cout << "Ports__count: " << srv.getPorts().size() << " \n";
 	printContainer(ports);
 	std::cout << " ------------------------------------- \n";
+}
+
+void	printTime() {
+	time_t now = time(0);
+	tm *ltm = localtime(&now);
+	std::cout << COL_GREEN << "Time: " << ltm->tm_hour << ":" << ltm->tm_min << ":" << ltm->tm_sec << " " << END_COL;
+}
+
+void	printWarning(std::string str) {
+	//time 
+	printTime();
+	std::cout << COL_YELLOW << "Warning: " << str << END_COL << std::endl;
+}
+
+
+
+enum	requestType {
+	NOT_SET = -1,
+	CONTENT_LENGTH,
+	CHUNKED,
+	NO_CONTENT,
+	MULTIPART_FORM,
+};
+
+
+void	printRequestType(int nbr) {
+	switch (nbr) {
+		case NOT_SET:
+			std::cout << COL_BLUE << "NOT_SET " << END_COL;
+			break;
+		case CONTENT_LENGTH:
+			std::cout << COL_BLUE <<  "CONTENT_LENGTH " << END_COL;
+			break;
+		case CHUNKED:
+			std::cout << COL_BLUE <<  "CHUNKED " << END_COL;
+			break;
+		case NO_CONTENT:
+			std::cout << COL_BLUE <<  "NO_CONTENT " << END_COL;
+			break;
+		case MULTIPART_FORM:
+			std::cout << COL_BLUE <<  "MULTIPART_FORM " << END_COL;
+			break;
+		default:
+			std::cout << COL_BLUE <<  "UNKNOWN " << END_COL;
+			break;
+	}
 }
