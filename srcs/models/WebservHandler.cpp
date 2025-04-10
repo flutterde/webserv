@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/10 15:19:34 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/04/10 16:08:54 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,5 +140,6 @@ void	WebservHandler::handleRequest(ClientData& client)
 							"Content-Length: " + FtPars::toString(exampleHtml.size()) + "\r\n"
 							"\r\n" + exampleHtml;
 	printWarning("handleRequest....");
+	std::cout << COL_MAGENTA << "Request: \n" << END_COL << client.request << std::endl;
 	send(client.fd, response.c_str(), response.size(), 0);
 }
