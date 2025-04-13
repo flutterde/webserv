@@ -23,7 +23,7 @@
 #include <netinet/in.h>
 
 void    ll(){ //! DELETE ME
-    system("leaks webserv");
+    system("leaks -q webserv");
 }
 
 int server(char *argFile, char **env) {

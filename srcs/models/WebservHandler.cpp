@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WebservHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/10 16:08:54 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/04/12 16:50:01 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,12 +134,10 @@ bool	WebservHandler::isRequestValid(ClientData& client)
 
 void	WebservHandler::handleRequest(ClientData& client)
 {
-	std::string	exampleHtml = "<html><body><h1> <center> Welcome to 1337 Webserv </center></h1></body></html>";
-	std::string response = "HTTP/1.1 200 OK\r\n"
-							"Content-Type: text/html\r\n"
-							"Content-Length: " + FtPars::toString(exampleHtml.size()) + "\r\n"
-							"\r\n" + exampleHtml;
-	printWarning("handleRequest....");
-	std::cout << COL_MAGENTA << "Request: \n" << END_COL << client.request << std::endl;
+	Request req(client.headers + client.request);
+	Response *res = new Response();
+
+	std::string response = res->handleResponse(client, req);
+	std::cout << "=======>" << response << "<=======" << std::endl;
 	send(client.fd, response.c_str(), response.size(), 0);
 }

@@ -5,13 +5,13 @@ NAME=webserv
 
 # OTM
 SRCS=main.cpp srcs/parsing/config/readConfig.cpp srcs/parsing/helpers/strTrim.cpp \
-srcs/parsing/helpers/FtPars.cpp srcs/models/Server.cpp  debug/printing.cpp 
+srcs/parsing/helpers/FtPars.cpp srcs/models/Server.cpp debug/printing.cpp 
 
 # ACHAKKAF
-SRCS +=  srcs/cgi/ft_cgi.cpp
+SRCS +=  learning/request.cpp 
 
 # MOAD
-SRCS +=  
+SRCS +=  srcs/models/Response.cpp
 
 #OTM
 SRCS += srcs/models/Webserv.cpp srcs/models/WebservHandler.cpp

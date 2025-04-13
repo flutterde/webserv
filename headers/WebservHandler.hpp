@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WebservHandler.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:37:19 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/10 15:20:02 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/04/13 09:56:30 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,13 @@
 #include <arpa/inet.h>
 #include <vector>
 #include "debug.hpp"
+#include "../learning/request.hpp"
+#include "./Response.hpp"
 
 # define RUNNING 1
 # define POLL_TIMEOUT 0
 # define END_OF_HEADERS "\r\n\r\n"
-# define READ_SIZE 20
+# define READ_SIZE 4096
 # define CHUNCK_SIZE 4096
 
 enum	requestType {
@@ -73,6 +75,6 @@ class WebservHandler
 
 	public:
 		WebservHandler();
-	~WebservHandler();
+		~WebservHandler();
 
 };
