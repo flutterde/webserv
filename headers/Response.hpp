@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:11 by mboujama          #+#    #+#             */
-/*   Updated: 2025/04/13 16:08:23 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/04/15 13:03:12 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,10 @@
 # define RESPONSE_HPP
 
 # include <iostream>
-# include "../learning/request.hpp"
-# include "WebservHandler.hpp"
 # include <time.h>
+# include "../learning/request.hpp"
+# include "./WebservHandler.hpp"
+# include "./ResponseUtils.hpp"
 
 class Response
 {
@@ -34,9 +35,13 @@ class Response
 		
 		std::string combineResponse();
 		void printResHeaders(void) const;
+		
 		void handleGet(struct ClientData &client, const Request &req);
 		void handlePost(struct ClientData &client, const Request &req);
 		void handleDelete(struct ClientData &client, const Request &req);
+
+		int checkRequestedPath(struct ClientData &client, const Request &req);
+		int checkAllowedMethods(struct ClientData &client, const Request &req);
 	public:
 		Response(void);
 		std::string handleResponse( struct ClientData &clientData , const Request &request);
