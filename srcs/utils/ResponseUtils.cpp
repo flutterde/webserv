@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 12:29:43 by mboujama          #+#    #+#             */
-/*   Updated: 2025/04/15 13:08:49 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/04/19 14:03:31 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,4 +45,11 @@ bool ResponseUtils::pathExists(const std::string& path) {
 	if (stat(path.c_str(), &info) != 0)
 		return 0;
     return 1;
+}
+
+int ResponseUtils::openFile(const std::string& filepath) {
+	int fd = open(filepath.c_str(), O_RDONLY);
+	// ? What is the file didn't open ?
+
+	return fd;
 }

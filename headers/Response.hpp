@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:11 by mboujama          #+#    #+#             */
-/*   Updated: 2025/04/15 13:03:12 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/04/19 11:14:10 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,19 +32,20 @@ class Response
 		std::map<std::string, std::string> headers;
 		std::string body;
 		std::string date;
+		int fd;
 		
-		std::string combineResponse();
 		void printResHeaders(void) const;
 		
 		void handleGet(struct ClientData &client, const Request &req);
 		void handlePost(struct ClientData &client, const Request &req);
 		void handleDelete(struct ClientData &client, const Request &req);
 
-		int checkRequestedPath(struct ClientData &client, const Request &req);
+		int checkRequestedPath(struct ClientData &client, const std::string &req);
 		int checkAllowedMethods(struct ClientData &client, const Request &req);
 	public:
 		Response(void);
-		std::string handleResponse( struct ClientData &clientData , const Request &request);
+		Response(struct ClientData &clientData , const Request &request);
+		std::string combineResponse();
 };	
 
 #endif

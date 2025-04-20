@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/12 16:50:01 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/04/19 11:28:04 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,9 +135,10 @@ bool	WebservHandler::isRequestValid(ClientData& client)
 void	WebservHandler::handleRequest(ClientData& client)
 {
 	Request req(client.headers + client.request);
-	Response *res = new Response();
+	client.response = new Response(client, req);
 
-	std::string response = res->handleResponse(client, req);
-	std::cout << "=======>" << response << "<=======" << std::endl;
-	send(client.fd, response.c_str(), response.size(), 0);
+	std::string res = client.response->combineResponse();
+	// std::string response = res->handleResponse(client, req);
+	std::cout << "=======>" << client.response << "<=======" << std::endl;
+	send(client.fd, res.c_str(), res.size(), 0);
 }

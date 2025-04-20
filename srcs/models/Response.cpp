@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/04/16 10:18:55 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/04/19 13:22:27 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,33 @@
 Response::Response(void)
 {
 	headers["Server"] = "NorthServ/1.0";
+}
+
+Response::Response(struct ClientData &client, const Request &req) {
+	std::string root_path = "/var/www/html";
+	std::string full_path = root_path + req.getPath();
+	http_version = req.getVersion();
+
+	//TODO: add checkRedirect: I need the
+	if (!checkRequestedPath(client, full_path) || !checkAllowedMethods(client, req))
+		return ;
+	fd = ResponseUtils::openFile(full_path);
+	if (req.getMethod() == "GET")
+		handleGet(client, req);
+	else if (req.getMethod() == "POST")
+		std::cout << "post" << std::endl;
+	else if (req.getMethod() == "DELETE")
+		std::cout << "delete" << std::endl;
+	
+	status_code = 200;
+	status_text = "OK";
+	body = "<html><body><center><h1>All Is Good</h1></center></body></html>";
+	headers["Server"] = "NorthServ/1.0";
+	headers["Content-Type"] = "text/html";
+	headers["Content-Length"] = std::to_string(body.size());
+	headers["Connection"] = "close";
+	headers["Date"] = "";
+	std::cout << "Allowed methods => [" << ResponseUtils::allowHeaderValue(client.server->getAllowedMethods()) << "]" << std::endl;
 }
 
 Response::~Response(void)
@@ -51,11 +78,7 @@ std::string Response::combineResponse(void) {
 }
 
 // Check if requested url exists
-int Response::checkRequestedPath(struct ClientData &client, const Request &req) {
-	//! ↓↓↓ equals the "location_root" ↓↓↓
-	std::string root_path = "/var/www/html";
-	std::string full_path = root_path + req.getPath();
-	
+int Response::checkRequestedPath(struct ClientData &client, const std::string &full_path) {
 	if (!ResponseUtils::pathExists(full_path)) {
 		status_code = 404;
 		status_text = "Not Found";
@@ -84,6 +107,10 @@ int Response::checkAllowedMethods(struct ClientData &client, const Request &req)
 }
 
 void Response::handleGet(struct ClientData &client, const Request &req) {
+	// TODO: 1- 404 not found if the requested path doesn't exist.
+	// TODO: 2- 301 if the path doesn't have / at the end.
+	// TODO: 3- In case of directory Serve index.html if exists otherwise serve autoindex if enabled.
+	// TODO: 4- Serve the requested file.
 	(void) client;
 	(void) req;
 	std::cout << "get" << std::endl;
@@ -99,30 +126,4 @@ void Response::handleDelete(struct ClientData &client, const Request &req) {
 	(void) client;
 	(void) req;
 	std::cout << "delete" << std::endl;
-}
-
-std::string Response::handleResponse(struct ClientData &client, const Request &req) {
-	http_version = req.getVersion();
-
-	//TODO: add checkRedirect: I need the
-	if (!checkRequestedPath(client, req) || !checkAllowedMethods(client, req))
-		return combineResponse();
-
-	if (req.getMethod() == "GET")
-		handleGet(client, req);
-	else if (req.getMethod() == "POST")
-		std::cout << "post" << std::endl;
-	else if (req.getMethod() == "DELETE")
-		std::cout << "delete" << std::endl;
-	
-	status_code = 200;
-	status_text = "OK";
-	body = "<html><body><center><h1>All Is Good</h1></center></body></html>";
-	headers["Server"] = "NorthServ/1.0";
-	headers["Content-Type"] = "text/html";
-	headers["Content-Length"] = std::to_string(body.size());
-	headers["Connection"] = "close";
-	headers["Date"] = "";
-	std::cout << "Allowed methods => [" << ResponseUtils::allowHeaderValue(client.server->getAllowedMethods()) << "]" << std::endl;
-	return (combineResponse());
 }

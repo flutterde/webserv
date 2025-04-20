@@ -6,28 +6,28 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:37:19 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/13 09:56:30 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/04/19 13:54:09 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 # include "FtPars.hpp"
-#include <cstddef>
-#include <cstdlib>
-#include <exception>
-#include <iostream>
-#include <ostream>
-#include <stdexcept>
-#include <string>
-#include <unistd.h>
-#include <sys/poll.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <vector>
-#include "debug.hpp"
-#include "../learning/request.hpp"
-#include "./Response.hpp"
+# include <cstddef>
+# include <cstdlib>
+# include <exception>
+# include <iostream>
+# include <ostream>
+# include <stdexcept>
+# include <string>
+# include <unistd.h>
+# include <sys/poll.h>
+# include <sys/socket.h>
+# include <arpa/inet.h>
+# include <vector>
+# include "debug.hpp"
+# include "../learning/request.hpp"
+# include "./Response.hpp"
 
 # define RUNNING 1
 # define POLL_TIMEOUT 0
@@ -44,6 +44,7 @@ enum	requestType {
 };
 
 struct ClientData {
+	Response	*response;
 	int			fd;
 	requestType	type;
 	bool		isRequestComplete;
@@ -76,5 +77,4 @@ class WebservHandler
 	public:
 		WebservHandler();
 		~WebservHandler();
-
 };
