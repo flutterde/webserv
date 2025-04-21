@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:37:19 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/19 13:54:09 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/04/21 10:43:01 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,6 @@
 # include "FtPars.hpp"
 # include <cstddef>
 # include <cstdlib>
-# include <exception>
-# include <iostream>
-# include <ostream>
-# include <stdexcept>
 # include <string>
 # include <unistd.h>
 # include <sys/poll.h>
@@ -26,7 +22,6 @@
 # include <arpa/inet.h>
 # include <vector>
 # include "debug.hpp"
-# include "../learning/request.hpp"
 # include "./Response.hpp"
 
 # define RUNNING 1
@@ -42,6 +37,8 @@ enum	requestType {
 	NO_CONTENT,
 	MULTIPART_FORM,
 };
+
+class Response;
 
 struct ClientData {
 	Response	*response;

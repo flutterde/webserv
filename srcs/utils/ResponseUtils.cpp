@@ -6,21 +6,22 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 12:29:43 by mboujama          #+#    #+#             */
-/*   Updated: 2025/04/19 14:03:31 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/04/21 14:30:36 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../headers/ResponseUtils.hpp"
+#include <sys/unistd.h>
 
 std::string ResponseUtils::getDateTime() {
 	time_t rawtime;
 	struct tm * datetime;
-	char buffer [80];
+	char buffer[80];
 
-	time (&rawtime);
+	time(&rawtime);
 	datetime = localtime(&rawtime);
 
-	strftime (buffer,80,"%a, %d %h %Y %T %Z", datetime);
+	strftime (buffer, 80, "%a, %d %h %Y %T %Z", datetime);
 	return std::string(buffer);
 }
 
@@ -40,11 +41,14 @@ std::string ResponseUtils::allowHeaderValue(std::map<std::string, bool> allowedM
 }
 
 bool ResponseUtils::pathExists(const std::string& path) {
-    struct stat info;
+    return access(path.c_str(), F_OK) == 0;
+}
 
-	if (stat(path.c_str(), &info) != 0)
-		return 0;
-    return 1;
+bool ResponseUtils::isDirectory(const std::string& path) {
+	struct stat info;
+
+	stat(path.c_str(), &info);
+	return S_ISDIR(info.st_mode);
 }
 
 int ResponseUtils::openFile(const std::string& filepath) {
