@@ -6,13 +6,14 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/10 16:08:54 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/04/20 16:04:02 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../../headers/WebservHandler.hpp"
 #include <cstddef>
 #include <string>
+#include <sys/socket.h>
 
 WebservHandler::WebservHandler() {
 }
@@ -141,5 +142,5 @@ void	WebservHandler::handleRequest(ClientData& client)
 							"\r\n" + exampleHtml;
 	printWarning("handleRequest....");
 	std::cout << COL_MAGENTA << "Request: \n" << END_COL << client.request << std::endl;
-	send(client.fd, response.c_str(), response.size(), 0);
+	send(client.fd, response.c_str(), response.size(), 0); //! MSG_NOSIGNAL (this flag not exist in MACOS)
 }

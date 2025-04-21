@@ -21,6 +21,7 @@ Server::Server(void)//! why ?
 	this->serverName = "127.0.0.1";
 	this->serverBind = -1;
 	this->serverSocket = -1;
+	this->rootPath = DEFAULT_ROOT_PATH;
 }
 
 Server::~Server(void)
@@ -102,6 +103,10 @@ static void	fillServerData(std::string& line, Server& srv) {
 	} else if (!line.compare(0, 14, "upload_enabled")) {
 		validateAndTrim(str);
 		FtPars::enableUploadsHandler(srv, str);
+	} else if (!line.compare(0, 13, "location_root"))
+	{
+		validateAndTrim(str);
+		srv.setRootPath(str);
 	}
 }
 
@@ -144,6 +149,11 @@ std::string	Server::getHost(void)	const
 std::string	Server::getserverName(void)	const
 {
 	return (this->serverName);
+}
+
+std::string	Server::getRootPath(void)	const
+{
+	return (this->rootPath);
 }
 
 uint32_t	Server::getLimitClientBodySize(void)	const
@@ -242,6 +252,11 @@ void	Server::setPorts(uint32_t val)
 void	Server::setEnableUploads(bool val)
 {
 	this->enableUploads = val;
+}
+
+void	Server::setRootPath(std::string& val)
+{
+	this->rootPath = val;
 }
 
 // INET FUNCTIONS

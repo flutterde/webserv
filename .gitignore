@@ -1,13 +1,12 @@
 # Prerequisites
 *.d
 
-
-
+labs/myfld/*
 
 
 labs/intern/
 
-
+ts.txt
 # Compiled Object files
 *.slo
 *.lo
