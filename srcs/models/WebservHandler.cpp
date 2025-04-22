@@ -6,13 +6,16 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/20 16:04:02 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/04/22 20:28:49 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../../headers/WebservHandler.hpp"
 #include <cstddef>
+#include <fstream>
+#include <iostream>
 #include <string>
+#include <sys/fcntl.h>
 #include <sys/socket.h>
 
 WebservHandler::WebservHandler() {
@@ -43,12 +46,12 @@ void	WebservHandler::setRequestType(ClientData& client)
 	printWarning("setRequestType....");
 	if (client.headers.empty())
 		return;
-	if (client.headers.find("Content-Length:") != std::string::npos)
+	if (client.headers.find("Content-Type: multipart/form-data") != std::string::npos)
+		client.type = MULTIPART_FORM;
+	else if (client.headers.find("Content-Length:") != std::string::npos)
 		client.type = CONTENT_LENGTH;
 	else if (client.headers.find("Transfer-Encoding: chunked\r\n") != std::string::npos)
 		client.type = CHUNKED;
-	else if (client.headers.find("Content-Type: multipart/form-data\r\n") != std::string::npos)
-		client.type = MULTIPART_FORM;
 	else
 		client.type = NO_CONTENT;
 	std::cout << "=> Request type: " ; printRequestType(client.type); 
@@ -69,7 +72,7 @@ void	WebservHandler::setContentLength(ClientData& client)
 	std::cout << "=> Content-Length: " << client.contentLen << std::endl;
 }
 
-bool WebservHandler::isChunkedComplete(ClientData& client)
+bool WebservHandler::isChunkedComplete(ClientData& client) //! will be cancelled
 {
 	printWarning("isChunkedComplete....");
     if (client.type != CHUNKED)
@@ -89,7 +92,6 @@ bool WebservHandler::isChunkedComplete(ClientData& client)
     return false;
 }
 
-
 bool	WebservHandler::isHeaderComplete(ClientData& client)
 {
 	printWarning("isHeaderComplete....");
@@ -101,7 +103,10 @@ bool	WebservHandler::isHeaderComplete(ClientData& client)
 		client.isHeaderComplete = true;
 		client.headers = client.request.substr(0, pos + 4); //! should stop at pos or pos + 4
 		client.request = client.request.substr(pos + 4);
-		std::cout << "Header complete: \n" << client.headers << std::endl;
+		std::cout << "Header complete: \n" << client.headers << std::endl; //! remove this
+		this->setBoundary(client);
+		client.bodyReded = client.request.size();
+		std::cout << "Body readed: " << client.bodyReded << std::endl;
 		return (true);
 	}
 	return (false);
@@ -112,10 +117,16 @@ bool	WebservHandler::isRequestComplete(ClientData& client)
 	printWarning("isRequestComplete....");
 	if (!client.isHeaderComplete)
 		return (false);
-	else if (client.type == CHUNKED)
+	else if (client.type == CHUNKED) //! no longer
 		return (isChunkedComplete(client));
 	else if (client.type == NO_CONTENT && client.contentLen == -1)
 		return (true);
+	else if (client.type == MULTIPART_FORM && client.contentLen <= static_cast<long>(client.bodyReded))
+	{
+		std::cout << COL_RED << "client.contentLen: " << client.contentLen << " client.bodyReded: " << client.bodyReded << END_COL << std::endl;
+		std::cout << "Multipart form data complete" << std::endl;
+		return (true);
+	}
 	else if (client.contentLen >= 0 && client.request.size() >= static_cast<size_t>(client.contentLen))
 		return (true);
 	std::cout << "Request not complete" << std::endl;
@@ -133,6 +144,21 @@ bool	WebservHandler::isRequestValid(ClientData& client)
 	return (true);
 }
 
+void	WebservHandler::setBoundary(ClientData& client)
+{
+	if (!client.isHeaderComplete || client.type != MULTIPART_FORM || !client.boundary.empty())
+		return;
+	size_t pos = client.headers.find("boundary=");
+	if (pos == std::string::npos)
+		return;
+	size_t start = client.headers.find("=", pos) + 1;
+	size_t end = client.headers.find("\r\n", start);
+	if (end == std::string::npos)
+		return;
+	client.boundary = client.headers.substr(start, end - start);
+	std::cout << "Boundary: " << client.boundary << std::endl;
+}
+
 void	WebservHandler::handleRequest(ClientData& client)
 {
 	std::string	exampleHtml = "<html><body><h1> <center> Welcome to 1337 Webserv </center></h1></body></html>";
@@ -141,6 +167,9 @@ void	WebservHandler::handleRequest(ClientData& client)
 							"Content-Length: " + FtPars::toString(exampleHtml.size()) + "\r\n"
 							"\r\n" + exampleHtml;
 	printWarning("handleRequest....");
+	std::ofstream logFile("request.log", std::ios::app);
+	if (logFile.is_open())
+		logFile << client.request << std::endl;
 	std::cout << COL_MAGENTA << "Request: \n" << END_COL << client.request << std::endl;
 	send(client.fd, response.c_str(), response.size(), 0); //! MSG_NOSIGNAL (this flag not exist in MACOS)
 }

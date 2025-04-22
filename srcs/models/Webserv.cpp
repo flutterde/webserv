@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/10 14:16:13 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/04/22 15:03:58 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,24 +19,6 @@ Webserv::Webserv() {
 Webserv::~Webserv() {
 
 }
-
-
-// void	Webserv::_closeClient(int fd)
-// {
-// 	std::cout << COL_YELLOW << "Closing client fd: " << fd << END_COL << std::endl;
-// 	// remove from pollfds
-// 	for (size_t i = 0; i < _pollfds.size(); ++i) {
-// 		if (_pollfds[i].fd == fd) {
-// 			close(fd);
-// 			std::vector<struct pollfd>::iterator tmp = _pollfds.begin() + i;
-// 			std::cout << "Removing fd: " << tmp->fd << std::endl;
-// 			_pollfds.erase(tmp);
-// 			_requests.erase(fd);
-// 			break;
-// 		}
-// 	}
-// 	// remove from requests
-// }
 
 Webserv::Webserv(readConfig& config, char **env) {
 	

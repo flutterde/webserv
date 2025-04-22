@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:37:19 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/10 15:20:02 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/04/22 20:28:22 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@
 # define RUNNING 1
 # define POLL_TIMEOUT 0
 # define END_OF_HEADERS "\r\n\r\n"
-# define READ_SIZE 20
+# define READ_SIZE 40960
 # define CHUNCK_SIZE 4096
 
 enum	requestType {
@@ -47,13 +47,16 @@ struct ClientData {
 	bool		isRequestComplete;
 	size_t		bytesSent;
 	long		contentLen;
-	size_t		readed;
+	size_t		readed; //! why ?
 	bool		isHeaderComplete;
 	int			file; //! 
 	std::string	request;
 	Server		*server;
 	std::string	headers;
-	ClientData() : type(NOT_SET), isRequestComplete(false), bytesSent(0), contentLen(-1), readed(0), isHeaderComplete(false), file(-1), server(NULL) {}
+	size_t		bodyReded;
+	std::string	boundary;
+	//! add map
+	ClientData() : type(NOT_SET), isRequestComplete(false), bytesSent(0), contentLen(-1), readed(0), isHeaderComplete(false), file(-1), server(NULL), bodyReded(0) {}
 };
 
 class WebservHandler
@@ -70,6 +73,7 @@ class WebservHandler
 		bool	isRequestValid(ClientData& client);
 		void	handleRequest(ClientData& client);
 		void	_closeClient(int fd);
+		void	setBoundary(ClientData& client);
 
 	public:
 		WebservHandler();
