@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseUtils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 12:29:43 by mboujama          #+#    #+#             */
-/*   Updated: 2025/04/21 14:30:36 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/04/22 11:34:46 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ std::string ResponseUtils::getDateTime() {
 	time(&rawtime);
 	datetime = localtime(&rawtime);
 
-	strftime (buffer, 80, "%a, %d %h %Y %T %Z", datetime);
+	strftime (buffer, 80, "%a, %d %h %Y %T", datetime);
 	return std::string(buffer);
 }
 
@@ -41,6 +41,7 @@ std::string ResponseUtils::allowHeaderValue(std::map<std::string, bool> allowedM
 }
 
 bool ResponseUtils::pathExists(const std::string& path) {
+	std::cout << "Path to search: " << path << std::endl;
     return access(path.c_str(), F_OK) == 0;
 }
 

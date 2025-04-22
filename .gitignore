@@ -44,3 +44,5 @@ testing/
 *.exe
 *.out
 *.app
+
+test*

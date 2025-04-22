@@ -26,6 +26,7 @@ public:
 	std::string getQuery() const;
 	size_t		getQuerySize(void) const;
 	std::string getBody(void) const;
+	void setPath(std::string &newPath);
 	void		convertToEnv(void);
 	// std::pair<std::string, std::string> getHeader(size_t index) const;
 	void 		printHeaders(void) const;

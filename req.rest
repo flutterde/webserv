@@ -1,6 +1,6 @@
 #GET, POST, DELETE
-PUT http://127.0.0.1:8080 HTTP/1.1
-Content-Type: "text/html"
+GET http://127.0.0.1:8080/test HTTP/1.1
+Connection: "keep-alive"
 
 ###
 
