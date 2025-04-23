@@ -6,11 +6,13 @@
 /*   By: mboujama <mboujama@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 12:29:43 by mboujama          #+#    #+#             */
-/*   Updated: 2025/04/22 11:34:46 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/04/23 14:40:16 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../headers/ResponseUtils.hpp"
+#include <cstdio>
+#include <fstream>
 #include <sys/unistd.h>
 
 std::string ResponseUtils::getDateTime() {
@@ -57,4 +59,61 @@ int ResponseUtils::openFile(const std::string& filepath) {
 	// ? What is the file didn't open ?
 
 	return fd;
+}
+
+std::string ResponseUtils::toString(long value) {
+	std::ostringstream oss;
+	oss << value;
+	return oss.str();
+}
+
+std::string ResponseUtils::isIndexFileExist(std::map<std::string, bool> &indexes, const std::string &path) {
+	DIR *dir;
+	struct dirent *ent;
+	std::map<std::string, bool>::iterator it;
+
+	dir = opendir(path.c_str());
+	while ((ent = readdir(dir))) {
+		if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, ".."))
+			continue ;
+		if ((it = indexes.find(ent->d_name)) != indexes.end())
+			return it->first;
+	}
+	return "";
+}
+
+std::string ResponseUtils::getErrorPage(RESPONSE_CODE status) {
+	std::string content;
+	std::string errorsPath = "/Users/mboujama/Desktop/webserv/var/www/html/errors/";
+
+	std::ifstream file;
+	switch (status) {
+		case FORBIDDEN:
+			file.open(errorsPath + "403.html");
+			break;
+		case NOT_FOUND:
+			file.open(errorsPath + "404.html");
+			break;
+		case METHOD_NOT_ALLOWED:
+			file.open(errorsPath + "405.html");
+			break;
+		case INTERNAL_SERVER_ERROR:
+			file.open(errorsPath + "500.html");
+			break;
+		default:
+			content = "Under control";
+	}
+
+	if (file.is_open()) {
+		std::string line;
+
+		while (file) {
+			std::getline(file, line);
+			content.append(line);
+		}
+	}
+	else
+		std::cout << "File doesn't opened" << std::endl;
+
+	return content;
 }

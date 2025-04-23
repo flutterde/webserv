@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:11 by mboujama          #+#    #+#             */
-/*   Updated: 2025/04/21 13:55:05 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/04/23 14:50:21 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,22 +16,19 @@
 # include "../learning/request.hpp"
 # include "./WebservHandler.hpp"
 # include "./ResponseUtils.hpp"
+# include "./MimeTypes.hpp"
 # include <dirent.h>
+#include <cstddef>
+#include <cstring>
+#include <dirent.h>
+#include <iostream>
+#include <string>
+#include <sys/_types/_ssize_t.h>
+#include <sys/dirent.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
-enum RESPONSE_CODE {
-	NOT_FOUND = 404,
-	MOVED_PERMANENTLY = 301,
-	METHOD_NOT_ALLOWED = 405,
-	FORBIDDEN = 403,
-	OK = 200,
-	CGI,
-	CREATED = 201,
-	CONFLICT = 409,
-	NOCONTENT = 204,
-	INTERNAL_SERVER_ERROR = 500
-};
-
-class Response
+class Response : public MimeTypes
 {
 	private:
 		Response(void);
@@ -45,9 +42,8 @@ class Response
 		std::string body;
 		std::string date;
 		int fd;
-		
-		void printResHeaders(void) const;
-		
+
+		int getFd() const;
 		void handleGet(struct ClientData &client, Request &req, const std::string &path);
 		void handlePost(struct ClientData &client, Request &req, const std::string &path);
 		void handleDelete(struct ClientData &client, Request &req, const std::string &path);

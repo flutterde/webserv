@@ -6,22 +6,18 @@
 /*   By: mboujama <mboujama@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/04/22 14:45:57 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/04/23 14:50:28 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../../headers/Response.hpp"
-#include <iostream>
-#include <sys/stat.h>
 
-Response::Response(void)
-{}
 
-Response::~Response(void)
-{}
+Response::Response(void) {}
 
-Response::Response(const Response& obj)
-{
+Response::~Response(void) {}
+
+Response::Response(const Response& obj){
 	*this = obj;
 }
 
@@ -31,11 +27,8 @@ Response& Response::operator=(const Response& obj)
 	return (*this);
 }
 
-void Response::printResHeaders(void) const
-{
-	std::map<std::string, std::string>::const_iterator it;
-	for (it = this->headers.begin(); it != this->headers.end(); ++it)
-		std::cout << it->first << ": " << it->second << std::endl;
+int Response::getFd() const {
+	return fd;
 }
 
 std::string Response::combineResponse(void) {
@@ -55,16 +48,15 @@ Response::Response(struct ClientData &client, Request &req) {
 	std::string full_path = root_path + req.getPath();
 	http_version = req.getVersion();
 
-	status_text = "OK";
-	body = "<html><body><center><h1>All Is Good</h1></center></body></html>";
-	headers["Content-Length"] = std::to_string(body.size());
 	headers["Server"] = "NorthServ/1.0";
 	headers["Content-Type"] = "text/html";
 	headers["Connection"] = "keep-alive";
 	headers["Date"] = ResponseUtils::getDateTime();
 	
 	//TODO: add checkRedirect:
-	if (!client.server->getAllowedMethods()[req.getMethod()])
+	if (full_path.find("..") != std::string::npos)
+		status_code = FORBIDDEN;
+	else if (!client.server->getAllowedMethods()[req.getMethod()])
 		status_code = METHOD_NOT_ALLOWED;
 	else if (!ResponseUtils::pathExists(full_path))
 		status_code = NOT_FOUND;
@@ -76,57 +68,74 @@ Response::Response(struct ClientData &client, Request &req) {
 		handleDelete(client, req, full_path);
 
 	switch (status_code) {
-		case NOT_FOUND:
-			std::cout << "NOT FOUND" << std::endl;
-			body = "<html><body><center><h1>404 Not Found</h1></center></body></html>";
-			headers["Content-Length"] = std::to_string(body.size());
-			break ;
-		case METHOD_NOT_ALLOWED:
-			std::cout << "METHOD NOT ALLOWED" << std::endl;
-			body = "<html><body><center><h1>405 Method Not Allowed</h1></center></body></html>";
-			headers["Content-Length"] = std::to_string(body.size());
-			break ;
+		// 30x
 		case MOVED_PERMANENTLY:
 			std::cout << "MOVED PERMANENTLY" << std::endl;
 			body = "<html><body><center><h1>301 Moved Permanently</h1></center></body></html>";
-			headers["Content-Length"] = std::to_string(body.size());
+			headers["Content-Length"] = ResponseUtils::toString(body.length());
+			break ;
+		// 40x
+		case FORBIDDEN:
+			std::cout << "FORBIDDEN" << std::endl;
+			body = ResponseUtils::getErrorPage(FORBIDDEN);
+			headers["Content-Length"] = ResponseUtils::toString(body.length());
+			break ;
+		case NOT_FOUND:
+			body = ResponseUtils::getErrorPage(NOT_FOUND);
+			headers["Content-Length"] = ResponseUtils::toString(body.length());
+			break ;
+		case METHOD_NOT_ALLOWED:
+			body = ResponseUtils::getErrorPage(METHOD_NOT_ALLOWED);
+			headers["Content-Length"] = ResponseUtils::toString(body.length());
 			break ;
 		default:
-			std::cout << "OK" << std::endl;
+			status_code = OK;
+			status_text = "OK";
 			body = "<html><body><center><h1>All is good</h1></center></body></html>";
-			headers["Content-Length"] = std::to_string(body.size());
+			headers["Content-Length"] = ResponseUtils::toString(body.length());
 			status_code = OK;
 	}
 	
 	std::cout << "Allowed methods => [" << ResponseUtils::allowHeaderValue(client.server->getAllowedMethods()) << "]" << std::endl;
 }
 
+
 void Response::handleGet(struct ClientData &client, Request &req, const std::string &path) {
-	// TODO: 1- Check is dir or file
+	if (path.find("..") != std::string::npos) {
+		status_code = FORBIDDEN; return;
+	}
 	if (ResponseUtils::isDirectory(path)) {
-		// TODO: 2- if directory
-		// TODO: 	2.1 - if path doesn't end with /, add it and redirect to /path/ (301)
-		std::cout << "this is a directory" << std::endl;
 		if (path.at(path.length() - 1) != '/') {
 			status_code = MOVED_PERMANENTLY;
 			headers["Location"] = req.getPath() + "/";
 			return ;
 		}
-		// TODO:	2.2 - if index file exists serve it (CGI || 200)
-		if (true) {
-			std::cout << "" << std::endl;
-		}
-		else {
-			status_code = FORBIDDEN;
+		
+		std::map<std::string, bool> indexes = client.server->getIndexes();
+		std::string index = ResponseUtils::isIndexFileExist(indexes, path);
+		
+		if (!index.empty()) {
+			fd = ResponseUtils::openFile(path + index);
+			fd == -1 ? status_code = FORBIDDEN : status_code = OK;
+			return ;
 		}
 		// TODO:	2.3 - if autoindex enabled show it (200) otherwise (403)
+		else if (client.server->getAutoIndex()) {
+			std::cout << "Autoindex enabled" << std::endl;
+			status_code = OK;
+		}
+		else {
+			std::cout << "Autoindex disabled" << std::endl;
+			status_code = FORBIDDEN;
+		}
 	}
 	else {
-		std::cout << "this is a file" << std::endl;
+		std::string mimeType = getMimeType(path);
+		
+		std::cout << "Extension: " << mimeType << std::endl;
 		// TODO: 3- if file serve it (CGI || 200)
+		std::cout << "this is a file" << std::endl;
 	}
-	(void) client;
-	(void) req;
 }
 
 void Response::handlePost(struct ClientData &client, Request &req, const std::string &path) {
