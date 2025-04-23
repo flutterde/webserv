@@ -52,5 +52,6 @@ namespace FtPars {
 	bool	isNumbersOnly(const std::string& str);
 	void	enableUploadsHandler(Server& server, std::string& line);
 	std::string	toString(size_t nbr);
-	size_t	hexaToNbr(std::string& str);
+	void	handleRedirects(Server& server, std::string& line);
+	size_t	hexaToNbr(std::string& str); //! not created yet
 }

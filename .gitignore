@@ -3,7 +3,7 @@
 
 labs/myfld/*
 
-
+test/runner
 labs/intern/
 
 ts.txt
@@ -43,3 +43,5 @@ testing/
 *.exe
 *.out
 *.app
+.DS_Store
+

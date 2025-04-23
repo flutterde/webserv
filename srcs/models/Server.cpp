@@ -12,7 +12,15 @@
 
 #include "./../../headers/Server.hpp"
 #include "./../../headers/debug.hpp" //!
+#include <cstddef>
 #include <sys/fcntl.h>
+
+
+//?
+#include <stdexcept>
+#include <cstring>
+#include <arpa/inet.h>
+#include <netdb.h>  // For getaddrinfo
 
 Server::Server(void)//! why ?
 {		
@@ -26,10 +34,10 @@ Server::Server(void)//! why ?
 
 Server::~Server(void)
 {
-	// if (this->serverSocket != -1)
-	// 	// close(this->serverSocket);
-	// if (this->serverBind != -1)
-		// close(this->serverBind);
+	if (this->serverSocket != -1)
+		close(this->serverSocket);
+	if (this->serverBind != -1)
+		close(this->serverBind);
 }
 
 Server::Server(const Server& srv, uint32_t port) //! 
@@ -103,10 +111,13 @@ static void	fillServerData(std::string& line, Server& srv) {
 	} else if (!line.compare(0, 14, "upload_enabled")) {
 		validateAndTrim(str);
 		FtPars::enableUploadsHandler(srv, str);
-	} else if (!line.compare(0, 13, "location_root"))
-	{
+	} else if (!line.compare(0, 13, "location_root")) {
 		validateAndTrim(str);
 		srv.setRootPath(str);
+	} else if (!line.compare(0, 9, "redirects")) {
+		std::cout << "-----> redirects: " << str << std::endl;
+		validateAndTrim(str);
+		FtPars::handleRedirects(srv, str);
 	}
 }
 
@@ -200,6 +211,11 @@ int	Server::getSocket() const
 	return (this->serverSocket);
 }
 
+const std::map<std::string, std::string>&	Server::getRedirects(void)	const
+{
+	return (this->redirects);
+}
+
 void	Server::setPort(uint32_t val)
 {
 	this->port = val;
@@ -259,6 +275,11 @@ void	Server::setRootPath(std::string& val)
 	this->rootPath = val;
 }
 
+void	Server::setRedirects(const std::string& key, const std::string& val)
+{
+	this->redirects[key] = val;
+}
+
 // INET FUNCTIONS
 
 void	Server::initServer(void)
@@ -302,6 +323,7 @@ void	Server::ftBind(void)
 		throw std::runtime_error("Bind failed");
 	// std::cout << "Binded to port " << this->port << std::endl; //! remove this
 }
+
 
 void	Server::ftListen(void)
 {

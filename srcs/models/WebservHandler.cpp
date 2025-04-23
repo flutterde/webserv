@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/22 20:28:49 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/04/23 19:43:45 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <string>
 #include <sys/fcntl.h>
 #include <sys/socket.h>
+
+int WebservHandler::requestCount = 0;
 
 WebservHandler::WebservHandler() {
 }
@@ -38,6 +40,7 @@ void	WebservHandler::_closeClient(int fd)
 			break;
 		}
 	}
+	std::cout << COL_GREEN << "The request count: " << requestCount << END_COL << std::endl;
 	// remove from requests
 }
 
@@ -136,11 +139,19 @@ bool	WebservHandler::isRequestComplete(ClientData& client)
 bool	WebservHandler::isRequestValid(ClientData& client)
 {
 	size_t max = client.server->getLimitClientBodySize();
+	std::cout << COL_GREEN << "------------------ >> (isRequestValid....) << ----------------" << END_COL << std::endl;
+	std::cout << COL_MAGENTA << "Body readed: " << client.bodyReded << " & Max: " << max << std::endl;
 	(void)max;
 	//! if bad request chunked and content length
 	//! if bad request content length and no content
 	//! if bad request no content and chunked
 	//! if content length more than server limit
+	if (client.bodyReded > static_cast<long>(max))
+	{
+		std::cout << COL_RED << "Request body size exceeds server limit" << END_COL << std::endl;
+		return (false);
+	}
+	std::cout << COL_GREEN << "------------------ >> (Request Valid....) << ----------------" << END_COL << std::endl;
 	return (true);
 }
 
@@ -162,14 +173,20 @@ void	WebservHandler::setBoundary(ClientData& client)
 void	WebservHandler::handleRequest(ClientData& client)
 {
 	std::string	exampleHtml = "<html><body><h1> <center> Welcome to 1337 Webserv </center></h1></body></html>";
+	// std::string exampleHtml = "{\"message\": \"File uploaded successfully!\"}";
 	std::string response = "HTTP/1.1 200 OK\r\n"
-							"Content-Type: text/html\r\n"
-							"Content-Length: " + FtPars::toString(exampleHtml.size()) + "\r\n"
-							"\r\n" + exampleHtml;
+                           "Content-Type: text/html\r\n"
+                           "Content-Length: " + FtPars::toString(exampleHtml.size()) + "\r\n"
+                           "Access-Control-Allow-Origin: *\r\n" // Allow requests from any origin
+                           "Access-Control-Allow-Methods: POST, GET, OPTIONS\r\n" // Allow specific methods
+                           "Access-Control-Allow-Headers: Content-Type, Authorization\r\n" // Allow specific headers
+                           "\r\n" + exampleHtml;
 	printWarning("handleRequest....");
-	std::ofstream logFile("request.log", std::ios::app);
-	if (logFile.is_open())
-		logFile << client.request << std::endl;
+	// std::ofstream logFile("request.log", std::ios::app);
+	// if (logFile.is_open())
+	// 	logFile << client.request << std::endl;
 	std::cout << COL_MAGENTA << "Request: \n" << END_COL << client.request << std::endl;
 	send(client.fd, response.c_str(), response.size(), 0); //! MSG_NOSIGNAL (this flag not exist in MACOS)
+	this->requestCount++; //! increment request count (Delete this)
+	this->_closeClient(client.fd);
 }

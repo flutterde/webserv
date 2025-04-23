@@ -6,11 +6,12 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/22 15:03:58 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/04/23 20:17:13 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../../headers/Webserv.hpp"
+#include <string>
 
 
 Webserv::Webserv() {
@@ -124,6 +125,7 @@ void	Webserv::acceptNewConnection(int fd)
 	} catch (const std::exception& e) {
 		std::cerr << e.what() << std::endl;
 	}
+	// this->requestCount++;
 }
 
 //! Handle Client Request
@@ -157,14 +159,25 @@ void	Webserv::handleClientRequest(int pollIdx, int fd)
 		std::cerr << "Error: client not found" << std::endl;
 		return;
 	}
-	
+	if (it->second.bodyReded != -1) {
+		it->second.bodyReded += bytesRead;
+	}
 	// if (this->_isRequestComplete(this->_requests[fd].request)) {
 	// 	//!
 	// 	std::cout << "Request complete: " << this->_requests[fd].request << std::endl;
 	// 	send(fd, response.c_str(), response.size(), 0); //! check send length
 	// 	this->_closeClient(fd);
 	// }
-	if (this->_isRequestComplete(it->second))
+	if (!this->isRequestValid(it->second)) {
+		std::cout << "400 Request not valid" << std::endl;
+		std::string response = "HTTP/1.1 400 Bad Request\r\n"
+							"Content-Length: 0\r\n"
+							"\r\n";
+		send(fd, response.c_str(), response.size(), 0);
+		this->_closeClient(fd);
+		return;
+	}
+	else if (this->_isRequestComplete(it->second))
 		this->handleRequest(it->second);
 	
 }

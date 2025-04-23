@@ -13,6 +13,7 @@
 #pragma once
 # include <iostream>
 # include <cstring>
+#include <string>
 # include <vector>
 # include <map>
 # include <sys/socket.h>
@@ -21,36 +22,37 @@
 # include "FtPars.hpp"
 
 #ifndef SO_NOSIGPIPE
-#define SO_NOSIGPIPE    0x1022  
+#define SO_NOSIGPIPE    0x1022
 #endif
 
-#define LISTEN_BACKLOG 12
+#define LISTEN_BACKLOG 12 //! should we increase this ?
 #define DEFAULT_ROOT_PATH "./website"
 
 typedef	unsigned int	uint32_t;
 /// @brief server class that hold data for each website
 class	Server {
 	private:
-		std::string					host;
-		uint32_t					port;
-		std::string					serverName;
-		std::string					rootPath;
-		uint32_t					limitClientBodySize;
-		std::string					errorPage404;
-		std::string					errorPage500;
-		std::string					uploadsPath;
-		std::map<std::string, bool> allowedMethods; //?
-		std::map<std::string, bool> indexes;
-		std::vector<uint32_t>		ports;
-		bool						enableUploads; //? !
-		bool						autoIndex; //?
-		int							serverSocket;
-		int							serverBind;
-		int							serverListenFd;
-		void						ftSocket(void);
-		void						ftBind(void);
-		void						ftListen(void);
-		void						setSocketOptions(void);
+		std::string							host;
+		uint32_t							port;
+		std::string							serverName;
+		std::string							rootPath;
+		uint32_t							limitClientBodySize;
+		std::string							errorPage404;
+		std::string							errorPage500;
+		std::string							uploadsPath;
+		std::map<std::string, bool> 		allowedMethods; //?
+		std::map<std::string, bool> 		indexes;
+		std::map<std::string, std::string>	redirects;
+		std::vector<uint32_t>				ports;
+		bool								enableUploads; //? !
+		bool								autoIndex; //?
+		int									serverSocket;
+		int									serverBind;
+		int									serverListenFd;
+		void								ftSocket(void);
+		void								ftBind(void);
+		void								ftListen(void);
+		void								setSocketOptions(void);
 
 	public:
 		Server(const Server& srv, uint32_t port);
@@ -72,6 +74,7 @@ class	Server {
 		const std::vector<uint32_t>&	getPorts(void) const;
 		bool	getEnableUploads(void) const;
 		int		getSocket() const;
+		const std::map<std::string, std::string>&	getRedirects(void)	const;
 		// Setters
 		void	setPort(uint32_t val);
 		void	setHost(std::string& val);
@@ -85,6 +88,7 @@ class	Server {
 		void	setPorts(uint32_t val);
 		void	setEnableUploads(bool val);
 		void	setRootPath(std::string& val);
+		void	setRedirects(const std::string& key, const std::string& val);
 		// Server_handlers
 		void	initServer(void);
 };

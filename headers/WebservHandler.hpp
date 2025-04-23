@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:37:19 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/22 20:28:22 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/04/23 20:11:03 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@
 # define RUNNING 1
 # define POLL_TIMEOUT 0
 # define END_OF_HEADERS "\r\n\r\n"
-# define READ_SIZE 40960
+# define READ_SIZE 4096
 # define CHUNCK_SIZE 4096
 
 enum	requestType {
@@ -53,10 +53,10 @@ struct ClientData {
 	std::string	request;
 	Server		*server;
 	std::string	headers;
-	size_t		bodyReded;
+	long		bodyReded;
 	std::string	boundary;
 	//! add map
-	ClientData() : type(NOT_SET), isRequestComplete(false), bytesSent(0), contentLen(-1), readed(0), isHeaderComplete(false), file(-1), server(NULL), bodyReded(0) {}
+	ClientData() : type(NOT_SET), isRequestComplete(false), bytesSent(0), contentLen(-1), readed(0), isHeaderComplete(false), file(-1), server(NULL), bodyReded(-1) {}
 };
 
 class WebservHandler
@@ -77,6 +77,7 @@ class WebservHandler
 
 	public:
 		WebservHandler();
+		static int requestCount;
 	~WebservHandler();
 
 };

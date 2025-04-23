@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:18:20 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/20 16:46:30 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/04/23 13:01:56 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 void	deleteFile(const std::string& path)
 {
-	if (remove(path.c_str()) != 0)
+	if (std::remove(path.c_str()) != 0)
 		std::cerr << "Error deleting file: " << path << std::endl;
 }
 
@@ -40,7 +40,7 @@ void deleteFolder(const std::string& path)
             deleteFile(filePath);
     }
     closedir(dir);
-    if (remove(path.c_str()) != 0)
+    if (std::remove(path.c_str()) != 0)
         std::cerr << "Error deleting directory: " << path << std::endl;
 }
 
