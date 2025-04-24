@@ -1,6 +1,7 @@
 // #include "./../../headers/Webserv.hpp"
 #include <string>
 #include <iostream>
+#include <algorithm>
 
 /*-------- LARGE FILES ALGORITHM: --------*/
 //	 Receive chunk → store in buffer
@@ -16,6 +17,7 @@
 // 	Only after ALL boundaries processed:
 //	 	Rename temp files to final names
 /*-----------------------------------------*/
+
 #define CHARS_SIZE 256
 
 void badCharHeuristic(std::string pattern, size_t size, int badChar[CHARS_SIZE])
@@ -26,43 +28,39 @@ void badCharHeuristic(std::string pattern, size_t size, int badChar[CHARS_SIZE])
 	for (size_t i = 0; i < size; ++i)
 		badChar[(size_t)pattern[i]] = i;
 }
+
+// the txt variable should stay string not string& because i pass a char[n] to it.
 //! NOT WORKING
 int search(std::string txt, std::string &pattern)
 {
+	if (pattern.empty())
+		return 0;
+
 	int badChar[CHARS_SIZE];
-	size_t patternSize = txt.size();
+
+	size_t patternSize = pattern.size();
 	size_t txtSize = txt.size();
-
-	// std::vector<int> matchIndexes;
-
 	badCharHeuristic(pattern, patternSize, badChar);
 
-	size_t i = patternSize;
-	size_t j = patternSize;
-	while (i < txtSize)
+	int skip = 0;
+	int i = 0;
+	int j;
+	while (i <= txtSize - patternSize)
 	{
-		if (pattern[j] == txt[i])
-		{
-			if (j == 0)
-				return i;
-			--i;
+		j = patternSize - 1;
+		while (j >= 0 && pattern[j] == txt[i + j])
 			--j;
-		}
-		else
-		{
-			if (badChar[(size_t)txt[i]] > 0)
-				i += badChar[(size_t)txt[i]];
-			else 
-				i += patternSize;
-			j = patternSize;
-		}
+		if (j < 0)
+			return i;
+		skip = std::max(1, j - badChar[txt[i + j]]);
+		i += skip;
 	}
 	return -1;
 }
 
 int main()
 {
-	std::string txt = "PIGBCTDOGCAT";
-	std::string pattern = "CAT";
+	std::string txt = "AABCACAADAcBAABA";
+	std::string pattern = "AABA";
 	std::cout << search(txt, pattern) << std::endl;
 }
