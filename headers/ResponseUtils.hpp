@@ -3,23 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseUtils.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboujama <mboujama@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 12:27:49 by mboujama          #+#    #+#             */
-/*   Updated: 2025/04/23 13:56:53 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/04/24 08:45:03 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 # include <sys/stat.h>
-# include <iostream>
 # include <sstream>
 # include <time.h>
 # include <map>
 # include <sys/fcntl.h>
 # include <unistd.h>
 # include <dirent.h>
+#include <cstdio>
+# include <fstream>
+# include <cstring>
+# include <dirent.h>
+# include <cstring>
+# include <iostream>
+# include <sys/stat.h>
 
 enum RESPONSE_CODE {
 	NOT_FOUND = 404,

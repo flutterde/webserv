@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboujama <mboujama@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/04/23 14:50:28 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/04/24 08:37:30 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,9 @@ std::string Response::combineResponse(void) {
 }
 
 Response::Response(struct ClientData &client, Request &req) {
-	std::string root_path = "/Users/mboujama/Desktop/webserv/var/www/html";
+	// std::string root_path = "/Users/mboujama/Desktop/webserv/var/www/html";
+	// root path for linux:
+	std::string root_path = "/home/mmboujamaa/Main/1337/1337-webserv/var/www/html";
 	std::string full_path = root_path + req.getPath();
 	http_version = req.getVersion();
 

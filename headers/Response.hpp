@@ -3,30 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboujama <mboujama@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:11 by mboujama          #+#    #+#             */
-/*   Updated: 2025/04/23 14:50:21 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/04/24 08:43:29 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-# include <iostream>
 # include "../learning/request.hpp"
 # include "./WebservHandler.hpp"
 # include "./ResponseUtils.hpp"
 # include "./MimeTypes.hpp"
-# include <dirent.h>
-#include <cstddef>
-#include <cstring>
-#include <dirent.h>
-#include <iostream>
-#include <string>
-#include <sys/_types/_ssize_t.h>
-#include <sys/dirent.h>
-#include <sys/stat.h>
-#include <unistd.h>
+
 
 class Response : public MimeTypes
 {

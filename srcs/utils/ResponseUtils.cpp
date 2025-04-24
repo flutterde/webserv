@@ -3,17 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseUtils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboujama <mboujama@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 12:29:43 by mboujama          #+#    #+#             */
-/*   Updated: 2025/04/23 14:40:16 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/04/24 08:34:52 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../headers/ResponseUtils.hpp"
-#include <cstdio>
-#include <fstream>
-#include <sys/unistd.h>
+
 
 std::string ResponseUtils::getDateTime() {
 	time_t rawtime;
@@ -89,16 +87,16 @@ std::string ResponseUtils::getErrorPage(RESPONSE_CODE status) {
 	std::ifstream file;
 	switch (status) {
 		case FORBIDDEN:
-			file.open(errorsPath + "403.html");
+			file.open((errorsPath + std::string("403.html")).c_str());
 			break;
 		case NOT_FOUND:
-			file.open(errorsPath + "404.html");
+			file.open((errorsPath + std::string("404.html")).c_str());
 			break;
 		case METHOD_NOT_ALLOWED:
-			file.open(errorsPath + "405.html");
+			file.open((errorsPath + std::string("405.html")).c_str());
 			break;
 		case INTERNAL_SERVER_ERROR:
-			file.open(errorsPath + "500.html");
+			file.open((errorsPath + std::string("500.html")).c_str());
 			break;
 		default:
 			content = "Under control";

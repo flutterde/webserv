@@ -269,8 +269,8 @@ void	Server::setSocketOptions(void)
 	// socketFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)
 	if (this->serverSocket < 0 || setsockopt(this->serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
 		throw std::runtime_error("Set socket options REUSEADDR failed");
-	if (this->serverSocket < 0 || setsockopt(this->serverSocket, SOL_SOCKET, SO_NOSIGPIPE, &opt, sizeof(opt)) < 0)
-		throw std::runtime_error("Set socket options REUSEADDR failed");
+	// if (this->serverSocket < 0 || setsockopt(this->serverSocket, SOL_SOCKET, SO_NOSIGPIPE, &opt, sizeof(opt)) < 0)
+	// 	throw std::runtime_error("Set socket options REUSEADDR failed");
 	// std::cout << "Socket options set for server " << this->serverSocket << std::endl; //! remove this
 }
 
