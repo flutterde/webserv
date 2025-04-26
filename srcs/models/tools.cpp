@@ -1,6 +1,6 @@
 // #include "./../../headers/Webserv.hpp"
 #include <string>
-#include <iostream>
+// #include <iostream>
 #include <algorithm>
 
 /*-------- LARGE FILES ALGORITHM: --------*/
@@ -30,16 +30,15 @@ void badCharHeuristic(std::string pattern, size_t size, int badChar[CHARS_SIZE])
 }
 
 // the txt variable should stay string not string& because i pass a char[n] to it.
-//! NOT WORKING
 int search(std::string txt, std::string &pattern)
 {
-	if (pattern.empty())
-		return 0;
+	if (pattern.empty() || txt.empty())
+		return -1;
 
 	int badChar[CHARS_SIZE];
 
-	size_t patternSize = pattern.size();
-	size_t txtSize = txt.size();
+	int patternSize = pattern.size();
+	int txtSize = txt.size();
 	badCharHeuristic(pattern, patternSize, badChar);
 
 	int skip = 0;
@@ -56,11 +55,4 @@ int search(std::string txt, std::string &pattern)
 		i += skip;
 	}
 	return -1;
-}
-
-int main()
-{
-	std::string txt = "AABCACAADAcBAABA";
-	std::string pattern = "AABA";
-	std::cout << search(txt, pattern) << std::endl;
 }
