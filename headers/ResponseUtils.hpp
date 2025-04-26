@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 12:27:49 by mboujama          #+#    #+#             */
-/*   Updated: 2025/04/24 08:45:03 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/04/26 09:15:53 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,10 @@
 # include <map>
 # include <sys/fcntl.h>
 # include <unistd.h>
-# include <dirent.h>
-#include <cstdio>
 # include <fstream>
-# include <cstring>
-# include <dirent.h>
-# include <cstring>
 # include <iostream>
-# include <sys/stat.h>
+# include <dirent.h>
+# include <string>
 
 enum RESPONSE_CODE {
 	NOT_FOUND = 404,
@@ -51,4 +47,5 @@ class ResponseUtils {
         static std::string isIndexFileExist(std::map<std::string, bool> &indexes, const std::string &path);
         static std::string getErrorPage(RESPONSE_CODE status);
         static std::string getMimeType(std::string filepath);
+        static std::string generateAutoIndex(std::string filepath);
 };

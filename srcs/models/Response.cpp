@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/04/24 08:37:30 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/04/24 12:18:14 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,16 +44,17 @@ std::string Response::combineResponse(void) {
 }
 
 Response::Response(struct ClientData &client, Request &req) {
-	// std::string root_path = "/Users/mboujama/Desktop/webserv/var/www/html";
-	// root path for linux:
-	std::string root_path = "/home/mmboujamaa/Main/1337/1337-webserv/var/www/html";
+	std::string root_path = "/Users/mboujama/Desktop/webserv/var/www/html";
+	//? root path for linux:
+	// std::string root_path = "/home/mmboujamaa/Main/1337/1337-webserv/var/www/html";
 	std::string full_path = root_path + req.getPath();
 	http_version = req.getVersion();
 
 	headers["Server"] = "NorthServ/1.0";
 	headers["Content-Type"] = "text/html";
-	headers["Connection"] = "keep-alive";
+	headers["Connection"] = "close";
 	headers["Date"] = ResponseUtils::getDateTime();
+	fd = -1;
 	
 	//TODO: add checkRedirect:
 	if (full_path.find("..") != std::string::npos)
@@ -93,7 +94,8 @@ Response::Response(struct ClientData &client, Request &req) {
 		default:
 			status_code = OK;
 			status_text = "OK";
-			body = "<html><body><center><h1>All is good</h1></center></body></html>";
+			if (body.empty())
+				body = "<html><body><center><h1>All is good</h1></center></body></html>";
 			headers["Content-Length"] = ResponseUtils::toString(body.length());
 			status_code = OK;
 	}
@@ -117,6 +119,7 @@ void Response::handleGet(struct ClientData &client, Request &req, const std::str
 		std::string index = ResponseUtils::isIndexFileExist(indexes, path);
 		
 		if (!index.empty()) {
+			// TODO: check cgi
 			fd = ResponseUtils::openFile(path + index);
 			fd == -1 ? status_code = FORBIDDEN : status_code = OK;
 			return ;
@@ -124,6 +127,7 @@ void Response::handleGet(struct ClientData &client, Request &req, const std::str
 		// TODO:	2.3 - if autoindex enabled show it (200) otherwise (403)
 		else if (client.server->getAutoIndex()) {
 			std::cout << "Autoindex enabled" << std::endl;
+			body = ResponseUtils::generateAutoIndex(path);
 			status_code = OK;
 		}
 		else {
@@ -132,9 +136,9 @@ void Response::handleGet(struct ClientData &client, Request &req, const std::str
 		}
 	}
 	else {
-		std::string mimeType = getMimeType(path);
+		headers["Content-Type"] = getMimeType(path);
 		
-		std::cout << "Extension: " << mimeType << std::endl;
+		std::cout << "Extension: " << headers["Content-Type"] << std::endl;
 		// TODO: 3- if file serve it (CGI || 200)
 		std::cout << "this is a file" << std::endl;
 	}

@@ -6,12 +6,11 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 12:29:43 by mboujama          #+#    #+#             */
-/*   Updated: 2025/04/24 08:34:52 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/04/26 09:13:42 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../headers/ResponseUtils.hpp"
-
 
 std::string ResponseUtils::getDateTime() {
 	time_t rawtime;
@@ -114,4 +113,30 @@ std::string ResponseUtils::getErrorPage(RESPONSE_CODE status) {
 		std::cout << "File doesn't opened" << std::endl;
 
 	return content;
+}
+
+std::string ResponseUtils::generateAutoIndex(std::string filepath) {
+	std::stringstream body;
+	DIR *dir;
+	struct dirent *ent;
+	bool first = true;
+	
+	body << "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>" << filepath << "</title><style>*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif;}body{background-color:rgb(23, 43, 61);color:black;padding:20px;}.container{background-color:rgb(229,221,221);padding:10px;border-radius:3px;max-width:650px;margin: 0 auto}hr{margin:10px 0}</style></head><body><div class='container'>";
+
+	dir = opendir(filepath.c_str());
+	while ((ent = readdir(dir))) {
+		if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, ".."))
+			continue ;
+		if (!first)
+			body << "<hr/>";
+		body << "<div class='directory'>" 
+				"<a href='" << ent->d_name << "'>" << ent->d_name << "</a>" 
+			"</div>"
+			<< std::endl;
+		first = false;
+	}
+	if (first)
+		body << "<center><h2>This directory is empty</h2></center>";
+	body << "";
+	return body.str();
 }
