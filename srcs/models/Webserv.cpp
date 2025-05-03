@@ -61,7 +61,7 @@ void	Webserv::run() {
 					// handle client request
 					this->handleClientRequest(i, _pollfds[i].fd);
 				}
-				printTime(); std::cout << COL_BLUE << " Events nbr: " << this->_nbrEvents << ":" << _pollfds[i].fd << END_COL << std::endl;
+				// printTime(); std::cout << COL_BLUE << " Events nbr: " << this->_nbrEvents << ":" << _pollfds[i].fd << END_COL << std::endl;
 			}
 			// std::cout << "pollfd: " << _pollfds[i].fd << std::endl;
 		}
@@ -151,7 +151,7 @@ void	Webserv::handleClientRequest(int pollIdx, int fd)
 	}
 	buffer[bytesRead] = '\0';
 	std::cout << COL_RED << " --------------------------------- " << END_COL << std::endl; //! remove this
-	std::cout << "Received request: \n" << buffer << std::endl; //! remove this
+	std::cout << buffer << std::endl; //! remove this
 	std::cout << COL_RED << " --------------------------------- " << END_COL << std::endl; //! remove this
 	this->_requests[fd].request += buffer;
 	std::map<int, ClientData>::iterator it = this->_requests.find(fd);

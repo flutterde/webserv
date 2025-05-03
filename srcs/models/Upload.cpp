@@ -1,4 +1,5 @@
-// #include "./../../headers/Webserv.hpp"
+#include "./../../headers/Webserv.hpp"
+#include <fstream>
 #include <string>
 // #include <iostream>
 #include <algorithm>
@@ -30,7 +31,7 @@ void badCharHeuristic(std::string pattern, size_t size, int badChar[CHARS_SIZE])
 }
 
 // the txt variable should stay string not string& because i pass a char[n] to it.
-int search(std::string txt, std::string &pattern)
+int search(const std::string &txt, const std::string &pattern)
 {
 	if (pattern.empty() || txt.empty())
 		return -1;
@@ -51,8 +52,39 @@ int search(std::string txt, std::string &pattern)
 			--j;
 		if (j < 0)
 			return i;
-		skip = std::max(1, j - badChar[txt[i + j]]);
+		skip = std::max(1, j - badChar[(int)txt[i + j]]);
 		i += skip;
 	}
 	return -1;
+}
+
+/// get file name from a buffer request
+std::string getFileName(const std::string &buffer){
+	std::string fileName;
+	int i = search(buffer, "filename=\"");
+	if (i != -1) {
+		for (i = i + 10; buffer[i] != '"' && buffer[i] ; ++i){
+			fileName += buffer[i];
+		}
+		// std::cout << COL_RED << fileName << END_COL << std::endl;
+		if(buffer[i] != '"')
+			return "";
+	}
+	return fileName;
+}
+
+void processMultipartUpload(ClientData &client)
+{
+	std::string fileName = getFileName(client.request);
+	if (fileName.empty())
+		return;
+	client.tmpFolder = "./tmp/";
+	std::string tmpFileName = fileName + ".tmp";
+	
+	// std::cout << COL_GREEN <<  fileName << END_COL << std::endl;
+
+	// std::cout << std::endl << COL_BLUE << " --------------------------------- " << END_COL << std::endl; //! remove this
+	// std::cout << "|" << client.request << "|";
+	// std::cout << std::endl << COL_BLUE << " --------------------------------- " << END_COL << std::endl; //! remove this
+	
 }

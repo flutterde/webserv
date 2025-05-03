@@ -57,7 +57,7 @@ void	WebservHandler::setRequestType(ClientData& client)
 		client.type = CHUNKED;
 	else
 		client.type = NO_CONTENT;
-	std::cout << "=> Request type: " ; printRequestType(client.type); 
+	// std::cout << "=> Request type: " ; printRequestType(client.type); 
 }
 
 void	WebservHandler::setContentLength(ClientData& client)
@@ -72,7 +72,7 @@ void	WebservHandler::setContentLength(ClientData& client)
 	size_t vEnd = client.headers.find("\r\n", vStart);
 	std::string value = client.headers.substr(vStart, vEnd - vStart);
 	client.contentLen = std::atoi(value.c_str());
-	std::cout << "=> Content-Length: " << client.contentLen << std::endl;
+	// std::cout << "=> Content-Length: " << client.contentLen << std::endl;
 }
 
 bool WebservHandler::isChunkedComplete(ClientData& client) //! will be cancelled
@@ -115,6 +115,8 @@ bool	WebservHandler::isHeaderComplete(ClientData& client)
 	return (false);
 }
 
+void processMultipartUpload(ClientData &client);
+
 bool	WebservHandler::isRequestComplete(ClientData& client)
 {
 	printWarning("isRequestComplete....");
@@ -126,21 +128,23 @@ bool	WebservHandler::isRequestComplete(ClientData& client)
 		return (true);
 	else if (client.type == MULTIPART_FORM && client.contentLen <= static_cast<long>(client.bodyReded))
 	{
-		std::cout << COL_RED << "client.contentLen: " << client.contentLen << " client.bodyReded: " << client.bodyReded << END_COL << std::endl;
+		// std::cout << COL_RED << "client.contentLen: " << client.contentLen << " client.bodyReded: " << client.bodyReded << END_COL << std::endl;
 		std::cout << "Multipart form data complete" << std::endl;
 		return (true);
 	}
 	else if (client.contentLen >= 0 && client.request.size() >= static_cast<size_t>(client.contentLen))
 		return (true);
-	std::cout << "Request not complete" << std::endl;
+	// std::cout << "Request not complete" << std::endl;
+	/// Call the ...
+	processMultipartUpload(client);
 	return (false);
 }
 
 bool	WebservHandler::isRequestValid(ClientData& client)
 {
 	size_t max = client.server->getLimitClientBodySize();
-	std::cout << COL_GREEN << "------------------ >> (isRequestValid....) << ----------------" << END_COL << std::endl;
-	std::cout << COL_MAGENTA << "Body readed: " << client.bodyReded << " & Max: " << max << std::endl;
+	// std::cout << COL_GREEN << "------------------ >> (isRequestValid....) << ----------------" << END_COL << std::endl;
+	// std::cout << COL_MAGENTA << "Body readed: " << client.bodyReded << " & Max: " << max << std::endl;
 	(void)max;
 	//! if bad request chunked and content length
 	//! if bad request content length and no content
@@ -151,7 +155,7 @@ bool	WebservHandler::isRequestValid(ClientData& client)
 		std::cout << COL_RED << "Request body size exceeds server limit" << END_COL << std::endl;
 		return (false);
 	}
-	std::cout << COL_GREEN << "------------------ >> (Request Valid....) << ----------------" << END_COL << std::endl;
+	// std::cout << COL_GREEN << "------------------ >> (Request Valid....) << ----------------" << END_COL << std::endl;
 	return (true);
 }
 

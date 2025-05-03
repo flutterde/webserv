@@ -51,16 +51,17 @@ void	printServer(Server& srv) {
 	std::cout << " ------------------------------------- \n";
 }
 
-void	printTime() {
-	time_t now = time(0);
-	tm *ltm = localtime(&now);
-	std::cout << COL_GREEN << "Time: " << ltm->tm_hour << ":" << ltm->tm_min << ":" << ltm->tm_sec << " " << END_COL;
-}
+// void	printTime() {
+// 	time_t now = time(0);
+// 	tm *ltm = localtime(&now);
+// 	std::cout << COL_GREEN << "Time: " << ltm->tm_hour << ":" << ltm->tm_min << ":" << ltm->tm_sec << " " << END_COL;
+// }
 
 void	printWarning(std::string str) {
 	//time 
-	printTime();
-	std::cout << COL_YELLOW << "Warning: " << str << END_COL << std::endl;
+	// printTime();
+	(void)str;
+	// std::cout << COL_YELLOW << "Warning: " << str << END_COL << std::endl;
 }
 
 
