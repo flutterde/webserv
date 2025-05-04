@@ -1,8 +1,11 @@
 #include "./../../headers/Webserv.hpp"
+#include <cstdio>
 #include <fstream>
 #include <string>
 // #include <iostream>
 #include <algorithm>
+#include <unistd.h>
+#include <vector>
 
 /*-------- LARGE FILES ALGORITHM: --------*/
 //	 Receive chunk → store in buffer
@@ -73,18 +76,52 @@ std::string getFileName(const std::string &buffer){
 	return fileName;
 }
 
+// You should put all tmp files in a temp
 void processMultipartUpload(ClientData &client)
 {
-	std::string fileName = getFileName(client.request);
-	if (fileName.empty())
-		return;
-	client.tmpFolder = "./tmp/";
-	std::string tmpFileName = fileName + ".tmp";
+	std::string	fileName;
+	size_t			firstBoundary;
 	
-	// std::cout << COL_GREEN <<  fileName << END_COL << std::endl;
+	firstBoundary = client.request.find("\r\n\r\n");
+	if (firstBoundary != std::string::npos){
+		fileName = getFileName(client.request);
+		if (!fileName.empty()) {
+			if (client.files.find(client.tmpFileName) != client.files.end() && 
+				client.files[client.tmpFileName] != -1) {
+					close(client.files[client.tmpFileName]);
+			}
+			client.tmpFileName = "upload_" + fileName;
+			client.files[client.tmpFileName] = open(client.tmpFileName.c_str() ,O_CREAT | O_TRUNC | O_WRONLY, 0644);
+			if (client.files[client.tmpFileName] == -1)
+                return;
+		}
+		client.request.erase(0, firstBoundary + 4);
+		// std::cout << COL_GREEN <<  client.request <<END_COL<< std::endl;
+		// std::cout << "|" << client.tmpFileName << "|" << client.files[client.tmpFileName] << " HHAHAHHAHAHHAAHHAHH\n" ;
+		size_t secondBoundary = client.request.find("--" + client.boundary);
+		if (secondBoundary != std::string::npos){
+			if (client.files[client.tmpFileName] != -1)
+				write(client.files[client.tmpFileName],client.request.c_str(),client.request.size() - secondBoundary);
+			client.request.erase(0, secondBoundary + 2);
+			// processMultipartUpload(client);
+		}
+	}
 
+	// if (search(client.request, "\r\n\r\n") != -1)
+	// 	return;
+
+	// write(client.files[client.tmpFileName], client.request.c_str(), client.request.size());
 	// std::cout << std::endl << COL_BLUE << " --------------------------------- " << END_COL << std::endl; //! remove this
 	// std::cout << "|" << client.request << "|";
 	// std::cout << std::endl << COL_BLUE << " --------------------------------- " << END_COL << std::endl; //! remove this
-	
+	// client.request.clear();
+
+
+	// if (fileName.empty()){
+	// 	write(client.files[client.tmpFileName], client.request.c_str(), client.request.size());
+	// 	client.request.clear();
+	// 	return;
+	// }
+	// std::cout << COL_GREEN <<  fileName << END_COL << std::endl;
 }
+

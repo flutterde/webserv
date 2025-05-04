@@ -150,9 +150,9 @@ void	Webserv::handleClientRequest(int pollIdx, int fd)
 		return;
 	}
 	buffer[bytesRead] = '\0';
-	std::cout << COL_RED << " --------------------------------- " << END_COL << std::endl; //! remove this
-	std::cout << buffer << std::endl; //! remove this
-	std::cout << COL_RED << " --------------------------------- " << END_COL << std::endl; //! remove this
+	// std::cout << COL_RED << " --------------------------------- " << END_COL << std::endl; //! remove this
+	// std::cout << buffer << std::endl; //! remove this
+	// std::cout << COL_RED << " --------------------------------- " << END_COL << std::endl; //! remove this
 	this->_requests[fd].request += buffer;
 	std::map<int, ClientData>::iterator it = this->_requests.find(fd);
 	if (it == this->_requests.end()) {

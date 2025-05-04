@@ -106,10 +106,10 @@ bool	WebservHandler::isHeaderComplete(ClientData& client)
 		client.isHeaderComplete = true;
 		client.headers = client.request.substr(0, pos + 4); //! should stop at pos or pos + 4
 		client.request = client.request.substr(pos + 4);
-		std::cout << "Header complete: \n" << client.headers << std::endl; //! remove this
+		// std::cout << "Header complete: \n" << client.headers << std::endl; //! remove this
 		this->setBoundary(client);
 		client.bodyReded = client.request.size();
-		std::cout << "Body readed: " << client.bodyReded << std::endl;
+		// std::cout << "Body readed: " << client.bodyReded << std::endl;
 		return (true);
 	}
 	return (false);
@@ -189,7 +189,7 @@ void	WebservHandler::handleRequest(ClientData& client)
 	// std::ofstream logFile("request.log", std::ios::app);
 	// if (logFile.is_open())
 	// 	logFile << client.request << std::endl;
-	std::cout << COL_MAGENTA << "Request: \n" << END_COL << client.request << std::endl;
+	// std::cout << COL_MAGENTA << "Request: \n" << END_COL << client.request << std::endl;
 	send(client.fd, response.c_str(), response.size(), 0); //! MSG_NOSIGNAL (this flag not exist in MACOS)
 	this->requestCount++; //! increment request count (Delete this)
 	this->_closeClient(client.fd);

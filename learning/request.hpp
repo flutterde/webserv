@@ -31,6 +31,7 @@ public:
 	void 		printHeaders(void) const;
 	std::string	getEnv(size_t i) const;
 	size_t		getEnvSize(void) const;
+	std::string executeCgiScript(Request &request, char **systemEnv);
 
 	~Request();
 };

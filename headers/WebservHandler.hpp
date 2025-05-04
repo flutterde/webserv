@@ -19,18 +19,19 @@
 // #include <iostream>
 // #include <ostream>
 // #include <stdexcept>
+#include <fstream>
+#include <map>
 #include <string>
 #include <unistd.h>
 #include <sys/poll.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <vector>
 #include "debug.hpp"
 
 # define RUNNING 1
 # define POLL_TIMEOUT 0
 # define END_OF_HEADERS "\r\n\r\n"
-# define READ_SIZE 50
+# define READ_SIZE 100
 # define CHUNCK_SIZE 4096
 
 enum	requestType {
@@ -56,6 +57,8 @@ struct ClientData {
 	long		bodyReded;
 	std::string	boundary;
 	std::string tmpFolder;
+	std::map<std::string, int> files;
+	std::string	tmpFileName;
 	//! add map
 	ClientData() : type(NOT_SET), isRequestComplete(false), bytesSent(0), contentLen(-1), readed(0), isHeaderComplete(false), file(-1), server(NULL), bodyReded(-1) {}
 };
