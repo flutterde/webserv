@@ -59,6 +59,7 @@ struct ClientData {
 	std::string tmpFolder;
 	std::map<std::string, int> files;
 	std::string	tmpFileName;
+	int currentFileFd;
 	//! add map
 	ClientData() : type(NOT_SET), isRequestComplete(false), bytesSent(0), contentLen(-1), readed(0), isHeaderComplete(false), file(-1), server(NULL), bodyReded(-1) {}
 };

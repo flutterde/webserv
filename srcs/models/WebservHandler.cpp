@@ -120,6 +120,7 @@ void processMultipartUpload(ClientData &client);
 bool	WebservHandler::isRequestComplete(ClientData& client)
 {
 	printWarning("isRequestComplete....");
+	processMultipartUpload(client);
 	if (!client.isHeaderComplete)
 		return (false);
 	else if (client.type == CHUNKED) //! no longer
@@ -136,7 +137,6 @@ bool	WebservHandler::isRequestComplete(ClientData& client)
 		return (true);
 	// std::cout << "Request not complete" << std::endl;
 	/// Call the ...
-	processMultipartUpload(client);
 	return (false);
 }
 
