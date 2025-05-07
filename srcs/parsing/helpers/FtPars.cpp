@@ -278,7 +278,7 @@ namespace	FtPars {
 	}
 
 	size_t	getCurrentTimeMs() {
-		std::clock_t clock_time = std::clock();
+		clock_t clock_time = clock();
     	return static_cast<size_t>(clock_time) * 1000 / CLOCKS_PER_SEC;
 	}
 }
