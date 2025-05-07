@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/07 14:17:46 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/07 18:48:19 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,8 +145,6 @@ void	Webserv::handleClientRequest(int pollIdx, int fd)
 {
 	(void)pollIdx;
 	//! delete this
-
-	//! end delete
 	char buffer[READ_SIZE];
 	ssize_t	bytesRead = recv(fd, buffer, READ_SIZE - 1, 0);
 	if (bytesRead <= 0) { //! check this
@@ -160,9 +158,9 @@ void	Webserv::handleClientRequest(int pollIdx, int fd)
 	}
 	buffer[bytesRead] = '\0';
 	std::cout << COL_RED << " --------------------------------- " << END_COL << std::endl; //! remove this
-	std::cout << "Received request: \n" << buffer << std::endl; //! remove this
-	std::cout << COL_RED << " --------------------------------- " << END_COL << std::endl; //! remove this
+	std::cout << "Received request: \n" << "buffer" << std::endl; //! remove this
 	this->_requests[fd].request += buffer;
+	std::cout << COL_RED << " --------------------------------- " << END_COL << std::endl; //! remove this
 	std::map<int, ClientData>::iterator it = this->_requests.find(fd);
 	if (it == this->_requests.end()) {
 		std::cerr << "Error: client not found" << std::endl;
@@ -176,8 +174,9 @@ void	Webserv::handleClientRequest(int pollIdx, int fd)
 	}
 	if (it->second.bodyReded != -1) {
 		it->second.bodyReded += bytesRead;
+		std::cout << COL_GREEN << "Body readed: " << it->second.bodyReded << END_COL << std::endl;
 	}
-	else if (this->_isRequestComplete(it->second)) {
+	if (this->_isRequestComplete(it->second)) {
 		printWarning("Request Ready......................>>>>");
 		it->second.progress = READY;
 		this->enablePOLLOUT(fd);
