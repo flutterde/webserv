@@ -20,13 +20,14 @@
 # include <cstdlib>
 # include <cctype>
 # include "Server.hpp"
+#include <arpa/inet.h>
 
 typedef	unsigned int	uint32_t;
 typedef unsigned char	uint8_t;
 
 #define FT_LIMIT_BODY_SIZE 80000
 #define FT_PORT 8080
-
+# define ALLOWED_CHARS "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;="
 # define COL_RED "\033[0;91m"
 # define COL_GREEN "\033[0;92m"
 # define COL_YELLOW "\033[0;93m"
@@ -42,7 +43,7 @@ namespace FtPars {
 	std::string&	strTrim(std::string&str, std::string set);
 	bool	isValidPattern(std::string& str);
 	bool	isValidIP4(std::string& str);
-	uint32_t	ftInetPton(const std::string& str);
+	uint32_t	ftInetPton(const std::string& str); //! delete this
 	char	*stringToChar(std::string& str);
 	std::map<std::string, bool> parseMethods(const std::map<std::string, bool>& oldMp, std::string& str);
 	void	setServerIndexes(Server& server, std::string& line);
@@ -52,5 +53,8 @@ namespace FtPars {
 	bool	isNumbersOnly(const std::string& str);
 	void	enableUploadsHandler(Server& server, std::string& line);
 	std::string	toString(size_t nbr);
-	size_t	hexaToNbr(std::string& str);
+	void	handleRedirects(Server& server, std::string& line);
+	size_t	hexaToNbr(std::string& str); //! not created yet
+	void	handleCGIs(Server& server, std::string& line);
+	size_t	getCurrentTimeMs();
 }

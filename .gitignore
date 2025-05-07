@@ -1,13 +1,12 @@
 # Prerequisites
 *.d
 
+labs/myfld/*
 
-
-
-
+test/runner
 labs/intern/
 
-
+ts.txt
 # Compiled Object files
 *.slo
 *.lo
@@ -25,6 +24,7 @@ labs/app
 *.so
 *.dylib
 *.dll
+*.zip
 
 # Fortran module files
 *.mod
@@ -44,5 +44,7 @@ testing/
 *.exe
 *.out
 *.app
+.DS_Store
+
 
 test*

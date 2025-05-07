@@ -70,13 +70,14 @@ std::string locateExecutable(const std::vector<std::string> &searchPaths, const 
 	return "";
 }
 
-void executeCgiScript(Request &request, char **systemEnv)
+std::string executeCgiScript(Request &request, char **systemEnv)
 {
 	char **envVariables = createEnvironmentVariables(request, systemEnv);
 	std::vector<std::string> binaryPaths = extractBinaryPaths(systemEnv);
 	std::string scriptExtension;
 	std::string interpreterPath;
 	size_t extensionPos;
+	std::string file;
 	extensionPos = request.getPath().find_last_of(".");
 	if (extensionPos != std::string::npos)
 		scriptExtension = request.getPath().substr(extensionPos);
@@ -109,7 +110,7 @@ void executeCgiScript(Request &request, char **systemEnv)
 		while ((bytesRead = read(pipeFd[0], outputBuffer, sizeof(outputBuffer) - 1)) > 0)
 		{
 			outputBuffer[bytesRead] = '\0';
-			std::cout << outputBuffer;
+			file += outputBuffer;
 		}
 		close(pipeFd[0]);
 		waitpid(processId, NULL, 0);
@@ -121,4 +122,5 @@ void executeCgiScript(Request &request, char **systemEnv)
 		delete envVariables[i];
 	}
 	delete[] envVariables;
+	return file;
 }

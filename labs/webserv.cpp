@@ -135,7 +135,7 @@ int main() {
     
     // Bind socket to the specified port
     if (bind(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-        perror("Bind failed");
+        perror("Bind failed 2");
         return 1;
     }
     

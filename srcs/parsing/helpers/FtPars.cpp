@@ -12,6 +12,8 @@
 
 #include "./../../../headers/FtPars.hpp"
 #include <algorithm>
+#include <cstddef>
+#include <sstream>
 
 /// @brief collection of helper functions for parsing
 namespace	FtPars {
@@ -220,5 +222,63 @@ namespace	FtPars {
 
 		ss << nbr;
 		return (ss.str());
+	}
+
+	void	handleRedirects(Server& server, std::string& line) {
+		std::string		tmp;
+		std::stringstream	ss(line);
+		std::vector<std::string> arr;
+		if (ss.fail())
+			throw std::runtime_error("Error parsing server redirects");
+		while (getline(ss, tmp, ','))
+			arr.push_back(tmp);
+		for (size_t i = 0; i < arr.size(); i++) {
+			std::stringstream	ss2(arr[i]);
+			std::string		key;
+			std::string		val;
+			if (getline(ss2, key, ':') && getline(ss2, val, ':')) {
+				if (FtPars::containSpaces(key) || FtPars::containSpaces(val))
+					throw std::runtime_error("Error parsing server redirects");
+				server.setRedirects(key, val);
+			} else
+				throw std::runtime_error("Error parsing server redirects");
+		}
+		std::cout << COL_YELLOW << "Redirects: ----------------------> " << std::endl;
+		for (std::map<std::string, std::string>::const_iterator it = server.getRedirects().begin(); it != server.getRedirects().end(); ++it) {
+			std::cout << COL_YELLOW << "Key: " << it->first << " Value: " << it->second << END_COL << std::endl;
+		}
+		std::cout << COL_YELLOW << "----------------------------------" << END_COL << std::endl;
+	}
+
+	void	handleCGIs(Server& server, std::string& line) {
+		// /usr/bin/php-cgi:.py,/usr/bin/go-cgi:.go,/usr/bin/cs-cgi:.cs
+		std::string		tmp;
+		std::stringstream	ss(line);
+		std::vector<std::string> arr;
+		if (ss.fail())
+			throw std::runtime_error("Error parsing server cgis");
+		while (getline(ss, tmp, ','))
+			arr.push_back(tmp);
+		for (size_t i = 0; i < arr.size(); i++) {
+			std::stringstream	ss2(arr[i]);
+			std::string		key;
+			std::string		val;
+			if (getline(ss2, key, ':') && getline(ss2, val, ':')) {
+				if (FtPars::containSpaces(key) || FtPars::containSpaces(val))
+					throw std::runtime_error("Error parsing server cgis");
+				server.setCGI(key, val);
+			} else
+				throw std::runtime_error("Error parsing server cgis");
+		}
+		std::cout << COL_YELLOW << "CGIs: ----------------------> " << std::endl;
+		for (std::map<std::string, std::string>::const_iterator it = server.getCGIs().begin(); it != server.getCGIs().end(); ++it) {
+			std::cout << COL_YELLOW << "Key: " << it->first << " Value: " << it->second << END_COL << std::endl;
+		}
+		std::cout << COL_YELLOW << "----------------------------------" << END_COL << std::endl;
+	}
+
+	size_t	getCurrentTimeMs() {
+		clock_t clock_time = clock();
+    	return static_cast<size_t>(clock_time) * 1000 / CLOCKS_PER_SEC;
 	}
 }
