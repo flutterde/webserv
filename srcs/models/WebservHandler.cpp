@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/07 13:41:10 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/07 15:07:44 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ bool	WebservHandler::isHeaderComplete(ClientData& client)
 		client.isHeaderComplete = true;
 		client.headers = client.request.substr(0, pos + 4); //! should stop at pos or pos + 4
 		client.request = client.request.substr(pos + 4);
-		std::cout << "Header complete: \n" << client.headers << std::endl; //! remove this
+		// std::cout << "Header complete: \n" << client.headers << std::endl; //! remove this
 		this->setBoundary(client);
 		client.bodyReded = client.request.size();
 		// std::cout << "Body readed: " << client.bodyReded << std::endl;
@@ -123,13 +123,13 @@ bool	WebservHandler::isRequestComplete(ClientData& client)
 		return (true);
 	else if (client.type == MULTIPART_FORM && client.contentLen <= static_cast<long>(client.bodyReded))
 	{
-		std::cout << COL_RED << "client.contentLen: " << client.contentLen << " client.bodyReded: " << client.bodyReded << END_COL << std::endl;
+		// std::cout << COL_RED << "client.contentLen: " << client.contentLen << " client.bodyReded: " << client.bodyReded << END_COL << std::endl;
 		std::cout << "Multipart form data complete" << std::endl;
 		return (true);
 	}
 	else if (client.contentLen >= 0 && client.request.size() >= static_cast<size_t>(client.contentLen))
 		return (true);
-	std::cout << "Request not complete" << std::endl;
+	// std::cout << "Request not complete" << std::endl;
 	return (false);
 }
 
@@ -138,8 +138,8 @@ bool	WebservHandler::isRequestValid(ClientData& client)
 	if (!client.isHeadersChecked)
 		this->validateRequestHeaders(client);
 	size_t max = client.server->getLimitClientBodySize();
-	std::cout << COL_GREEN << "------------------ >> (isRequestValid....) << ----------------" << END_COL << std::endl;
-	std::cout << COL_MAGENTA << "Body readed: " << client.bodyReded << " & Max: " << max << std::endl;
+	// std::cout << COL_GREEN << "------------------ >> (isRequestValid....) << ----------------" << END_COL << std::endl;
+	// std::cout << COL_MAGENTA << "Body readed: " << client.bodyReded << " & Max: " << max << std::endl;
 	(void)max;
 	//! if bad request chunked and content length
 	//! if bad request content length and no content
@@ -166,16 +166,17 @@ void	WebservHandler::setBoundary(ClientData& client)
 	if (end == std::string::npos)
 		return;
 	client.boundary = client.headers.substr(start, end - start);
-	std::cout << "Boundary: " << client.boundary << std::endl;
+	// std::cout << "Boundary: " << client.boundary << std::endl;
 }
 
 void	WebservHandler::handleRequest(ClientData& client)
 {
 	if (!client.error.empty()) {
 		send(client.fd, client.error.c_str(), client.error.size(), 0);
+		this->_closeClient(client.fd);
 		return ;
 	}
-	std::string	exampleHtml = "<html><body><h1> <center> Welcome to 1337 Webserv </center></h1></body></html>";
+	std::string	exampleHtml = "<html><body><h1> <center> Welcome to 1337 | testing Webserv </center></h1></body></html>";
 	// std::string exampleHtml = "{\"message\": \"File uploaded successfully!\"}";
 	std::string response = "HTTP/1.1 200 OK\r\n"
                            "Content-Type: text/html\r\n"
@@ -188,7 +189,7 @@ void	WebservHandler::handleRequest(ClientData& client)
 	std::cout << COL_MAGENTA << "Request: \n" << END_COL << client.request << std::endl;
 	send(client.fd, response.c_str(), response.size(), 0); //! MSG_NOSIGNAL (this flag not exist in MACOS)
 	this->requestCount++; //! increment request count (Delete this)
-	this->_closeClient(client.fd);
+	this->_closeClient(client.fd); //! Close client connection only if the response is sent
 }
 
 void	WebservHandler::validateRequestHeaders(ClientData& client)

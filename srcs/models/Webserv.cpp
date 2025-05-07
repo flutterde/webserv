@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/07 13:06:47 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/07 14:17:46 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,6 @@ void	Webserv::run() {
 				}
 				printTime(); std::cout << COL_BLUE << " Events nbr: " << this->_nbrEvents << ":" << _pollfds[i].fd << END_COL << std::endl;
 			}
-			std::cout << " <<--------------------------------->> " << std::endl; //! remove this
 			if (_pollfds[i].revents & POLLOUT) {
 				//! Writting to client should be here
 				//? 1. Check if client still exists in _requests
@@ -185,7 +184,7 @@ void	Webserv::handleClientRequest(int pollIdx, int fd)
 	}
 }
 
-void	Webserv::sendResponse(int fd)
+void	Webserv::sendResponse(int fd) //?! Complete the request, you have to send headers, body and file
 {
 	mapIt it = this->_requests.find(fd);
 	if (it == this->_requests.end()) {

@@ -6,22 +6,13 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:37:19 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/07 11:34:45 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/07 15:16:40 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-
-#include <cstddef>
-#include <cstdlib>
-// #include <exception>
-// #include <iostream>
-// #include <ostream>
-// #include <stdexcept>
-#include <fstream>
 #include <map>
-#include <string>
 #include <unistd.h>
 #include <sys/poll.h>
 #include <sys/socket.h>
@@ -33,7 +24,7 @@
 # define POLL_TIMEOUT 0
 # define END_OF_HEADERS "\r\n\r\n"
 # define READ_SIZE 8192
-# define URL_MAX_SIZE 2048
+# define URL_MAX_SIZE 20
 # define CHUNCK_SIZE 4096
 
 typedef std::map<int, ClientData>::iterator mapIt;
