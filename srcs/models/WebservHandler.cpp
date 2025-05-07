@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/23 19:43:45 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/07 13:41:10 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,11 @@ void	WebservHandler::_closeClient(int fd)
 		if (_pollfds[i].fd == fd) {
 			close(fd);
 			std::vector<struct pollfd>::iterator tmp = _pollfds.begin() + i;
-			// std::cout << "Removing fd: " << tmp->fd << std::endl;
 			_pollfds.erase(tmp);
 			_requests.erase(fd);
 			break;
 		}
 	}
-	std::cout << COL_GREEN << "The request count: " << requestCount << END_COL << std::endl;
-	// remove from requests
 }
 
 void	WebservHandler::setRequestType(ClientData& client)
@@ -57,7 +54,6 @@ void	WebservHandler::setRequestType(ClientData& client)
 		client.type = CHUNKED;
 	else
 		client.type = NO_CONTENT;
-	std::cout << "=> Request type: " ; printRequestType(client.type); 
 }
 
 void	WebservHandler::setContentLength(ClientData& client)
@@ -109,7 +105,7 @@ bool	WebservHandler::isHeaderComplete(ClientData& client)
 		std::cout << "Header complete: \n" << client.headers << std::endl; //! remove this
 		this->setBoundary(client);
 		client.bodyReded = client.request.size();
-		std::cout << "Body readed: " << client.bodyReded << std::endl;
+		// std::cout << "Body readed: " << client.bodyReded << std::endl;
 		return (true);
 	}
 	return (false);
@@ -118,6 +114,7 @@ bool	WebservHandler::isHeaderComplete(ClientData& client)
 bool	WebservHandler::isRequestComplete(ClientData& client)
 {
 	printWarning("isRequestComplete....");
+	this->isRequestValid(client);
 	if (!client.isHeaderComplete)
 		return (false);
 	else if (client.type == CHUNKED) //! no longer
@@ -138,6 +135,8 @@ bool	WebservHandler::isRequestComplete(ClientData& client)
 
 bool	WebservHandler::isRequestValid(ClientData& client)
 {
+	if (!client.isHeadersChecked)
+		this->validateRequestHeaders(client);
 	size_t max = client.server->getLimitClientBodySize();
 	std::cout << COL_GREEN << "------------------ >> (isRequestValid....) << ----------------" << END_COL << std::endl;
 	std::cout << COL_MAGENTA << "Body readed: " << client.bodyReded << " & Max: " << max << std::endl;
@@ -172,6 +171,10 @@ void	WebservHandler::setBoundary(ClientData& client)
 
 void	WebservHandler::handleRequest(ClientData& client)
 {
+	if (!client.error.empty()) {
+		send(client.fd, client.error.c_str(), client.error.size(), 0);
+		return ;
+	}
 	std::string	exampleHtml = "<html><body><h1> <center> Welcome to 1337 Webserv </center></h1></body></html>";
 	// std::string exampleHtml = "{\"message\": \"File uploaded successfully!\"}";
 	std::string response = "HTTP/1.1 200 OK\r\n"
@@ -182,11 +185,66 @@ void	WebservHandler::handleRequest(ClientData& client)
                            "Access-Control-Allow-Headers: Content-Type, Authorization\r\n" // Allow specific headers
                            "\r\n" + exampleHtml;
 	printWarning("handleRequest....");
-	// std::ofstream logFile("request.log", std::ios::app);
-	// if (logFile.is_open())
-	// 	logFile << client.request << std::endl;
 	std::cout << COL_MAGENTA << "Request: \n" << END_COL << client.request << std::endl;
 	send(client.fd, response.c_str(), response.size(), 0); //! MSG_NOSIGNAL (this flag not exist in MACOS)
 	this->requestCount++; //! increment request count (Delete this)
 	this->_closeClient(client.fd);
+}
+
+void	WebservHandler::validateRequestHeaders(ClientData& client)
+{
+	if (!client.isHeaderComplete)
+		return;
+	printWarning("validate Request Headers....");
+	this->validateUrl(client);
+	// client.isHeadersChecked = true;
+}
+
+static void httpResponse414(ClientData& client) {
+	(void)client;
+	std::string response = "HTTP/1.1 414 Request-URI Too Long\r\n"
+						   "Content-Type: text/html\r\n"
+						   "Content-Length: 59\r\n"
+						   "\r\n<html><body><h1>414 Request-URI Too Long</h1></body></html>";
+	std::cout << COL_RED << response << END_COL << std::endl;
+	client.error = response;
+	client.progress = READY;
+}
+
+static void httpResponse400(ClientData& client) {
+	(void)client;
+	std::string response = "HTTP/1.1 400 Bad Request\r\n"
+						   "Content-Type: text/html\r\n"
+						   "Content-Length: 50\r\n"
+						   "\r\n<html><body><h1>400 Bad Request</h1></body></html>";
+	std::cout << COL_RED << response << END_COL << std::endl;
+	client.error = response;
+	client.progress = READY;
+}
+
+void	WebservHandler::validateUrl(ClientData& client)
+{
+	// 414 Request-URI Too Long (more than URL_MAX_SIZE characters)
+	size_t start = client.headers.find_first_of("/", 0);
+	size_t end = client.headers.find(" HTTP/1.1", start);
+	std::cout << "start: " << start << " end: " << end << std::endl;
+	if (start == std::string::npos || end == std::string::npos)
+		return httpResponse400(client), this->enablePOLLOUT(client.fd);
+	std::string url = client.headers.substr(start, end - start);
+	if (end - start > URL_MAX_SIZE)
+		return httpResponse414(client), this->enablePOLLOUT(client.fd);
+	std::cout << "URL: " << url << " Lenght: " << end - start << std::endl;
+	// 400 Bad Request url contains invalid characters
+	if (url.find_first_not_of(ALLOWED_CHARS) != std::string::npos)
+		return httpResponse400(client), this->enablePOLLOUT(client.fd);
+}
+
+
+void WebservHandler::enablePOLLOUT(int fd) {
+	for (size_t i = 0; i < _pollfds.size(); ++i) {
+		if (_pollfds[i].fd == fd) {
+			_pollfds[i].events |= POLLOUT;
+			break;
+		}
+	}
 }

@@ -24,6 +24,7 @@ labs/app
 *.so
 *.dylib
 *.dll
+*.zip
 
 # Fortran module files
 *.mod

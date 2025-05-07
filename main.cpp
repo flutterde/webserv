@@ -15,12 +15,16 @@
 #include "headers/debug.hpp"//!
 #include "headers/readConfig.hpp"
 #include <fstream>
+#include <iostream>
 #include <string>
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
 #include <unistd.h>
 #include <netinet/in.h>
+
+char	**serverEnv;
+std::string	*notFound;
 
 void    ll(){ //! DELETE ME
     system("leaks webserv");
@@ -46,5 +50,7 @@ int	main(int ac, char **av, char **env)
 		std::cout << "config file require!" << std::endl;
 		return (1);
 	}
+    serverEnv = env;
+    notFound = new std::string("not_found");
     return (server(av[1], env));
 }

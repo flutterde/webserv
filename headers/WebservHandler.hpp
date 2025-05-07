@@ -6,13 +6,13 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:37:19 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/23 20:11:03 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/07 11:34:45 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-# include "FtPars.hpp"
+
 #include <cstddef>
 #include <cstdlib>
 // #include <exception>
@@ -27,41 +27,16 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include "debug.hpp"
+#include "ClientData.hpp"
 
 # define RUNNING 1
 # define POLL_TIMEOUT 0
 # define END_OF_HEADERS "\r\n\r\n"
-# define READ_SIZE 100
+# define READ_SIZE 8192
+# define URL_MAX_SIZE 2048
 # define CHUNCK_SIZE 4096
 
-enum	requestType {
-	NOT_SET = -1,
-	CONTENT_LENGTH,
-	CHUNKED,
-	NO_CONTENT,
-	MULTIPART_FORM,
-};
-
-struct ClientData {
-	int			fd;
-	requestType	type;
-	bool		isRequestComplete;
-	size_t		bytesSent;
-	long		contentLen;
-	size_t		readed; //! why ?
-	bool		isHeaderComplete;
-	int			file; //! 
-	std::string	request;
-	Server		*server;
-	std::string	headers;
-	long		bodyReded;
-	std::string	boundary;
-	std::string tmpFolder;
-	std::string	tmpFileName;
-	int			currentFileFd;
-	//! add map
-	ClientData() : type(NOT_SET), isRequestComplete(false), bytesSent(0), contentLen(-1), readed(0), isHeaderComplete(false), file(-1), server(NULL), bodyReded(-1) {}
-};
+typedef std::map<int, ClientData>::iterator mapIt;
 
 class WebservHandler
 {
@@ -78,10 +53,14 @@ class WebservHandler
 		void	handleRequest(ClientData& client);
 		void	_closeClient(int fd);
 		void	setBoundary(ClientData& client);
+		//* Validate the request
+		void	validateRequestHeaders(ClientData& client);
+		void	validateUrl(ClientData& client);
 
 	public:
 		WebservHandler();
 		static int requestCount;
+		void 					enablePOLLOUT(int fd);
 	~WebservHandler();
 
 };

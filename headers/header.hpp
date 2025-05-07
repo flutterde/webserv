@@ -17,4 +17,7 @@
 # include <unistd.h>
 # define FIRST_INDEX 0
 
+extern char	**serverEnv;
+extern std::string	*notFound;
+
 std::string&	strTrim(std::string&str, std::string set); //!
