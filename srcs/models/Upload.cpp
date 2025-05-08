@@ -78,6 +78,9 @@ std::string getFileName(const std::string &buffer){
 // You should put all tmp files in a temp folder
 void processMultipartUpload(ClientData &client)
 {
+    std::cout << COL_MAGENTA << "==================================================...." << END_COL << std::endl;
+    std::cout << COL_MAGENTA << "processMultipartUpload...." << END_COL << std::endl;
+    std::cout << COL_MAGENTA << "==================================================...." << END_COL << std::endl;
 	ssize_t written;
     while(!client.request.empty()) {
         if (client.currentFileFd == -1){
@@ -103,7 +106,9 @@ void processMultipartUpload(ClientData &client)
                 written =  write(client.currentFileFd,
                                         client.request.c_str(),
                                         boundary > 2 ? boundary - 2: 0);
+                std::cout << COL_RED << "Written.........  (" << written << ")" << END_COL << std::endl;
                 if (written == -1){
+                   std::cout << COL_RED << "Written 2......... " << END_COL << std::endl;
                     close(client.currentFileFd);
                     client.currentFileFd = -1;
                     return;

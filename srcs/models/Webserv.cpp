@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/07 18:48:19 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/08 18:57:10 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void	Webserv::run() {
 			continue;
 		}
 		for (size_t i = 0; i < _pollfds.size() && this->_nbrEvents > 0; ++i) {
+			std::cout << COL_BLUE << "Pollfd: " << _pollfds[i].fd << " Events: " << _pollfds[i].revents << END_COL << std::endl;
 			if (_pollfds[i].revents & (POLLERR | POLLHUP)) {
 				if (!isServerSocket(_pollfds[i].fd))
 					this->_closeClient(_pollfds[i].fd);
@@ -90,11 +91,14 @@ Server*	Webserv::getServerByFd(int fd) {
 }
 
 bool	Webserv::_isRequestComplete(ClientData& client) {
+	if (client.progress == READY)
+		return (true);
 	if (!client.isHeaderComplete) {
 		this->isHeaderComplete(client);
 	}
 	this->setRequestType(client);
 	this->setContentLength(client);
+	this->setBoundary(client);
 	//! Validate request
 	//! ...
 	return (this->isRequestComplete(client));
@@ -112,6 +116,7 @@ void	Webserv::acceptNewConnection(int fd)
 {
 	std::cout << "(" << fd << ")"<< " accepting new connection..." << std::endl;
 	ClientData	newClient;
+	// newClient.webservHandler = this;
 	try {
 		Server	*srv = this->getServerByFd(fd);
 		std::cout << "server port: " << srv->getPort() << "Server name: " << srv->getserverName() << std::endl;
@@ -137,21 +142,19 @@ void	Webserv::acceptNewConnection(int fd)
 	}
 }
 
-//! Handle Client Request
-//! 1. Read request from socket to buffer
-//! 2. Append buffer to request
-//! 3. Check if request is complete
 void	Webserv::handleClientRequest(int pollIdx, int fd)
 {
-	(void)pollIdx;
+	std::cout << COL_BLUE << "Handling client request..." << END_COL << std::endl;
 	//! delete this
+	(void)pollIdx;
 	char buffer[READ_SIZE];
 	ssize_t	bytesRead = recv(fd, buffer, READ_SIZE - 1, 0);
-	if (bytesRead <= 0) { //! check this
+	std::cout << COL_BLUE << "Bytes read: " << bytesRead << END_COL << std::endl;
+	if (bytesRead < 0) { //! check this
 		if (bytesRead == 0) {
 			std::cout << "Client disconnected" << std::endl;
 		} else {
-			std::cerr << "Error while reading from client" << std::endl;
+			std::cerr << COL_RED << "Error while reading from client" << END_COL << std::endl;
 		}
 		this->_closeClient(fd);
 		return;

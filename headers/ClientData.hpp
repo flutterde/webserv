@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 13:07:08 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/07 11:35:17 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/08 16:56:56 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,6 @@ struct ClientData {
 	ClientData() : type(NOT_SET), isRequestComplete(false),
 		bytesSent(0), contentLen(-1), readed(0), isHeaderComplete(false),
 		isHeadersChecked(false), file(-1), server(NULL), bodyReded(-1), progress(NOT_STARTED),
-		startTime(FtPars::getCurrentTimeMs()) {}
+		startTime(FtPars::getCurrentTimeMs()), currentFileFd(-1) {}
 	~ClientData() {}
 };

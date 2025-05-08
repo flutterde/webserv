@@ -25,6 +25,7 @@
 
 char	**serverEnv;
 std::string	*notFound;
+WebservHandler	*wServ;
 
 void    ll(){ //! DELETE ME
     system("leaks webserv");

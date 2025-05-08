@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:37:19 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/07 15:16:40 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/08 18:40:55 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,18 +17,20 @@
 #include <sys/poll.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include "debug.hpp"
 #include "ClientData.hpp"
+#include "HttpErrors.hpp"
+#include "debug.hpp"
 
 # define RUNNING 1
 # define POLL_TIMEOUT 0
 # define END_OF_HEADERS "\r\n\r\n"
-# define READ_SIZE 8192
+# define READ_SIZE 1024
 # define URL_MAX_SIZE 20
 # define CHUNCK_SIZE 4096
 
+void processMultipartUpload(ClientData &client);
 typedef std::map<int, ClientData>::iterator mapIt;
-
+class HttpErrors;
 class WebservHandler
 {
 	protected:
@@ -55,3 +57,5 @@ class WebservHandler
 	~WebservHandler();
 
 };
+
+extern WebservHandler	*wServ;
