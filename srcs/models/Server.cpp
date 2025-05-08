@@ -231,7 +231,7 @@ int	Server::getSocket() const
 	return (this->serverSocket);
 }
 
-const std::map<std::string, std::string>&	Server::getRedirects(void)	const
+std::map<std::string, std::string>&	Server::getRedirects(void)
 {
 	return (this->redirects);
 }

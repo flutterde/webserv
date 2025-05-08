@@ -6,12 +6,11 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/04/24 12:18:14 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/08 11:35:05 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../../headers/Response.hpp"
-
 
 Response::Response(void) {}
 
@@ -44,10 +43,8 @@ std::string Response::combineResponse(void) {
 }
 
 Response::Response(struct ClientData &client, Request &req) {
-	std::string root_path = "/Users/mboujama/Desktop/webserv/var/www/html";
-	//? root path for linux:
-	// std::string root_path = "/home/mmboujamaa/Main/1337/1337-webserv/var/www/html";
-	std::string full_path = root_path + req.getPath();
+	cgi = new Cgi();
+	std::string full_path = client.server->getRootPath() + req.getPath();
 	http_version = req.getVersion();
 
 	headers["Server"] = "NorthServ/1.0";
@@ -56,11 +53,15 @@ Response::Response(struct ClientData &client, Request &req) {
 	headers["Date"] = ResponseUtils::getDateTime();
 	fd = -1;
 	
-	//TODO: add checkRedirect:
 	if (full_path.find("..") != std::string::npos)
 		status_code = FORBIDDEN;
 	else if (!client.server->getAllowedMethods()[req.getMethod()])
 		status_code = METHOD_NOT_ALLOWED;
+	else if (!client.server->getRedirects()[req.getPath()].empty())
+	{
+		status_code = MOVED_PERMANENTLY;
+		headers["location"] = client.server->getRedirects()[req.getPath()];
+	}
 	else if (!ResponseUtils::pathExists(full_path))
 		status_code = NOT_FOUND;
 	else if (req.getMethod() == "GET")
@@ -74,7 +75,8 @@ Response::Response(struct ClientData &client, Request &req) {
 		// 30x
 		case MOVED_PERMANENTLY:
 			std::cout << "MOVED PERMANENTLY" << std::endl;
-			body = "<html><body><center><h1>301 Moved Permanently</h1></center></body></html>";
+			if (body.empty())
+				body = "<html><body><center><h1>301 Moved Permanently</h1></center></body></html>";
 			headers["Content-Length"] = ResponseUtils::toString(body.length());
 			break ;
 		// 40x
@@ -99,12 +101,14 @@ Response::Response(struct ClientData &client, Request &req) {
 			headers["Content-Length"] = ResponseUtils::toString(body.length());
 			status_code = OK;
 	}
-	
 	std::cout << "Allowed methods => [" << ResponseUtils::allowHeaderValue(client.server->getAllowedMethods()) << "]" << std::endl;
 }
 
 
 void Response::handleGet(struct ClientData &client, Request &req, const std::string &path) {
+	bool isFile = true;
+	std::string index;
+
 	if (path.find("..") != std::string::npos) {
 		status_code = FORBIDDEN; return;
 	}
@@ -115,32 +119,26 @@ void Response::handleGet(struct ClientData &client, Request &req, const std::str
 			return ;
 		}
 		
+		isFile = false;
 		std::map<std::string, bool> indexes = client.server->getIndexes();
-		std::string index = ResponseUtils::isIndexFileExist(indexes, path);
+		index = ResponseUtils::isIndexFileExist(indexes, path);
 		
-		if (!index.empty()) {
-			// TODO: check cgi
-			fd = ResponseUtils::openFile(path + index);
-			fd == -1 ? status_code = FORBIDDEN : status_code = OK;
-			return ;
-		}
-		// TODO:	2.3 - if autoindex enabled show it (200) otherwise (403)
+		if (!index.empty()) isFile = true;
 		else if (client.server->getAutoIndex()) {
-			std::cout << "Autoindex enabled" << std::endl;
 			body = ResponseUtils::generateAutoIndex(path);
 			status_code = OK;
 		}
-		else {
-			std::cout << "Autoindex disabled" << std::endl;
-			status_code = FORBIDDEN;
-		}
+		else status_code = FORBIDDEN;
 	}
-	else {
-		headers["Content-Type"] = getMimeType(path);
-		
-		std::cout << "Extension: " << headers["Content-Type"] << std::endl;
-		// TODO: 3- if file serve it (CGI || 200)
-		std::cout << "this is a file" << std::endl;
+	if (isFile) {
+		if (!path.substr(path.find_last_of('.')).compare(".py") 
+			|| !path.substr(path.find_last_of('.')).compare(".php"))
+			body = cgi->executeCgiScript(req, serverEnv);
+		else {
+			!index.empty() 
+				? fd = ResponseUtils::openFile(req.getPath() + index)  
+				: fd = ResponseUtils::openFile(path);
+		}		
 	}
 }
 

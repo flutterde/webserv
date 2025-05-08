@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 12:29:43 by mboujama          #+#    #+#             */
-/*   Updated: 2025/04/26 09:13:42 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/07 20:03:13 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ std::string ResponseUtils::allowHeaderValue(std::map<std::string, bool> allowedM
 }
 
 bool ResponseUtils::pathExists(const std::string& path) {
-	std::cout << "Path to search: " << path << std::endl;
     return access(path.c_str(), F_OK) == 0;
 }
 

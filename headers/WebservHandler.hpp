@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:37:19 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/07 19:45:12 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/08 09:41:10 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 # define POLL_TIMEOUT 0
 # define END_OF_HEADERS "\r\n\r\n"
 # define READ_SIZE 8192
-# define URL_MAX_SIZE 20
+# define URL_MAX_SIZE 200
 # define CHUNCK_SIZE 4096
 
 typedef std::map<int, ClientData>::iterator mapIt;

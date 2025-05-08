@@ -6,17 +6,19 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/07 19:45:22 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/07 20:27:09 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../../headers/WebservHandler.hpp"
+#include "./../../headers/Response.hpp"
 #include <cstddef>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <sys/fcntl.h>
 #include <sys/socket.h>
+#include "../../learning/request.hpp"
 
 int WebservHandler::requestCount = 0;
 
@@ -181,20 +183,12 @@ void	WebservHandler::handleRequest(ClientData& client)
 		this->_closeClient(client.fd);
 		return ;
 	}
-	std::string	exampleHtml = "<html><body><h1> <center> Welcome to 1337 | testing Webserv </center></h1></body></html>";
-	// std::string exampleHtml = "{\"message\": \"File uploaded successfully!\"}";
-	std::string response = "HTTP/1.1 200 OK\r\n"
-                           "Content-Type: text/html\r\n"
-                           "Content-Length: " + FtPars::toString(exampleHtml.size()) + "\r\n"
-                           "Access-Control-Allow-Origin: *\r\n" // Allow requests from any origin
-                           "Access-Control-Allow-Methods: POST, GET, OPTIONS\r\n" // Allow specific methods
-                           "Access-Control-Allow-Headers: Content-Type, Authorization\r\n" // Allow specific headers
-                           "\r\n" + exampleHtml;
-	printWarning("handleRequest....");
-	// std::cout << COL_MAGENTA << "Request: \n" << END_COL << client.request << std::endl;
-	send(client.fd, response.c_str(), response.size(), 0); //! MSG_NOSIGNAL (this flag not exist in MACOS)
-	this->requestCount++; //! increment request count (Delete this)
-	this->_closeClient(client.fd); //! Close client connection only if the response is sent
+	Request req(client.headers + client.request);
+	Response *response = new Response(client, req); //! free this
+
+	std::string res = response->combineResponse();
+	std::cout << "=======>\n" << res << "\n<=======" << std::endl;
+	send(client.fd, res.c_str(), res.size(), 0);
 }
 
 void	WebservHandler::validateRequestHeaders(ClientData& client)

@@ -11,7 +11,7 @@ srcs/parsing/helpers/FtPars.cpp srcs/models/Server.cpp debug/printing.cpp
 SRCS +=  learning/request.cpp 
 
 # MOAD
-SRCS +=  srcs/models/Response.cpp srcs/utils/ResponseUtils.cpp srcs/models/MimeTypes.cpp
+SRCS +=  srcs/models/Response.cpp srcs/models/ResponseUtils.cpp srcs/models/MimeTypes.cpp srcs/models/Cgi.cpp
 
 #OTM
 SRCS += srcs/models/Webserv.cpp srcs/models/WebservHandler.cpp

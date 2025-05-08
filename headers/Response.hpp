@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:11 by mboujama          #+#    #+#             */
-/*   Updated: 2025/04/24 08:43:29 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/08 07:53:03 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,12 @@
 # include "./WebservHandler.hpp"
 # include "./ResponseUtils.hpp"
 # include "./MimeTypes.hpp"
-
+# include "Cgi.hpp"
 
 class Response : public MimeTypes
 {
 	private:
+		Cgi *cgi;
 		Response(void);
 		Response(const Response& obj);
 		Response&	operator=(const Response& obj);
