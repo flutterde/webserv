@@ -41,7 +41,7 @@ int server(char *argFile, char **env) {
 
 int    main(int ac, char **av, char **env)
 {
-    atexit(ll); //! -->delete
+    atexit(ll); //! --> delete
     if (ac != 2) {
         std::cout << "config file require!" << std::endl;
         return (1);

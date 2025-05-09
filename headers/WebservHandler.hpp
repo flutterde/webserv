@@ -31,7 +31,7 @@
 # define RUNNING 1
 # define POLL_TIMEOUT 0
 # define END_OF_HEADERS "\r\n\r\n"
-# define READ_SIZE 100
+# define READ_SIZE 48500
 # define CHUNCK_SIZE 4096
 
 enum	requestType {

@@ -84,6 +84,7 @@ bool	Webserv::_isRequestComplete(ClientData& client) {
 	}
 	this->setRequestType(client);
 	this->setContentLength(client);
+	this->setBoundary(client);
 	//! Validate request
 	//! ...
 	return (this->isRequestComplete(client));
@@ -153,7 +154,8 @@ void	Webserv::handleClientRequest(int pollIdx, int fd)
 	// std::cout << COL_RED << " --------------------------------- " << END_COL << std::endl; //! remove this
 	// std::cout << buffer << std::endl; //! remove this
 	// std::cout << COL_RED << " --------------------------------- " << END_COL << std::endl; //! remove this
-	this->_requests[fd].request += buffer;
+	// this->_requests[fd].request += buffer;
+	this->_requests[fd].request.append(buffer, bytesRead);
 	std::map<int, ClientData>::iterator it = this->_requests.find(fd);
 	if (it == this->_requests.end()) {
 		std::cerr << "Error: client not found" << std::endl;

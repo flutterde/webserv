@@ -106,7 +106,7 @@ bool	WebservHandler::isHeaderComplete(ClientData& client)
 		client.isHeaderComplete = true;
 		client.headers = client.request.substr(0, pos + 4); //! should stop at pos or pos + 4
 		client.request = client.request.substr(pos + 4);
-		// std::cout << "Header complete: \n" << client.headers << std::endl; //! remove this
+		std::cout << "Header complete: \n" << client.headers << std::endl; //! remove this
 		this->setBoundary(client);
 		client.bodyReded = client.request.size();
 		// std::cout << "Body readed: " << client.bodyReded << std::endl;
@@ -120,10 +120,10 @@ void processMultipartUpload(ClientData &client);
 bool	WebservHandler::isRequestComplete(ClientData& client)
 {
 	printWarning("isRequestComplete....");
-	processMultipartUpload(client);
 	if (!client.isHeaderComplete)
 		return (false);
-	else if (client.type == CHUNKED) //! no longer
+	processMultipartUpload(client);
+	if (client.type == CHUNKED) //! no longer
 		return (isChunkedComplete(client));
 	else if (client.type == NO_CONTENT && client.contentLen == -1)
 		return (true);
@@ -171,7 +171,8 @@ void	WebservHandler::setBoundary(ClientData& client)
 	if (end == std::string::npos)
 		return;
 	client.boundary = client.headers.substr(start, end - start);
-	std::cout << "Boundary: " << client.boundary << std::endl;
+	client.currentFileFd = -1;
+	std::cout << COL_RED << "Boundary: " << client.boundary  << END_COL<< std::endl;	
 }
 
 void	WebservHandler::handleRequest(ClientData& client)
