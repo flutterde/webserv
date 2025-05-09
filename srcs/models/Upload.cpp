@@ -99,6 +99,7 @@ void processMultipartUpload(ClientData &client)
                 return;
         }
 
+        std::cout << COL_RED << "uploading..." << END_COL << std::endl;
         if (client.request.rfind("\r") != std::string::npos){
             size_t boundaryPos = client.request.find("--" + client.boundary);
             // std::cout << COL_RED << client.request << " " << boundaryPos << END_COL<< std::endl;
@@ -117,7 +118,7 @@ void processMultipartUpload(ClientData &client)
                     close(client.currentFileFd);
                     client.currentFileFd = -1;
                 }
-                client.request.erase(0, boundaryPos);
+                client.request.erase(0, boundaryPos + client.boundary.size() + 2);
                 continue;
             }
             else

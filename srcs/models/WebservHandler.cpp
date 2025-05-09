@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/08 17:49:22 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/09 20:04:41 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,9 +88,13 @@ bool	WebservHandler::isHeaderComplete(ClientData& client)
 		client.headers = client.request.substr(0, pos + 4); //! should stop at pos or pos + 4
 		client.request = client.request.substr(pos + 4);
 		std::cout << "Header complete: \n" << COL_MAGENTA << client.headers << END_COL << std::endl; //! remove this
+		std::cout << COL_GREEN << "Header size: " << client.headers.size() << END_COL << std::endl;
 		// this->setBoundary(client);
 		client.bodyReded = client.request.size();
-		// std::cout << "Body readed: " << client.bodyReded << std::endl;
+		std::cout << "*-> Body readed: " << client.bodyReded << std::endl;
+		std::cout << COL_GREEN << "Request: \n" << client.request << END_COL << std::endl;
+		std::cout << COL_GREEN << "Request size: " << client.request.size() << "\n\n" << END_COL << std::endl;
+		
 		return (true);
 	}
 	return (false);

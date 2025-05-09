@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/08 18:57:10 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/09 20:26:54 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,9 +160,9 @@ void	Webserv::handleClientRequest(int pollIdx, int fd)
 		return;
 	}
 	buffer[bytesRead] = '\0';
-	std::cout << COL_RED << " --------------------------------- " << END_COL << std::endl; //! remove this
 	std::cout << "Received request: \n" << "buffer" << std::endl; //! remove this
-	this->_requests[fd].request += buffer;
+	// this->_requests[fd].request += buffer;
+	this->_requests[fd].request.append(buffer, bytesRead);
 	std::cout << COL_RED << " --------------------------------- " << END_COL << std::endl; //! remove this
 	std::map<int, ClientData>::iterator it = this->_requests.find(fd);
 	if (it == this->_requests.end()) {

@@ -25,7 +25,9 @@ labs/app
 *.dylib
 *.dll
 *.zip
-
+uploadtestfile.txt 
+uploadtestfile.cpp
+.DS_Store
 # Fortran module files
 *.mod
 *.smod
