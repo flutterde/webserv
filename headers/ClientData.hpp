@@ -14,6 +14,8 @@
 
 # include "FtPars.hpp"
 #include <cstddef>
+#include <utility>
+#include <vector>
 
 enum	requestType {
 	NOT_SET = -1,
@@ -47,13 +49,15 @@ struct ClientData {
 	requestProgress progress;
 	size_t			startTime;
 	std::string		error;
-	std::string tmpFolder;
-	std::string	tmpFileName;
-	int			currentFileFd;
+	std::string		tmpFolder;
+	std::string		tmpFileName;
+	std::map<std::string, int> uploadFd;
+	// int			currentFileFd;
+	//  uploadFd;
 	//! add map
 	ClientData() : type(NOT_SET), isRequestComplete(false),
 		bytesSent(0), contentLen(-1), readed(0), isHeaderComplete(false),
 		isHeadersChecked(false), file(-1), server(NULL), bodyReded(-1), progress(NOT_STARTED),
-		startTime(FtPars::getCurrentTimeMs()), currentFileFd(-1) {}
+		startTime(FtPars::getCurrentTimeMs()){}
 	~ClientData() {}
 };

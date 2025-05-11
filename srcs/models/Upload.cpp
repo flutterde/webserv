@@ -74,70 +74,85 @@ std::string getFileName(const std::string &buffer){
 	return fileName;
 }
 
+void closeFiles(ClientData &client)
+{
+    std::map<std::string, int>::iterator it;
+
+    for (it = client.uploadFd.begin(); it != client.uploadFd.end(); ++it)
+        close(it->second);
+    client.uploadFd.clear();
+}
 
 //! set client.currentFileFd to -1
 //! call setheader() function (I am not sure about the function name)
 // You should put all tmp files in a temp folder
+// you should close all the files  + you should reset the files
 void processMultipartUpload(ClientData &client)
 {
 	ssize_t written;
+
     while(!client.request.empty()) {
-        if (client.currentFileFd == -1){
+        if (client.uploadFd.find(client.tmpFileName) == client.uploadFd.end()){
             size_t headers = client.request.find("\r\n\r\n");
             std::string	fileName;
             if (headers != std::string::npos) {
                 fileName = getFileName(client.request);
                 if (!fileName.empty()) {
                     client.tmpFileName = "upload_" + fileName;
-                    client.currentFileFd = open(client.tmpFileName.c_str() ,O_CREAT | O_TRUNC | O_WRONLY, 0644);
-                    if (client.currentFileFd == -1)
-                        break;
-                }
-                client.request.erase(0, headers + 4);
-            }
-            else 
-                return;
-        }
-
-        std::cout << COL_RED << "uploading..." << END_COL << std::endl;
-        if (client.request.rfind("\r") != std::string::npos){
-            size_t boundaryPos = client.request.find("--" + client.boundary);
-            // std::cout << COL_RED << client.request << " " << boundaryPos << END_COL<< std::endl;
-            if (boundaryPos != std::string::npos) {
-                if (client.currentFileFd != -1){
-                    written =  write(client.currentFileFd,
-                                            client.request.c_str(),
-                                            boundaryPos > 2 ? boundaryPos - 2: 0);
-                    if (written == -1){
-                        close(client.currentFileFd);
-                        client.currentFileFd = -1;
-                        return;
+                    client.uploadFd[client.tmpFileName] = open(client.tmpFileName.c_str() ,O_CREAT | O_TRUNC | O_WRONLY, 0644);
+                    if (client.uploadFd[client.tmpFileName] == -1){
+                        closeFiles(client);
+                        break; //!  close all the files
                     }
                 }
-                if(client.request.find("--" + client.boundary + "--") != std::string::npos){
-                    close(client.currentFileFd);
-                    client.currentFileFd = -1;
-                }
-                client.request.erase(0, boundaryPos + client.boundary.size() + 2);
-                continue;
+                client.request.erase(0, headers + 4);
             }
             else
                 return;
         }
 
-        if (client.currentFileFd != -1) {
-            written = write(client.currentFileFd, 
+        std::cout << COL_RED << "uploading..." << END_COL << std::endl;
+
+        if (client.request.find("\r") != std::string::npos){
+            size_t boundaryPos = client.request.find("--" + client.boundary + "\r\n");
+            size_t endBoundary;
+            if (boundaryPos != std::string::npos) {
+                if (client.uploadFd.find(client.tmpFileName) != client.uploadFd.end()){
+                    written =  write(client.uploadFd[client.tmpFileName],
+                                            client.request.c_str(),
+                                            boundaryPos > 2 ? boundaryPos - 2: 0);
+                    if (written == -1){
+                        closeFiles(client);
+                        return;
+                    }
+                }
+                client.request.erase(0, boundaryPos + client.boundary.size() + 4);
+                client.tmpFileName.clear();
+                continue;
+            }
+            else if((endBoundary = client.request.find("--" + client.boundary + "--\r\n")) != std::string::npos){
+                written =  write(client.uploadFd[client.tmpFileName],
+                                            client.request.c_str(),
+                                            endBoundary > 2 ? endBoundary - 2: 0);
+                client.request.clear();
+                client.tmpFileName.clear();
+                closeFiles(client);
+            }
+            else
+                return;
+        }
+
+        if (client.uploadFd.find(client.tmpFileName) != client.uploadFd.end()) {
+            written = write(client.uploadFd[client.tmpFileName], 
                             client.request.c_str(),
                             client.request.size());
-            // std::cout << client.request << std::endl;
             if (written == -1){
-                close(client.currentFileFd);
-                client.currentFileFd = -1;
+                closeFiles(client);
                 return;
             }
             client.request.erase(0, written);
         }
-        else
-            client.request.clear();
+        // else
+        //     client.request.clear();
     }
 }
