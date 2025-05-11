@@ -59,6 +59,12 @@ class	Server {
 		void								ftListen(void);
 		void								setSocketOptions(void);
 
+		// utils functions
+		std::string&						validateAndTrim(std::string& str);
+		void								fillServerData(std::string& line, Server& srv);
+		void								setServer(std::vector<std::string>& arr, size_t& idx, Server& srv);
+
+
 	public:
 		Server(const Server& srv, uint32_t port);
 		Server(void);
@@ -69,6 +75,7 @@ class	Server {
 		uint32_t	getPort(void)	const;
 		size_t		getTimeout(void)	const;
 		const std::string&	getClientBodyTempPath(void) const;
+		const std::string&	getUploadsPath(void) const;
 		std::string	getHost(void)	const;
 		std::string	getserverName(void)	const;
 		std::string	getRootPath(void)	const;
@@ -91,6 +98,7 @@ class	Server {
 		void	setserverName(std::string& val);
 		void	setLimitClientBodySize(uint32_t val);
 		void	setClientBodyTempPath(std::string& val);
+		void	setUploadsPath(std::string& val);
 		void	setErrorPage404(std::string& val);
 		void	setErrorPage500(std::string& val);
 		void	setIndex(std::string& key, bool val);

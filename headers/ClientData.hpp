@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 13:07:08 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/08 16:56:56 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/11 16:57:16 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ enum	requestType {
 enum requestProgress {
 	NOT_STARTED = -1,
 	WORKING,
+	COLLECTED,
 	READY,
 };
 
@@ -33,7 +34,7 @@ struct ClientData {
 	int				fd;
 	requestType		type;
 	bool			isRequestComplete;
-	size_t			bytesSent;
+	size_t			bytesSent; //! Why ?
 	long			contentLen;
 	size_t			readed; //! why ?
 	bool			isHeaderComplete;

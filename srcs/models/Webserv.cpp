@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/09 20:26:54 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/11 18:46:01 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include <iostream>
 #include <string>
 #include <sys/poll.h>
-
 
 Webserv::Webserv() {
 }
@@ -37,7 +36,7 @@ Webserv::Webserv(readConfig& config, char **env) {
 }
 
 void	Webserv::_init() {
-	std::cout << "initing............" << std::endl;
+	std::cout << COL_BLUE << "initing.." << END_COL << std::endl;
 	if (this->_servers.empty())
 		throw std::runtime_error("No servers found");
 	for (size_t i = 0; i < this->_servers.size(); ++i) {
@@ -49,12 +48,8 @@ void	Webserv::_init() {
 void	Webserv::run() {
 	this->_init();
 	while (RUNNING) {
-		if ((this->_nbrEvents = poll(_pollfds.data(), _pollfds.size(), 0)) < 0) {
-			std::cerr << COL_RED << "Error while polling: " << END_COL << std::endl;
-			continue;
-		}
+		if ((this->_nbrEvents = poll(_pollfds.data(), _pollfds.size(), 0)) < 0) continue;
 		for (size_t i = 0; i < _pollfds.size() && this->_nbrEvents > 0; ++i) {
-			std::cout << COL_BLUE << "Pollfd: " << _pollfds[i].fd << " Events: " << _pollfds[i].revents << END_COL << std::endl;
 			if (_pollfds[i].revents & (POLLERR | POLLHUP)) {
 				if (!isServerSocket(_pollfds[i].fd))
 					this->_closeClient(_pollfds[i].fd);
@@ -65,13 +60,10 @@ void	Webserv::run() {
 				--this->_nbrEvents;
 				if (isServerSocket(_pollfds[i].fd))
 					this->acceptNewConnection(_pollfds[i].fd);
-				else {
+				else
 					this->handleClientRequest(i, _pollfds[i].fd);
-				}
-				printTime(); std::cout << COL_BLUE << " Events nbr: " << this->_nbrEvents << ":" << _pollfds[i].fd << END_COL << std::endl;
 			}
 			if (_pollfds[i].revents & POLLOUT) {
-				//! Writting to client should be here
 				//? 1. Check if client still exists in _requests
 				//? 2. check if the request progress is complete
 				//? 3. send response
@@ -80,6 +72,7 @@ void	Webserv::run() {
 				this->sendResponse(_pollfds[i].fd);
 			}
 		}
+		this->timeoutHandler();
 	}
 }
 
@@ -161,7 +154,6 @@ void	Webserv::handleClientRequest(int pollIdx, int fd)
 	}
 	buffer[bytesRead] = '\0';
 	std::cout << "Received request: \n" << "buffer" << std::endl; //! remove this
-	// this->_requests[fd].request += buffer;
 	this->_requests[fd].request.append(buffer, bytesRead);
 	std::cout << COL_RED << " --------------------------------- " << END_COL << std::endl; //! remove this
 	std::map<int, ClientData>::iterator it = this->_requests.find(fd);
@@ -169,12 +161,13 @@ void	Webserv::handleClientRequest(int pollIdx, int fd)
 		std::cerr << "Error: client not found" << std::endl;
 		return;
 	}
-	if (FtPars::getCurrentTimeMs() - it->second.startTime > (it->second.server->getTimeout() * 1000)) //!
-	{
-		std::cout << "Client timeout" << std::endl;
-		this->_closeClient(fd);
-		return;
-	}
+	// //! change this
+	// if (FtPars::getCurrentTimeMs() - it->second.startTime > (it->second.server->getTimeout() * 1000)) //!
+	// {
+	// 	std::cout << "Client timeout" << std::endl;
+	// 	this->_closeClient(fd);
+	// 	return;
+	// }
 	if (it->second.bodyReded != -1) {
 		it->second.bodyReded += bytesRead;
 		std::cout << COL_GREEN << "Body readed: " << it->second.bodyReded << END_COL << std::endl;
@@ -190,7 +183,6 @@ void	Webserv::sendResponse(int fd) //?! Complete the request, you have to send h
 {
 	mapIt it = this->_requests.find(fd);
 	if (it == this->_requests.end()) {
-		std::cerr << "Error: client not found" << std::endl;
 		return;
 	}
 	if (it->second.progress == READY) {
@@ -198,4 +190,19 @@ void	Webserv::sendResponse(int fd) //?! Complete the request, you have to send h
 	}
 	std::cout << " ************>>>>>>>>>>>>>>>>>> Sending response to client..." << std::endl;
 }
+
+void Webserv::timeoutHandler(void)
+{
+	for (mapIt it = _requests.begin(); it != _requests.end();) {
+		if (FtPars::getCurrentTimeMs() - it->second.startTime > (it->second.server->getTimeout() * 1000)) {
+			std::cout << "Client fd " << it->first << " timed out" << std::endl;
+			mapIt nextIt = it;
+			this->_closeClient(it->first);
+			it = nextIt;
+		} else {
+			++it;
+		}
+	}
+}
+
 

@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/09 20:04:41 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/11 18:13:40 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@
 #include <string>
 #include <sys/fcntl.h>
 #include <sys/socket.h>
-
-int WebservHandler::requestCount = 0;
 
 WebservHandler::WebservHandler() {
 	wServ = this;
@@ -45,10 +43,7 @@ void	WebservHandler::_closeClient(int fd)
 void	WebservHandler::setRequestType(ClientData& client)
 {
 	printWarning("setRequestType....");
-	if (client.headers.empty())
-		return;
-	//! check if the request type is already set
-	if (client.type != NOT_SET)
+	if (client.headers.empty() || client.type != NOT_SET)
 		return;
 	else if (client.headers.find("Content-Type: multipart/form-data") != std::string::npos)
 		client.type = MULTIPART_FORM;
@@ -85,16 +80,10 @@ bool	WebservHandler::isHeaderComplete(ClientData& client)
 	pos = client.request.find("\r\n\r\n");
 	if (pos != std::string::npos) {
 		client.isHeaderComplete = true;
-		client.headers = client.request.substr(0, pos + 4); //! should stop at pos or pos + 4
+		client.headers = client.request.substr(0, pos + 4);
 		client.request = client.request.substr(pos + 4);
-		std::cout << "Header complete: \n" << COL_MAGENTA << client.headers << END_COL << std::endl; //! remove this
-		std::cout << COL_GREEN << "Header size: " << client.headers.size() << END_COL << std::endl;
-		// this->setBoundary(client);
 		client.bodyReded = client.request.size();
-		std::cout << "*-> Body readed: " << client.bodyReded << std::endl;
-		std::cout << COL_GREEN << "Request: \n" << client.request << END_COL << std::endl;
-		std::cout << COL_GREEN << "Request size: " << client.request.size() << "\n\n" << END_COL << std::endl;
-		
+		client.progress = WORKING;
 		return (true);
 	}
 	return (false);
@@ -102,22 +91,21 @@ bool	WebservHandler::isHeaderComplete(ClientData& client)
 
 bool	WebservHandler::isRequestComplete(ClientData& client)
 {
-	printWarning("isRequestComplete....");
+	printWarning("is Request Complete....");
 	this->isRequestValid(client);
 	if (!client.isHeaderComplete)
 		return (false);
-	processMultipartUpload(client);
+	processMultipartUpload(client); //? ....
 	if (client.type == NO_CONTENT && client.contentLen == -1)
-		return (true);
+		return ((client.progress = COLLECTED), true);
 	else if (client.type == MULTIPART_FORM && client.contentLen <= static_cast<long>(client.bodyReded))
 	{
-		// std::cout << COL_RED << "client.contentLen: " << client.contentLen << " client.bodyReded: " << client.bodyReded << END_COL << std::endl;
+		client.isRequestComplete = true;
 		std::cout << COL_RED << "Multipart form data complete" <<  END_COL << std::endl;
-		return (true);
+		return ((client.progress = COLLECTED), true);
 	}
 	else if (client.contentLen >= 0 && client.request.size() >= static_cast<size_t>(client.contentLen))
-		return (true);
-	// std::cout << "Request not complete" << std::endl;
+		return ((client.progress = COLLECTED), true);
 	return (false);
 }
 
@@ -127,8 +115,6 @@ bool	WebservHandler::isRequestValid(ClientData& client)
 	if (!client.isHeadersChecked)
 		this->validateRequestHeaders(client);
 	size_t max = client.server->getLimitClientBodySize();
-	// std::cout << COL_GREEN << "------------------ >> (isRequestValid....) << ----------------" << END_COL << std::endl;
-	// std::cout << COL_MAGENTA << "Body readed: " << client.bodyReded << " & Max: " << max << std::endl;
 	(void)max;
 	//! if bad request chunked and content length
 	//! if bad request content length and no content
@@ -168,18 +154,15 @@ void	WebservHandler::handleRequest(ClientData& client)
 		return ;
 	}
 	std::string	exampleHtml = "<html><body><h1> <center> Welcome to 1337 | testing Webserv </center></h1></body></html>";
-	// std::string exampleHtml = "{\"message\": \"File uploaded successfully!\"}";
 	std::string response = "HTTP/1.1 200 OK\r\n"
                            "Content-Type: text/html\r\n"
                            "Content-Length: " + FtPars::toString(exampleHtml.size()) + "\r\n"
-                           "Access-Control-Allow-Origin: *\r\n" // Allow requests from any origin
-                           "Access-Control-Allow-Methods: POST, GET, OPTIONS\r\n" // Allow specific methods
-                           "Access-Control-Allow-Headers: Content-Type, Authorization\r\n" // Allow specific headers
+                           "Access-Control-Allow-Origin: *\r\n" 
+                           "Access-Control-Allow-Methods: POST, GET, OPTIONS\r\n"
+                           "Access-Control-Allow-Headers: Content-Type, Authorization\r\n"
                            "\r\n" + exampleHtml;
 	printWarning("handleRequest....");
-	// std::cout << COL_MAGENTA << "Request: \n" << END_COL << client.request << std::endl;
 	send(client.fd, response.c_str(), response.size(), 0); //! MSG_NOSIGNAL (this flag not exist in MACOS)
-	this->requestCount++; //! increment request count (Delete this)
 	this->_closeClient(client.fd); //! Close client connection only if the response is sent
 }
 
@@ -189,23 +172,21 @@ void	WebservHandler::validateRequestHeaders(ClientData& client)
 		return;
 	printWarning("validate Request Headers....");
 	this->validateUrl(client);
+	if (client.type == CHUNKED)
+		return HttpErrors::httpResponse400(client), this->enablePOLLOUT(client.fd);
 	client.isHeadersChecked = true;
 }
-
-
 
 void	WebservHandler::validateUrl(ClientData& client)
 {
 	// 414 Request-URI Too Long (more than URL_MAX_SIZE characters)
 	size_t start = client.headers.find_first_of("/", 0);
 	size_t end = client.headers.find(" HTTP/1.1", start);
-	// std::cout << "start: " << start << " end: " << end << std::endl;
 	if (start == std::string::npos || end == std::string::npos)
 		return HttpErrors::httpResponse400(client), this->enablePOLLOUT(client.fd);
 	std::string url = client.headers.substr(start, end - start);
 	if (end - start > URL_MAX_SIZE)
 		return HttpErrors::httpResponse414(client), this->enablePOLLOUT(client.fd);
-	// std::cout << "URL: " << url << " Lenght: " << end - start << std::endl;
 	// 400 Bad Request url contains invalid characters
 	if (url.find_first_not_of(ALLOWED_CHARS) != std::string::npos)
 		return HttpErrors::httpResponse400(client), this->enablePOLLOUT(client.fd);

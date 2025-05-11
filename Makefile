@@ -6,7 +6,7 @@ NAME=webserv
 # OTM
 SRCS=main.cpp srcs/parsing/config/readConfig.cpp srcs/parsing/helpers/strTrim.cpp \
 srcs/parsing/helpers/FtPars.cpp srcs/models/Server.cpp  debug/printing.cpp \
-srcs/utils/httpResponseErrors.cpp 
+srcs/utils/httpResponseErrors.cpp srcs/utils/serverUtils.cpp
 
 # ACHAKKAF
 SRCS +=  srcs/cgi/ft_cgi.cpp srcs/models/Upload.cpp

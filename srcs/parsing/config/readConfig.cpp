@@ -14,7 +14,6 @@
 
 readConfig::readConfig(void)
 {
-	std::cout << "Default conf Constructor...\n";
 	this->lines = new std::vector<std::string>();
 	if (!this->lines)
 		throw std::runtime_error("No ressources");
@@ -91,7 +90,7 @@ void	readConfig::readFile(char *argFile)
 			++x;
 	}
 	this->seperateServers();
-	std::cout << this->servers.size() << " ################################################### \n";
+	std::cout << " --------- ------------ ------------- ------------ \n";
 	// for (size_t i = 0; i < this->servers.size(); ++i) { //!
 	// 	std::cout << "Id: " << i << std::endl;
 	// 	printServer(this->servers[i]);

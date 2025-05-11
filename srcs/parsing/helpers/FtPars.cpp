@@ -185,7 +185,6 @@ namespace	FtPars {
 		{
 			if (!FtPars::isNumbersOnly(tmp))
 				throw std::runtime_error("Error parsing server ports");
-			std::cout << "A new Port added: " << tmp << std::endl;
 			arr.push_back(tmp);
 		}
 		for (size_t i = 0; i < arr.size(); i++) {
@@ -207,8 +206,6 @@ namespace	FtPars {
 	}
 
 	void	enableUploadsHandler(Server& server, std::string& line) {
-
-		std::cout << "enableUploadsHandler: " << line << std::endl;
 		if (line == "on")
 			server.setEnableUploads(true);
 		else if (line == "off")
@@ -243,15 +240,9 @@ namespace	FtPars {
 			} else
 				throw std::runtime_error("Error parsing server redirects");
 		}
-		std::cout << COL_YELLOW << "Redirects: ----------------------> " << std::endl;
-		for (std::map<std::string, std::string>::const_iterator it = server.getRedirects().begin(); it != server.getRedirects().end(); ++it) {
-			std::cout << COL_YELLOW << "Key: " << it->first << " Value: " << it->second << END_COL << std::endl;
-		}
-		std::cout << COL_YELLOW << "----------------------------------" << END_COL << std::endl;
 	}
 
 	void	handleCGIs(Server& server, std::string& line) {
-		// /usr/bin/php-cgi:.py,/usr/bin/go-cgi:.go,/usr/bin/cs-cgi:.cs
 		std::string		tmp;
 		std::stringstream	ss(line);
 		std::vector<std::string> arr;
@@ -270,11 +261,6 @@ namespace	FtPars {
 			} else
 				throw std::runtime_error("Error parsing server cgis");
 		}
-		std::cout << COL_YELLOW << "CGIs: ----------------------> " << std::endl;
-		for (std::map<std::string, std::string>::const_iterator it = server.getCGIs().begin(); it != server.getCGIs().end(); ++it) {
-			std::cout << COL_YELLOW << "Key: " << it->first << " Value: " << it->second << END_COL << std::endl;
-		}
-		std::cout << COL_YELLOW << "----------------------------------" << END_COL << std::endl;
 	}
 
 	size_t	getCurrentTimeMs() {

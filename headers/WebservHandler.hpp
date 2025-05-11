@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:37:19 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/09 19:06:33 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/11 18:38:44 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 # define RUNNING 1
 # define POLL_TIMEOUT 0
 # define END_OF_HEADERS "\r\n\r\n"
-# define READ_SIZE 4096
+# define READ_SIZE 1024
 # define URL_MAX_SIZE 20
 # define CHUNCK_SIZE 4096
 
@@ -39,7 +39,7 @@ class WebservHandler
 		std::map<int, ClientData>	_requests;
 		void	setRequestType(ClientData& client);
 		void	setContentLength(ClientData& client);
-		bool	isChunkedComplete(ClientData& client);
+		// bool	isChunkedComplete(ClientData& client);
 		bool	isHeaderComplete(ClientData& client);
 		bool	isRequestComplete(ClientData& client);
 		bool	isRequestValid(ClientData& client);
@@ -52,10 +52,8 @@ class WebservHandler
 
 	public:
 		WebservHandler();
-		static int requestCount;
 		void 					enablePOLLOUT(int fd);
 	~WebservHandler();
-
 };
 
 extern WebservHandler	*wServ;
