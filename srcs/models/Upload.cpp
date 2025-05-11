@@ -91,6 +91,7 @@ void processMultipartUpload(ClientData &client)
 {
 	ssize_t written;
 
+
     while(!client.request.empty()) {
         if (client.uploadFd.find(client.tmpFileName) == client.uploadFd.end()){
             size_t headers = client.request.find("\r\n\r\n");
@@ -99,6 +100,8 @@ void processMultipartUpload(ClientData &client)
                 fileName = getFileName(client.request);
                 if (!fileName.empty()) {
                     client.tmpFileName = "upload_" + fileName;
+                    if (client.uploadFd.find(client.tmpFileName) != client.uploadFd.end())
+                        close(client.uploadFd[client.tmpFileName]);
                     client.uploadFd[client.tmpFileName] = open(client.tmpFileName.c_str() ,O_CREAT | O_TRUNC | O_WRONLY, 0644);
                     if (client.uploadFd[client.tmpFileName] == -1){
                         closeFiles(client);
@@ -137,6 +140,7 @@ void processMultipartUpload(ClientData &client)
                 client.request.clear();
                 client.tmpFileName.clear();
                 closeFiles(client);
+                // REQUEST_COMPLETE
             }
             else
                 return;
@@ -152,7 +156,5 @@ void processMultipartUpload(ClientData &client)
             }
             client.request.erase(0, written);
         }
-        // else
-        //     client.request.clear();
     }
 }
