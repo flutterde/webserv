@@ -88,7 +88,7 @@ class	Server {
 		const std::vector<uint32_t>&	getPorts(void) const;
 		bool	getEnableUploads(void) const;
 		int		getSocket() const;
-		const std::map<std::string, std::string>&	getRedirects(void)	const;
+		std::map<std::string, std::string>&	getRedirects(void);
 		const std::string&	getCGI(std::string& val)	const;
 		const std::map<std::string, std::string>&	getCGIs()	const;
 		//? Setters

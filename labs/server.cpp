@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 22:31:18 by ochouati          #+#    #+#             */
-/*   Updated: 2025/03/20 18:21:26 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/07 19:46:02 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ int main() {
     server_addr.sin_port = htons(PORT);
 
     if (bind(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-        printError("Bind failed");
+        printError("Bind failed 1");
     }
 
     // Listen for connections

@@ -6,37 +6,43 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:11 by mboujama          #+#    #+#             */
-/*   Updated: 2025/03/20 10:05:20 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/12 12:10:05 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef RESPONSE_HPP
-# define RESPONSE_HPP
-# include <iostream>
+#pragma once
 
-class Response
+# include "../learning/request.hpp"
+# include "./WebservHandler.hpp"
+# include "./ResponseUtils.hpp"
+# include "./MimeTypes.hpp"
+# include "Cgi.hpp"
+
+class Response : public MimeTypes
 {
 	private:
-		std::string http_version;
-		int status_code;
-		std::string status_text;
-		std::string body;
-
-	public:
+		Cgi *cgi;
 		Response(void);
 		Response(const Response& obj);
 		Response&	operator=(const Response& obj);
+		
+		std::string http_version;
+		RESPONSE_CODE status_code;
+		std::string status_text;
+		std::map<std::string, std::string> headers;
+		std::string body;
+		std::string date;
+		int fd;
+
+		int getFd() const;
+		void handleGet(struct ClientData &client, Request &req, std::string &path);
+		void handlePost(struct ClientData &client, Request &req, const std::string &path);
+		void handleDelete(struct ClientData &client, Request &req, const std::string &path);
+
+		int checkRequestedPath(struct ClientData &client, const std::string &req);
+		int checkAllowedMethods(struct ClientData &client, const Request &req);
+	public:
+		Response(struct ClientData &clientData , Request &request);
 		~Response();
-
-		std::string getHttpVersion();
-		int getStatusCode();
-		std::string getStatusText();
-		std::string getBody();
-
-		void setHttpVersion(std::string version);
-		void setStatusCode(int status);
-		void setStatusText(std::string status);
-		void setBody(std::string body);
-};
-
-#endif
+		std::string combineResponse();
+};	

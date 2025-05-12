@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MimeTypes.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 16:47:27 by ochouati          #+#    #+#             */
-/*   Updated: 2025/03/25 16:49:37 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/04/23 14:42:30 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,5 +30,8 @@ MimeTypes::MimeTypes()
 }
 
 MimeTypes::~MimeTypes()
-{
+{}
+
+std::string MimeTypes::getMimeType(std::string filepath) {
+	return types[filepath.substr(filepath.find_last_of('.'))];
 }

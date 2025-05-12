@@ -19,6 +19,7 @@ configs/php/app
 *.gch
 *.pch
 labs/app
+mmm/
 *.log
 # Compiled Dynamic libraries
 *.so
@@ -48,3 +49,5 @@ testing/
 *.app
 .DS_Store
 
+
+test*

@@ -152,7 +152,7 @@ int	Server::getSocket() const
 	return (this->serverSocket);
 }
 
-const std::map<std::string, std::string>&	Server::getRedirects(void)	const
+std::map<std::string, std::string>&	Server::getRedirects(void)
 {
 	return (this->redirects);
 }
@@ -293,7 +293,7 @@ void	Server::ftBind(void)
 	std::cout << "Host: " << COL_GREEN << this->host << END_COL " Port: " << COL_YELLOW << this->port << END_COL << std::endl;
 	addr.sin_addr.s_addr = inet_addr(this->host.c_str());
 	if ((this->serverBind = bind(this->serverSocket, (struct sockaddr *)&addr, sizeof(addr))) < 0)
-		throw std::runtime_error("Bind failed");
+		throw std::runtime_error("Bind failed 3");
 }
 
 

@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/12 18:45:35 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/12 18:57:12 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,7 +170,7 @@ void	Webserv::handleClientRequest(int pollIdx, int fd)
 	// }
 	if (it->second.bodyReded != -1) {
 		it->second.bodyReded += bytesRead;
-		std::cout << COL_GREEN << "Body readed: " << it->second.bodyReded << END_COL << std::endl;
+		// std::cout << COL_GREEN << "Body readed: " << it->second.bodyReded << END_COL << std::endl;
 	}
 	if (this->_isRequestComplete(it->second)) {
 		printWarning("Request Ready......................>>>>");

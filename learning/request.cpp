@@ -144,5 +144,8 @@ size_t Request::getEnvSize(void) const
 	return vEnv.size();
 }
 
+void Request::setPath(std::string &newPath) {
+	path = newPath;
+}
 
 Request::~Request() {}
