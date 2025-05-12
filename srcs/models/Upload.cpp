@@ -1,4 +1,5 @@
 #include "./../../headers/Webserv.hpp"
+#include <algorithm>
 #include <cstddef>
 #include <cstdio>
 #include <ctime>
@@ -61,7 +62,7 @@
 
 /// get file name from a buffer request
 std::string getFileName(const std::string &buffer){
-	std::string fileName;
+	std::string fileName; 
 	size_t i = buffer.find("filename=\"");
 	if (i != std::string::npos) {
 		for (i = i + 10; buffer[i] != '"' && buffer[i] ; ++i){
@@ -73,8 +74,9 @@ std::string getFileName(const std::string &buffer){
 	return fileName;
 }
 
-//! - add temp file to temp folder
-//! - add copy the fie from temp folder to the corant folder
+
+//! set client.currentFileFd to -1
+//! call setheader() function (I am not sure about the function name)
 // You should put all tmp files in a temp folder
 void processMultipartUpload(ClientData &client)
 {
@@ -97,30 +99,37 @@ void processMultipartUpload(ClientData &client)
                 return;
         }
 
-        size_t boundary = client.request.find("--" + client.boundary);
-        if (boundary != std::string::npos) {
-            if (client.currentFileFd != -1){
-                written =  write(client.currentFileFd,
-                                        client.request.c_str(),
-                                        boundary > 2 ? boundary - 2: 0);
-                if (written == -1){
+        std::cout << COL_RED << "uploading..." << END_COL << std::endl;
+        if (client.request.rfind("\r") != std::string::npos){
+            size_t boundaryPos = client.request.find("--" + client.boundary);
+            // std::cout << COL_RED << client.request << " " << boundaryPos << END_COL<< std::endl;
+            if (boundaryPos != std::string::npos) {
+                if (client.currentFileFd != -1){
+                    written =  write(client.currentFileFd,
+                                            client.request.c_str(),
+                                            boundaryPos > 2 ? boundaryPos - 2: 0);
+                    if (written == -1){
+                        close(client.currentFileFd);
+                        client.currentFileFd = -1;
+                        return;
+                    }
+                }
+                if(client.request.find("--" + client.boundary + "--") != std::string::npos){
                     close(client.currentFileFd);
                     client.currentFileFd = -1;
-                    return;
                 }
+                client.request.erase(0, boundaryPos + client.boundary.size() + 2);
+                continue;
             }
-            if(client.request.find("--" + client.boundary + "--") != std::string::npos){
-                close(client.currentFileFd);
-                client.currentFileFd = -1;
-            }
-            client.request.erase(0, boundary);
-            continue;
+            else
+                return;
         }
 
         if (client.currentFileFd != -1) {
             written = write(client.currentFileFd, 
                             client.request.c_str(),
                             client.request.size());
+            // std::cout << client.request << std::endl;
             if (written == -1){
                 close(client.currentFileFd);
                 client.currentFileFd = -1;

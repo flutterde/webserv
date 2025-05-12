@@ -57,89 +57,6 @@ Server::Server(const Server& srv, uint32_t port) //!
 	this->serverSocket = -1;
 }
 
-static std::string&	validateAndTrim(std::string& str) {
-	try
-	{
-		str = str.substr(str.find_first_of('=') + 1, str.length());
-		str = FtPars::strTrim(str, " 	");
-		FtPars::isValidPattern(str);
-		str = FtPars::strTrim(str, "\"");
-	}
-	catch(const std::exception& e)
-	{
-		throw std::runtime_error(e.what());
-	}
-	return (str);
-}
-
-static void	fillServerData(std::string& line, Server& srv) {
-	std::string str;
-	str = line;
-	if (!line.compare(0, 11, "server_name")) {
-		if (!srv.getserverName().empty())
-			throw std::runtime_error("server_name already set");
-		validateAndTrim(str);
-		srv.setserverName(str);
-	} else if (!line.compare(0, 4, "host")) {
-		if (!srv.getHost().empty())
-			throw std::runtime_error("host already set");
-		validateAndTrim(str);
-		FtPars::isValidIP4(str);
-		srv.setHost(str);
-	} else if (!line.compare(0, 4, "port")) {
-		validateAndTrim(str);
-		FtPars::serverPortsHandler(srv, str);
-	} else if (!line.compare(0, 20, "client_max_body_size")) {
-		validateAndTrim(str);
-		srv.setLimitClientBodySize(std::atoi(str.c_str()));
-	} else if (!line.compare(0, 14, "error_page_404")) {
-		validateAndTrim(str);
-		srv.setErrorPage404(str);
-	} else if (!line.compare(0, 14, "error_page_500")) {
-		validateAndTrim(str);
-		srv.setErrorPage500(str);
-	}else if (!line.compare(0, 15, "allowed_methods")) {
-		validateAndTrim(str);
-		srv.setMethods(FtPars::parseMethods(srv.getAllowedMethods(), str));
-	} else if (!line.compare(0, 7, "indexes")) {
-		validateAndTrim(str);
-		FtPars::setServerIndexes(srv, str);
-	} else if (!line.compare(0, 9, "autoindex")) {
-		validateAndTrim(str);
-		FtPars::autoIndexHandler(srv, str);
-	} else if (!line.compare(0, 14, "upload_enabled")) {
-		validateAndTrim(str);
-		FtPars::enableUploadsHandler(srv, str);
-	} else if (!line.compare(0, 13, "location_root")) {
-		validateAndTrim(str);
-		srv.setRootPath(str);
-	} else if (!line.compare(0, 9, "redirects")) {
-		std::cout << "-----> redirects: " << str << std::endl;
-		validateAndTrim(str);
-		FtPars::handleRedirects(srv, str);
-	} else if (!line.compare(0, 21, "client_body_temp_path")) {
-		validateAndTrim(str);
-		srv.setClientBodyTempPath(str);
-	} else if (!line.compare(0, 3, "cgi")) {
-		validateAndTrim(str);
-		FtPars::handleCGIs(srv, str);
-	} else if (!line.compare(0, 14, "client_timeout")) {
-		validateAndTrim(str);
-		srv.setTimeout(std::atoi(str.c_str()));
-	}
-}
-
-static void	setServer(std::vector<std::string>& arr, size_t& idx, Server& srv)
-{
-	idx++;
-	for (size_t i = idx; i < arr.size(); ++i) {
-		if (FtPars::isNewServer(arr[i])) {
-			break;
-		}
-		fillServerData(arr[i], srv);
-	}
-	idx--;
-}
 
 Server::Server(std::vector<std::string>& arr, size_t& idx)
 {
@@ -156,7 +73,6 @@ Server::Server(std::vector<std::string>& arr, size_t& idx)
 }
 
 // GETTERS
-
 uint32_t	Server::getPort(void)	const
 {
 	return (this->port);
@@ -226,6 +142,11 @@ const std::string&	Server::getClientBodyTempPath(void) const
 	return (this->clientBodyTempPath);
 }
 
+const std::string&	Server::getUploadsPath(void) const
+{
+	return (this->uploadsPath);
+}
+
 int	Server::getSocket() const
 {
 	return (this->serverSocket);
@@ -250,7 +171,6 @@ const std::map<std::string, std::string>&	Server::getCGIs()	const
 }
 
 // SETTERS
-
 void	Server::setPort(uint32_t val)
 {
 	this->port = val;
@@ -269,6 +189,11 @@ void	Server::setHost(std::string& val)
 void	Server::setClientBodyTempPath(std::string& val)
 {
 	this->clientBodyTempPath = val;
+}
+
+void	Server::setUploadsPath(std::string& val)
+{
+	this->uploadsPath = val;
 }
 
 void	Server::setserverName(std::string& val)
@@ -365,7 +290,7 @@ void	Server::ftBind(void)
 	std::memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(this->port);
-	std::cout << "Host: " << this->host << " len: " << this->host.size() << std::endl;
+	std::cout << "Host: " << COL_GREEN << this->host << END_COL " Port: " << COL_YELLOW << this->port << END_COL << std::endl;
 	addr.sin_addr.s_addr = inet_addr(this->host.c_str());
 	if ((this->serverBind = bind(this->serverSocket, (struct sockaddr *)&addr, sizeof(addr))) < 0)
 		throw std::runtime_error("Bind failed 3");

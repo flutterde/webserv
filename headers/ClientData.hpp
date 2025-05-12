@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 13:07:08 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/07 11:35:17 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/11 16:57:16 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ enum	requestType {
 enum requestProgress {
 	NOT_STARTED = -1,
 	WORKING,
+	COLLECTED,
 	READY,
 };
 
@@ -33,7 +34,7 @@ struct ClientData {
 	int				fd;
 	requestType		type;
 	bool			isRequestComplete;
-	size_t			bytesSent;
+	size_t			bytesSent; //! Why ?
 	long			contentLen;
 	size_t			readed; //! why ?
 	bool			isHeaderComplete;
@@ -54,6 +55,6 @@ struct ClientData {
 	ClientData() : type(NOT_SET), isRequestComplete(false),
 		bytesSent(0), contentLen(-1), readed(0), isHeaderComplete(false),
 		isHeadersChecked(false), file(-1), server(NULL), bodyReded(-1), progress(NOT_STARTED),
-		startTime(FtPars::getCurrentTimeMs()) {}
+		startTime(FtPars::getCurrentTimeMs()), currentFileFd(-1) {}
 	~ClientData() {}
 };

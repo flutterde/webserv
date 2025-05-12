@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 19:52:42 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/08 11:31:01 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/12 12:46:47 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ char **Cgi::createEnvironmentVariables(Request &request, char **systemEnv)
 	for (size_t j = 0; !request.getEnv(j).empty(); ++j)
 		envVariables[index++] = strdup(request.getEnv(j).c_str());
 
-	envVariables[index] = NULL;
+	envVariables[index - 1] = NULL;
 	return envVariables;
 }
 

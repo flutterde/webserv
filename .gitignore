@@ -19,13 +19,16 @@ configs/php/app
 *.gch
 *.pch
 labs/app
+mmm/
 *.log
 # Compiled Dynamic libraries
 *.so
 *.dylib
 *.dll
 *.zip
-
+uploadtestfile.txt 
+uploadtestfile.cpp
+.DS_Store
 # Fortran module files
 *.mod
 *.smod

@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/12 10:34:34 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/12 10:38:19 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include <iostream>
 #include <string>
 #include <sys/poll.h>
-
 
 Webserv::Webserv() {
 }
@@ -37,7 +36,7 @@ Webserv::Webserv(readConfig& config, char **env) {
 }
 
 void	Webserv::_init() {
-	std::cout << "initing............" << std::endl;
+	std::cout << COL_BLUE << "initing.." << END_COL << std::endl;
 	if (this->_servers.empty())
 		throw std::runtime_error("No servers found");
 	for (size_t i = 0; i < this->_servers.size(); ++i) {
@@ -49,10 +48,7 @@ void	Webserv::_init() {
 void	Webserv::run() {
 	this->_init();
 	while (RUNNING) {
-		if ((this->_nbrEvents = poll(_pollfds.data(), _pollfds.size(), 0)) < 0) {
-			std::cerr << COL_RED << "Error while polling: " << END_COL << std::endl;
-			continue;
-		}
+		if ((this->_nbrEvents = poll(_pollfds.data(), _pollfds.size(), 0)) < 0) continue;
 		for (size_t i = 0; i < _pollfds.size() && this->_nbrEvents > 0; ++i) {
 			if (_pollfds[i].revents & (POLLERR | POLLHUP)) {
 				if (!isServerSocket(_pollfds[i].fd))
@@ -64,13 +60,10 @@ void	Webserv::run() {
 				--this->_nbrEvents;
 				if (isServerSocket(_pollfds[i].fd))
 					this->acceptNewConnection(_pollfds[i].fd);
-				else {
+				else
 					this->handleClientRequest(i, _pollfds[i].fd);
-				}
-				printTime(); std::cout << COL_BLUE << " Events nbr: " << this->_nbrEvents << ":" << _pollfds[i].fd << END_COL << std::endl;
 			}
 			if (_pollfds[i].revents & POLLOUT) {
-				//! Writting to client should be here
 				//? 1. Check if client still exists in _requests
 				//? 2. check if the request progress is complete
 				//? 3. send response
@@ -79,6 +72,7 @@ void	Webserv::run() {
 				this->sendResponse(_pollfds[i].fd);
 			}
 		}
+		this->timeoutHandler();
 	}
 }
 
@@ -90,11 +84,14 @@ Server*	Webserv::getServerByFd(int fd) {
 }
 
 bool	Webserv::_isRequestComplete(ClientData& client) {
+	if (client.progress == READY)
+		return (true);
 	if (!client.isHeaderComplete) {
 		this->isHeaderComplete(client);
 	}
 	this->setRequestType(client);
 	this->setContentLength(client);
+	this->setBoundary(client);
 	//! Validate request
 	//! ...
 	return (this->isRequestComplete(client));
@@ -112,6 +109,7 @@ void	Webserv::acceptNewConnection(int fd)
 {
 	std::cout << "(" << fd << ")"<< " accepting new connection..." << std::endl;
 	ClientData	newClient;
+	// newClient.webservHandler = this;
 	try {
 		Server	*srv = this->getServerByFd(fd);
 		std::cout << "server port: " << srv->getPort() << "Server name: " << srv->getserverName() << std::endl;
@@ -137,41 +135,39 @@ void	Webserv::acceptNewConnection(int fd)
 	}
 }
 
-//! Handle Client Request
-//! 1. Read request from socket to buffer
-//! 2. Append buffer to request
-//! 3. Check if request is complete
 void	Webserv::handleClientRequest(int pollIdx, int fd)
 {
-	(void)pollIdx;
+	std::cout << COL_BLUE << "Handling client request..." << END_COL << std::endl;
 	//! delete this
+	(void)pollIdx;
 	char buffer[READ_SIZE];
 	ssize_t	bytesRead = recv(fd, buffer, READ_SIZE - 1, 0);
-	if (bytesRead <= 0) { //! check this
+	std::cout << COL_BLUE << "Bytes read: " << bytesRead << END_COL << std::endl;
+	if (bytesRead < 0) { //! check this
 		if (bytesRead == 0) {
 			std::cout << "Client disconnected" << std::endl;
 		} else {
-			std::cerr << "Error while reading from client" << std::endl;
+			std::cerr << COL_RED << "Error while reading from client" << END_COL << std::endl;
 		}
 		this->_closeClient(fd);
 		return;
 	}
 	buffer[bytesRead] = '\0';
-	std::cout << COL_RED << " --------------------------------- " << END_COL << std::endl; //! remove this
 	std::cout << "Received request: \n" << "buffer" << std::endl; //! remove this
-	this->_requests[fd].request += buffer;
+	this->_requests[fd].request.append(buffer, bytesRead);
 	std::cout << COL_RED << " --------------------------------- " << END_COL << std::endl; //! remove this
 	std::map<int, ClientData>::iterator it = this->_requests.find(fd);
 	if (it == this->_requests.end()) {
 		std::cerr << "Error: client not found" << std::endl;
 		return;
 	}
-	if (FtPars::getCurrentTimeMs() - it->second.startTime > (it->second.server->getTimeout() * 1000)) //!
-	{
-		std::cout << "Client timeout" << std::endl;
-		this->_closeClient(fd);
-		return;
-	}
+	// //! change this
+	// if (FtPars::getCurrentTimeMs() - it->second.startTime > (it->second.server->getTimeout() * 1000)) //!
+	// {
+	// 	std::cout << "Client timeout" << std::endl;
+	// 	this->_closeClient(fd);
+	// 	return;
+	// }
 	if (it->second.bodyReded != -1) {
 		it->second.bodyReded += bytesRead;
 		// std::cout << COL_GREEN << "Body readed: " << it->second.bodyReded << END_COL << std::endl;
@@ -187,7 +183,6 @@ void	Webserv::sendResponse(int fd) //?! Complete the request, you have to send h
 {
 	mapIt it = this->_requests.find(fd);
 	if (it == this->_requests.end()) {
-		std::cerr << "Error: client not found" << std::endl;
 		return;
 	}
 	if (it->second.progress == READY) {
@@ -195,4 +190,19 @@ void	Webserv::sendResponse(int fd) //?! Complete the request, you have to send h
 	}
 	std::cout << " ************>>>>>>>>>>>>>>>>>> Sending response to client..." << std::endl;
 }
+
+void Webserv::timeoutHandler(void)
+{
+	for (mapIt it = _requests.begin(); it != _requests.end();) {
+		if (FtPars::getCurrentTimeMs() - it->second.startTime > (it->second.server->getTimeout() * 1000)) {
+			std::cout << "Client fd " << it->first << " timed out" << std::endl;
+			mapIt nextIt = it;
+			this->_closeClient(it->first);
+			it = nextIt;
+		} else {
+			++it;
+		}
+	}
+}
+
 

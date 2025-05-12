@@ -25,10 +25,11 @@
 
 char	**serverEnv;
 std::string	*notFound;
+WebservHandler	*wServ;
 
-void    ll(){ //! DELETE ME
-    system("leaks -q webserv");
-}
+// void    ll(){ //! DELETE ME
+//     system("leaks -q webserv");
+// }
 
 int server(char *argFile, char **env) {
     try {
@@ -45,7 +46,7 @@ int server(char *argFile, char **env) {
 
 int	main(int ac, char **av, char **env)
 {
-    atexit(ll); //! -->delete
+    // atexit(ll); //! -->delete
 	if (ac != 2) {
 		std::cout << "config file require!" << std::endl;
 		return (1);
