@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 13:07:08 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/11 16:57:16 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/12 12:26:24 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ struct ClientData {
 	size_t			readed; //! why ?
 	bool			isHeaderComplete;
 	bool			isHeadersChecked;
-	int				file; //! 
+	int				file; //!
+	std::string		method;
 	std::string		request;
 	Server			*server;
 	std::string		headers;

@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/11 18:13:40 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/12 14:17:15 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@ void	WebservHandler::setRequestType(ClientData& client)
 	printWarning("setRequestType....");
 	if (client.headers.empty() || client.type != NOT_SET)
 		return;
+	else if (client.method != "POST")
+		client.type = NO_CONTENT;
 	else if (client.headers.find("Content-Type: multipart/form-data") != std::string::npos)
 		client.type = MULTIPART_FORM;
 	else if (client.headers.find("Content-Length:") != std::string::npos)
@@ -84,6 +86,9 @@ bool	WebservHandler::isHeaderComplete(ClientData& client)
 		client.request = client.request.substr(pos + 4);
 		client.bodyReded = client.request.size();
 		client.progress = WORKING;
+		this->setMethod(client);
+		std::cout << COL_GREEN << client.headers << END_COL  << "\n\n" << std::endl;
+		std::cout << COL_MAGENTA << client.request << END_COL << "\n\n" << client.request.size() << std::endl;
 		return (true);
 	}
 	return (false);
@@ -144,6 +149,16 @@ void	WebservHandler::setBoundary(ClientData& client)
 		return;
 	client.boundary = client.headers.substr(start, end - start);
 	std::cout << "*>> Boundary: " << client.boundary << std::endl;
+}
+
+void	WebservHandler::setMethod(ClientData& client)
+{
+	if (!client.isHeaderComplete || !client.method.empty())
+		return;
+	size_t pos = client.headers.find(" ");
+	if (pos == std::string::npos)
+		return;
+	client.method = client.headers.substr(0, pos);
 }
 
 void	WebservHandler::handleRequest(ClientData& client)
