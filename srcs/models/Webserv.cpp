@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/11 18:46:01 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/12 18:45:35 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,16 +193,17 @@ void	Webserv::sendResponse(int fd) //?! Complete the request, you have to send h
 
 void Webserv::timeoutHandler(void)
 {
-	for (mapIt it = _requests.begin(); it != _requests.end();) {
-		if (FtPars::getCurrentTimeMs() - it->second.startTime > (it->second.server->getTimeout() * 1000)) {
-			std::cout << "Client fd " << it->first << " timed out" << std::endl;
-			mapIt nextIt = it;
-			this->_closeClient(it->first);
-			it = nextIt;
-		} else {
-			++it;
-		}
-	}
+    mapIt it = _requests.begin();
+    while (it != _requests.end()) {
+        if (FtPars::getCurrentTimeMs() - it->second.startTime > (it->second.server->getTimeout() * 1000)) {
+            std::cout << "Client fd " << it->first << " timed out" << std::endl;
+            int clientFd = it->first;
+            ++it;
+            this->_closeClient(clientFd);
+        } else {
+            ++it;
+        }
+    }
 }
 
 
