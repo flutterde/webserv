@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 12:29:43 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/07 20:03:13 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/12 09:05:13 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,3 +139,38 @@ std::string ResponseUtils::generateAutoIndex(std::string filepath) {
 	body << "";
 	return body.str();
 }
+
+bool    ResponseUtils::deleteFile(const std::string& path)
+{
+    if (remove(path.c_str()) != 0) {
+        std::cerr << "Error deleting file: " << path << std::endl;
+		return false;
+	}
+	return true;
+}
+
+bool ResponseUtils::deleteFolder(const std::string& path)
+{
+    DIR* dir = opendir(path.c_str());
+
+    if (!dir) {
+        std::cerr << "Error opening directory: " << path << std::endl;
+        return false;
+    }
+    struct dirent* entry;
+    while ((entry = readdir(dir)) != NULL)
+    {
+        if (std::string(entry->d_name) == "." || std::string(entry->d_name) == "..")
+            continue;
+        std::string filePath = path + "/" + entry->d_name;
+        if (entry->d_type == DT_DIR)
+            deleteFolder(filePath);
+        else
+            deleteFile(filePath);
+    }
+    closedir(dir);
+    if (remove(path.c_str()) != 0)
+        std::cerr << "Error deleting directory: " << path << std::endl;
+	return true;
+}
+

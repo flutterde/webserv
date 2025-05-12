@@ -6,22 +6,22 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/08 11:35:05 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/12 10:28:09 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../../headers/Response.hpp"
+#include <ostream>
 
 Response::Response(void) {}
 
 Response::~Response(void) {}
 
-Response::Response(const Response& obj){
+Response::Response(const Response& obj) {
 	*this = obj;
 }
 
-Response& Response::operator=(const Response& obj)
-{
+Response& Response::operator=(const Response& obj) {
 	(void) obj;
 	return (*this);
 }
@@ -45,6 +45,7 @@ std::string Response::combineResponse(void) {
 Response::Response(struct ClientData &client, Request &req) {
 	cgi = new Cgi();
 	std::string full_path = client.server->getRootPath() + req.getPath();
+	std::cout << COL_GREEN << "Full path: " << full_path << END_COL << std::endl;
 	http_version = req.getVersion();
 
 	headers["Server"] = "NorthServ/1.0";
@@ -61,9 +62,12 @@ Response::Response(struct ClientData &client, Request &req) {
 	{
 		status_code = MOVED_PERMANENTLY;
 		headers["location"] = client.server->getRedirects()[req.getPath()];
+		return ;
 	}
-	else if (!ResponseUtils::pathExists(full_path))
+	else if (!ResponseUtils::pathExists(full_path)) {
 		status_code = NOT_FOUND;
+		std::cout << COL_RED << "File really doesn't exist" << END_COL << std::endl;
+	}
 	else if (req.getMethod() == "GET")
 		handleGet(client, req, full_path);
 	else if (req.getMethod() == "POST")
@@ -71,6 +75,7 @@ Response::Response(struct ClientData &client, Request &req) {
 	else if (req.getMethod() == "DELETE")
 		handleDelete(client, req, full_path);
 
+	std::cout << status_code << std::endl;
 	switch (status_code) {
 		// 30x
 		case MOVED_PERMANENTLY:
@@ -93,6 +98,10 @@ Response::Response(struct ClientData &client, Request &req) {
 			body = ResponseUtils::getErrorPage(METHOD_NOT_ALLOWED);
 			headers["Content-Length"] = ResponseUtils::toString(body.length());
 			break ;
+		case NOCONTENT:
+			break;
+		case INTERNAL_SERVER_ERROR:
+			break;
 		default:
 			status_code = OK;
 			status_text = "OK";
@@ -106,12 +115,12 @@ Response::Response(struct ClientData &client, Request &req) {
 
 
 void Response::handleGet(struct ClientData &client, Request &req, const std::string &path) {
+	std::cout << COL_YELLOW << "Getting here" << END_COL << std::endl;
 	bool isFile = true;
 	std::string index;
 
-	if (path.find("..") != std::string::npos) {
+	if (path.find("..") != std::string::npos)
 		status_code = FORBIDDEN; return;
-	}
 	if (ResponseUtils::isDirectory(path)) {
 		if (path.at(path.length() - 1) != '/') {
 			status_code = MOVED_PERMANENTLY;
@@ -142,7 +151,7 @@ void Response::handleGet(struct ClientData &client, Request &req, const std::str
 	}
 }
 
-void Response::handlePost(struct ClientData &client, Request &req, const std::string &path) {
+void Response::handlePost(struct ClientData &client, Request &req, const std::string &path) {	
 	(void) client;
 	(void) req;
 	(void) path;
@@ -150,8 +159,36 @@ void Response::handlePost(struct ClientData &client, Request &req, const std::st
 }
 
 void Response::handleDelete(struct ClientData &client, Request &req, const std::string &path) {
+	std::cout << COL_RED << "Start deleting" << END_COL << std::endl;
 	(void) client;
-	(void) req;
-	(void) path;
-	std::cout << "delete" << std::endl;
+	if (path.find("..") != std::string::npos)
+		status_code = FORBIDDEN; return;
+
+	std::cout << COL_RED << "Check 1 passed" << END_COL << std::endl;
+	if (ResponseUtils::isDirectory(path)) {
+		std::cout << COL_BLUE << "deleting folder" << END_COL << std::endl;
+		if ((path.at(path.length() - 1)) != '/') {
+			status_code = MOVED_PERMANENTLY;
+			headers["location"] = req.getPath() + "/";
+			return ;
+		}
+		if (ResponseUtils::deleteFolder(path))
+			status_code = NOCONTENT;
+		else {
+			if (access(path.c_str(), W_OK))
+				status_code = FORBIDDEN;
+			else
+				status_code = INTERNAL_SERVER_ERROR;
+		}
+	} else {
+		std::cout << COL_BLUE << "deleting file" << END_COL << std::endl;
+		if (ResponseUtils::deleteFile(path))
+			status_code = NOCONTENT;
+		else {
+			if (access(path.c_str(), W_OK))
+				status_code = FORBIDDEN;
+			else
+				status_code = INTERNAL_SERVER_ERROR;
+		}
+	}
 }

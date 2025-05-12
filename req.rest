@@ -1,9 +1,7 @@
-#GET, POST, DELETE
-GET http://127.0.0.1:8080/test HTTP/1.1
+DELETE http://127.0.0.1:8080/folder/ HTTP/1.1
 Connection: "keep-alive"
 
 ###
 
-#GET
 GET http://localhost:8080/test.py HTTP/1.1
 Content-Type: "text/html"

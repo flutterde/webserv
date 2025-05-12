@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/07 18:48:19 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/12 10:34:34 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,7 +174,7 @@ void	Webserv::handleClientRequest(int pollIdx, int fd)
 	}
 	if (it->second.bodyReded != -1) {
 		it->second.bodyReded += bytesRead;
-		std::cout << COL_GREEN << "Body readed: " << it->second.bodyReded << END_COL << std::endl;
+		// std::cout << COL_GREEN << "Body readed: " << it->second.bodyReded << END_COL << std::endl;
 	}
 	if (this->_isRequestComplete(it->second)) {
 		printWarning("Request Ready......................>>>>");
