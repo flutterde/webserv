@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/12 18:58:59 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/13 18:10:22 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,6 +173,7 @@ void	WebservHandler::handleRequest(ClientData& client)
 	std::string res = response->combineResponse();
 	std::cout << "=======>\n" << res << "\n<=======" << std::endl;
 	send(client.fd, res.c_str(), res.size(), 0);
+	this->_closeClient(client.fd); // first should be the send everything
 }
 
 void	WebservHandler::validateRequestHeaders(ClientData& client)
