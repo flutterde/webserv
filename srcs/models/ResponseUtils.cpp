@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 12:29:43 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/12 09:05:13 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/12 14:52:03 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,3 +174,16 @@ bool ResponseUtils::deleteFolder(const std::string& path)
 	return true;
 }
 
+std::string ResponseUtils::getAllowHeader(std::map<std::string, bool> allowed) {
+	std::string ret;
+	bool first = true;
+	std::map<std::string, bool>::iterator it;
+	
+	for (it = allowed.begin(); it != allowed.end(); it++) {
+		if (!first)
+			ret.append(", ");
+		ret.append(it->first);
+		first = false;
+	}
+	return ret;
+}

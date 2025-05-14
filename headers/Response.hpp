@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:11 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/12 12:10:05 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/12 14:34:17 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,8 @@ class Response : public MimeTypes
 
 		int getFd() const;
 		void handleGet(struct ClientData &client, Request &req, std::string &path);
-		void handlePost(struct ClientData &client, Request &req, const std::string &path);
-		void handleDelete(struct ClientData &client, Request &req, const std::string &path);
+		void handlePost(struct ClientData &client, Request &req, std::string &path);
+		void handleDelete(struct ClientData &client, Request &req, std::string &path);
 
 		int checkRequestedPath(struct ClientData &client, const std::string &req);
 		int checkAllowedMethods(struct ClientData &client, const Request &req);

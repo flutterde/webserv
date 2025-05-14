@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/12 12:55:31 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/12 14:52:32 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,11 @@ Response::Response(struct ClientData &client, Request &req) {
 	
 	if (full_path.find("..") != std::string::npos)
 		status_code = FORBIDDEN;
-	else if (!client.server->getAllowedMethods()[req.getMethod()])
+	else if (!client.server->getAllowedMethods()[req.getMethod()]) {
+		// Add allow headers;
+		headers["Allow"] = ResponseUtils::getAllowHeader(client.server->getAllowedMethods());
 		status_code = METHOD_NOT_ALLOWED;
+	}
 	else if (!client.server->getRedirects()[req.getPath()].empty())
 	{
 		status_code = MOVED_PERMANENTLY;
@@ -114,7 +117,6 @@ Response::Response(struct ClientData &client, Request &req) {
 
 
 void Response::handleGet(struct ClientData &client, Request &req, std::string &path) {
-	std::cout << COL_YELLOW << "Getting here" << END_COL << std::endl;
 	bool isFile = true;
 	std::string index;
 
@@ -122,7 +124,6 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 		status_code = FORBIDDEN; 
 		return;
 	}
-	std::cout << COL_YELLOW << "Getting here" << END_COL << std::endl;
 	if (ResponseUtils::isDirectory(path)) {
 		if (path.at(path.length() - 1) != '/') {
 			status_code = MOVED_PERMANENTLY;
@@ -155,17 +156,16 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 				: fd = ResponseUtils::openFile(path);
 		}	
 	}
-	std::cout << COL_RED << "End get request" << END_COL << std::endl;
+	client.progress = READY;
 }
 
-void Response::handlePost(struct ClientData &client, Request &req, const std::string &path) {	
-	(void) client;
+void Response::handlePost(struct ClientData &client, Request &req, std::string &path) {	
 	(void) req;
 	(void) path;
-	std::cout << "post" << std::endl;
+	client.progress = READY;
 }
 
-void Response::handleDelete(struct ClientData &client, Request &req, const std::string &path) {
+void Response::handleDelete(struct ClientData &client, Request &req, std::string &path) {
 	(void) client;
 	if (path.find("..") != std::string::npos) {
 		status_code = FORBIDDEN; 
@@ -196,4 +196,5 @@ void Response::handleDelete(struct ClientData &client, Request &req, const std::
 				status_code = INTERNAL_SERVER_ERROR;
 		}
 	}
+	client.progress = READY;
 }
