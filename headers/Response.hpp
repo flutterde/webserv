@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:11 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/14 12:05:28 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/14 17:44:41 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ class Response : public MimeTypes
 		std::map<std::string, std::string> headers;
 		std::string body;
 		std::string date;
-		int fd;
 
 		void handleGet(struct ClientData &client, Request &req, std::string &path);
 		void handlePost(struct ClientData &client, Request &req, std::string &path);
@@ -42,6 +41,7 @@ class Response : public MimeTypes
 		int checkRequestedPath(struct ClientData &client, const std::string &req);
 		int checkAllowedMethods(struct ClientData &client, const Request &req);
 	public:
+		int fd;
 		Response(struct ClientData &clientData , Request &request);
 		~Response();
 		std::string combineResponse();

@@ -6,13 +6,14 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/14 14:47:49 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/14 17:58:43 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../../headers/Webserv.hpp"
 #include <iostream>
 #include <string>
+#include <sys/fcntl.h>
 #include <sys/poll.h>
 
 Webserv::Webserv() {

@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/14 14:58:17 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/14 17:56:43 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <string>
 #include <sys/fcntl.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 WebservHandler::WebservHandler() {
 	wServ = this;
@@ -159,10 +160,7 @@ void	WebservHandler::handleRequest(ClientData& client)
 		return ;
 	}
 	if (!client.resp)
-		return;
-	// Request req(client.headers.append(client.request));
-	// if (!client.resp)
-	// 	client.resp = new Response(client, req); //! free this
+		return this->_closeClient(client.fd);
 	std::string res = client.resp->combineResponse();
 	int ffd = client.resp->getFd();
 	std::cout << COL_MAGENTA << "File descriptor: " << ffd << END_COL << std::endl;
