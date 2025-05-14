@@ -1,4 +1,4 @@
-GET http://127.0.0.1:8080/test.py HTTP/1.1
+GET http://127.0.0.1:8080/file.html HTTP/1.1
 Connection: "keep-alive"
 
 ###

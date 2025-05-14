@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:11 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/12 14:34:17 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/14 11:01:01 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ class Response : public MimeTypes
 		std::string date;
 		int fd;
 
-		int getFd() const;
 		void handleGet(struct ClientData &client, Request &req, std::string &path);
 		void handlePost(struct ClientData &client, Request &req, std::string &path);
 		void handleDelete(struct ClientData &client, Request &req, std::string &path);
@@ -45,4 +44,7 @@ class Response : public MimeTypes
 		Response(struct ClientData &clientData , Request &request);
 		~Response();
 		std::string combineResponse();
+		int getFd() const;
+		std::string getBody() const;
+		std::map<std::string, std::string> getHeaders() const;
 };	
