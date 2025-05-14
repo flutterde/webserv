@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WebservHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/12 10:39:45 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/13 18:10:22 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ void	WebservHandler::setRequestType(ClientData& client)
 	printWarning("setRequestType....");
 	if (client.headers.empty() || client.type != NOT_SET)
 		return;
+	else if (client.method != "POST")
+		client.type = NO_CONTENT;
 	else if (client.headers.find("Content-Type: multipart/form-data") != std::string::npos)
 		client.type = MULTIPART_FORM;
 	else if (client.headers.find("Content-Length:") != std::string::npos)
@@ -85,6 +87,7 @@ bool	WebservHandler::isHeaderComplete(ClientData& client)
 		client.request = client.request.substr(pos + 4);
 		client.bodyReded = client.request.size();
 		client.progress = WORKING;
+		this->setMethod(client);
 		return (true);
 	}
 	return (false);
@@ -147,6 +150,16 @@ void	WebservHandler::setBoundary(ClientData& client)
 	std::cout << "*>> Boundary: " << client.boundary << std::endl;
 }
 
+void	WebservHandler::setMethod(ClientData& client)
+{
+	if (!client.isHeaderComplete || !client.method.empty())
+		return;
+	size_t pos = client.headers.find(" ");
+	if (pos == std::string::npos)
+		return;
+	client.method = client.headers.substr(0, pos);
+}
+
 void	WebservHandler::handleRequest(ClientData& client)
 {
 	if (!client.error.empty()) {
@@ -160,6 +173,7 @@ void	WebservHandler::handleRequest(ClientData& client)
 	std::string res = response->combineResponse();
 	std::cout << "=======>\n" << res << "\n<=======" << std::endl;
 	send(client.fd, res.c_str(), res.size(), 0);
+	this->_closeClient(client.fd); // first should be the send everything
 }
 
 void	WebservHandler::validateRequestHeaders(ClientData& client)

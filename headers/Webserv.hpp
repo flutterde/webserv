@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:49:53 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/11 17:51:52 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/13 13:59:44 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,6 @@
 #include "ClientData.hpp"
 # include "WebservHandler.hpp"
 # include "readConfig.hpp"
-#include <cstddef>
-#include <map>
 #include <sys/poll.h>
 # include <vector>
 # include <poll.h>

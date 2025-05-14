@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 13:07:08 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/11 16:57:16 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/14 09:27:53 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ struct ClientData {
 	size_t			readed; //! why ?
 	bool			isHeaderComplete;
 	bool			isHeadersChecked;
-	int				file; //! 
+	int				file; //!
+	std::string		method;
 	std::string		request;
 	Server			*server;
 	std::string		headers;
@@ -51,6 +52,7 @@ struct ClientData {
 	std::string tmpFolder;
 	std::string	tmpFileName;
 	int			currentFileFd;
+	std::map<std::string, int> uploadFd;
 	//! add map
 	ClientData() : type(NOT_SET), isRequestComplete(false),
 		bytesSent(0), contentLen(-1), readed(0), isHeaderComplete(false),
