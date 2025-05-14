@@ -11,13 +11,17 @@
 /* ************************************************************************** */
 
 #pragma once
+// rename it to tooles;
+# include "Types.hpp"
+#include "WebservHandler.hpp"
+// #include "Cgi.hpp"
+#include "ClientData.hpp"
+#include "debug.hpp"
+#include "FtPars.hpp"
 
-# include <iostream>
-# include <sys/socket.h>
-# include <unistd.h>
-# define FIRST_INDEX 0
-
-extern char	**serverEnv;
-extern std::string	*notFound;
+extern char				**serverEnv;
+extern std::string		*notFound;
+extern WebservHandler	*wServ;
 
 std::string&	strTrim(std::string&str, std::string set); //!
+void 			processMultipartUpload(ClientData &client);

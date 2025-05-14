@@ -10,10 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include <map>
-#include <ctime>
+#include "../headers/Types.hpp"
 #include "../headers/debug.hpp"
+#include "../headers/Server.hpp"
 
 void	printing(std::string vr)
 {
@@ -65,13 +64,13 @@ void	printWarning(std::string str) {
 
 
 
-enum	requestType {
-	NOT_SET = -1,
-	CONTENT_LENGTH,
-	CHUNKED,
-	NO_CONTENT,
-	MULTIPART_FORM,
-};
+// enum	requestType {
+// 	NOT_SET = -1,
+// 	CONTENT_LENGTH,
+// 	CHUNKED,
+// 	NO_CONTENT,
+// 	MULTIPART_FORM,
+// };
 
 
 void	printRequestType(int nbr) {

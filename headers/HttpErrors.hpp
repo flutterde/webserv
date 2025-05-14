@@ -11,10 +11,8 @@
 /* ************************************************************************** */
 
 #pragma once
-#include "WebservHandler.hpp"
-
-struct ClientData;
-class	WebservHandler;
+#include "Types.hpp"
+#include "ClientData.hpp"
 class	HttpErrors {
 	public:
 		static void	httpResponse400(ClientData& client);

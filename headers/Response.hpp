@@ -12,12 +12,9 @@
 
 #pragma once
 
-# include "../learning/request.hpp"
-# include "./WebservHandler.hpp"
-# include "./ResponseUtils.hpp"
-# include "./MimeTypes.hpp"
-# include "Cgi.hpp"
-
+# include "Types.hpp"
+#include "MimeTypes.hpp"
+#include "Cgi.hpp"
 
 class Response : public MimeTypes
 {

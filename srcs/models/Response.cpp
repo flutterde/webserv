@@ -6,13 +6,14 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/14 12:01:02 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/14 19:02:06 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./../../headers/Response.hpp"
-#include <ostream>
-#include <sys/stat.h>
+#include "../../headers/Response.hpp"
+#include "../../headers/ResponseUtils.hpp"
+#include "../../headers/ClientData.hpp"
+#include "../../headers/header.hpp"
 
 Response::Response(void) {}
 

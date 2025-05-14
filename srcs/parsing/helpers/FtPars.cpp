@@ -11,9 +11,6 @@
 /* ************************************************************************** */
 
 #include "./../../../headers/FtPars.hpp"
-#include <algorithm>
-#include <cstddef>
-#include <sstream>
 
 /// @brief collection of helper functions for parsing
 namespace	FtPars {

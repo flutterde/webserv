@@ -10,18 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./../../headers/Server.hpp"
-#include "./../../headers/Webserv.hpp"
-#include "./../../headers/debug.hpp" //!
-#include <cstddef>
-#include <sys/fcntl.h>
+#include "../../headers/header.hpp"
 
-
-//?
-#include <stdexcept>
-#include <cstring>
-#include <arpa/inet.h>
-#include <netdb.h>  // For getaddrinfo
 
 Server::Server(void)//! why ?
 {		

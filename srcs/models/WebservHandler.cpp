@@ -6,19 +6,13 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/14 17:56:43 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/14 19:02:36 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./../../headers/WebservHandler.hpp"
-#include "./../../headers/Response.hpp"
-#include <cstddef>
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <sys/fcntl.h>
-#include <sys/socket.h>
-#include <unistd.h>
+#include "../../headers/header.hpp"
+#include "../../headers/HttpErrors.hpp"
+
 
 WebservHandler::WebservHandler() {
 	wServ = this;

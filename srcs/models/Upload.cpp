@@ -1,10 +1,5 @@
-#include "./../../headers/Webserv.hpp"
-#include <algorithm>
-#include <cstddef>
-#include <cstdio>
-#include <ctime>
-#include <string>
-#include <unistd.h>
+#include "../../headers/Webserv.hpp"
+
 
 /*-------- LARGE FILES ALGORITHM: --------*/
 //	 Receive chunk → store in buffer
@@ -21,44 +16,6 @@
 //	 	Rename temp files to final names
 /*-----------------------------------------*/
 
-#define CHARS_SIZE 256
-
-// void badCharHeuristic(std::string pattern, size_t size, int badChar[CHARS_SIZE])
-// {
-// 	for (size_t i = 0; i < CHARS_SIZE; ++i)
-// 		badChar[i] = -1;
-
-// 	for (size_t i = 0; i < size; ++i)
-// 		badChar[(size_t)pattern[i]] = i;
-// }
-
-// // the txt variable should stay string not string& because i pass a char[n] to it.
-// int search(const std::string &txt, const std::string &pattern)
-// {
-// 	if (pattern.empty() || txt.empty())
-// 		return -1;
-
-// 	int badChar[CHARS_SIZE];
-
-// 	int patternSize = pattern.size();
-// 	int txtSize = txt.size();
-// 	badCharHeuristic(pattern, patternSize, badChar);
-
-// 	int skip = 0;
-// 	int i = 0;
-// 	int j;
-// 	while (i <= txtSize - patternSize)
-// 	{
-// 		j = patternSize - 1;
-// 		while (j >= 0 && pattern[j] == txt[i + j])
-// 			--j;
-// 		if (j < 0)
-// 			return i;
-// 		skip = std::max(1, j - badChar[(int)txt[i + j]]);
-// 		i += skip;
-// 	}
-// 	return -1;
-// }
 
 /// get file name from a buffer request
 std::string getFileName(const std::string &buffer){
@@ -91,7 +48,6 @@ void processMultipartUpload(ClientData &client)
 {
 	ssize_t written;
 
-
     while(!client.request.empty()) {
         if (client.uploadFd.find(client.tmpFileName) == client.uploadFd.end()){
             size_t headers = client.request.find("\r\n\r\n");
@@ -99,7 +55,7 @@ void processMultipartUpload(ClientData &client)
             if (headers != std::string::npos) {
                 fileName = getFileName(client.request);
                 if (!fileName.empty()) {
-                    client.tmpFileName = "upload_" + fileName; //! remove prefix & chan
+                    client.tmpFileName = client.server->getClientBodyTempPath() + "/upload_" + fileName; //! remove prefix & chan + add temp folder
                     if (client.uploadFd.find(client.tmpFileName) != client.uploadFd.end())
                         close(client.uploadFd[client.tmpFileName]);
                     client.uploadFd[client.tmpFileName] = open(client.tmpFileName.c_str() ,O_CREAT | O_TRUNC | O_WRONLY, 0644);

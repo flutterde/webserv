@@ -11,8 +11,8 @@
 /* ************************************************************************** */
 
 #include "./../../headers/HttpErrors.hpp"
-#include <cstdlib>
-#include <string>
+#include "./../../headers/header.hpp"
+
 
 void	HttpErrors::httpResponse414(ClientData& client) {
 	std::string response = "HTTP/1.1 414 Request-URI Too Long\r\n"

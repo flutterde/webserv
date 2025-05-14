@@ -10,17 +10,18 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../learning/request.hpp"
-#include <unistd.h>
-#include <algorithm>
+#include "request.hpp"
+#include "Types.hpp"
 
 class Cgi {
     private:
-        char **createEnvironmentVariables(Request &request, char **systemEnv);
-        std::vector<std::string> extractBinaryPaths(char **environmentVariables);
-        std::string locateExecutable(const std::vector<std::string> &searchPaths, const std::string &executableName);
+        char                        **createEnvironmentVariables(Request &request, char **systemEnv);
+        std::vector<std::string>    extractBinaryPaths(char **environmentVariables);
+        std::string                 locateExecutable(const std::vector<std::string> &searchPaths,
+													const std::string &executableName);
+
     public:
         Cgi();
         ~Cgi();
-        std::string executeCgiScript(Request &request, char **systemEnv);
+        std::string	executeCgiScript(Request &request, char **systemEnv);
 };

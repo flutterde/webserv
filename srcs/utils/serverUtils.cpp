@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./../../headers/Server.hpp"
+#include "../../headers/Server.hpp"
+#include "../../headers/FtPars.hpp"
 
 
 std::string&	Server::validateAndTrim(std::string& str) {

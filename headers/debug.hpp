@@ -12,12 +12,7 @@
 
 #pragma once
 
-#include "FtPars.hpp"
-#include "header.hpp"
-#include "Server.hpp"
-#include "readConfig.hpp"
-#include <iostream>
-#include <vector>
+#include "Types.hpp"
 
 class Server;
 void	printing(std::string vr);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 19:52:42 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/12 12:46:47 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/14 19:08:39 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,7 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 		}
 		close(pipeFd[0]);
 		waitpid(processId, NULL, 0);
+		// delete temp files in temp folder
 	}
 	else
 		exit(EXIT_FAILURE);
