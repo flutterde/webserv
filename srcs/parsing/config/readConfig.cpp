@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include "./../../../headers/readConfig.hpp"
+#include "./../../../headers/FtPars.hpp"
+#include "./../../../headers/header.hpp"
 
 readConfig::readConfig(void)
 {

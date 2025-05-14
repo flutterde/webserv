@@ -12,34 +12,29 @@
 
 #pragma once
 
-#include "ClientData.hpp"
-# include "WebservHandler.hpp"
-# include "readConfig.hpp"
-#include <sys/poll.h>
-# include <vector>
-# include <poll.h>
-# include <unistd.h>
-
+#include "Types.hpp"
+#include "WebservHandler.hpp"
+#include "readConfig.hpp"
 
 class Webserv : public WebservHandler {
 	private:
-		readConfig					*_config;
 		int							_nbrEvents;
+		void						_init();
+		bool						_isRequestComplete(ClientData& client);
+		readConfig					*_config;
 		std::vector<char *>			_envs;
-		bool					_isRequestComplete(ClientData& client);
-		void					_init();
 		
 	public:
 		Webserv();
-		Webserv(readConfig& config, char **env);
 		~Webserv();
+		Webserv(readConfig& config, char **env);
+
 		Server*	getServerByFd(int fd);
 		void	run();
-		bool	isServerSocket(int fd) const;
 		void	acceptNewConnection(int srvfd);
 		void	handleClientRequest(int fd);
 		void	prepareClientResponse(ClientData& client);
 		void	sendResponse(int fd);
 		void	timeoutHandler(void);
-
+		bool	isServerSocket(int fd) const;
 };

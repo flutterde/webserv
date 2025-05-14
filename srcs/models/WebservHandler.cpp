@@ -10,14 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./../../headers/WebservHandler.hpp"
-#include "./../../headers/Response.hpp"
-#include <cstddef>
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <sys/fcntl.h>
-#include <sys/socket.h>
+#include "./../../headers/header.hpp"
+#include "./../../headers/HttpErrors.hpp"
+
 
 WebservHandler::WebservHandler() {
 	wServ = this;

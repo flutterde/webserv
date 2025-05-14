@@ -11,8 +11,9 @@
 /* ************************************************************************** */
 
 #include "./../../headers/Response.hpp"
-#include <ostream>
-#include <sys/stat.h>
+#include "./../../headers/ResponseUtils.hpp"
+#include "./../../headers/ClientData.hpp"
+#include "./../../headers/header.hpp"
 
 Response::Response(void) {}
 

@@ -12,49 +12,27 @@
 
 #pragma once
 
-#include <cstddef>
-# include <iostream>
-# include <vector>
-# include <map>
-# include <sstream>
-# include <cstdlib>
-# include <cctype>
-# include "Server.hpp"
-#include <arpa/inet.h>
-
-typedef	unsigned int	uint32_t;
-typedef unsigned char	uint8_t;
-
-#define FT_LIMIT_BODY_SIZE 80000
-#define FT_PORT 8080
-# define ALLOWED_CHARS "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;="
-# define COL_RED "\033[0;91m"
-# define COL_GREEN "\033[0;92m"
-# define COL_YELLOW "\033[0;93m"
-# define COL_BLUE "\033[0;94m"
-# define COL_MAGENTA "\033[0;95m"
-# define END_COL "\033[0m"
-
-class	Server;
+#include "Types.hpp"
+#include "Server.hpp"
 namespace FtPars {
-	size_t	charsCount(std::string& str, char c);
-	bool	strnCompare(std::string& str1, std::string str2, size_t n);
-	bool	isNewServer(std::string& line);
-	std::string&	strTrim(std::string&str, std::string set);
-	bool	isValidPattern(std::string& str);
-	bool	isValidIP4(std::string& str);
-	uint32_t	ftInetPton(const std::string& str); //! delete this
-	char	*stringToChar(std::string& str);
-	std::map<std::string, bool> parseMethods(const std::map<std::string, bool>& oldMp, std::string& str);
-	void	setServerIndexes(Server& server, std::string& line);
-	bool	containSpaces(std::string& str);
-	void	autoIndexHandler(Server& server, std::string& line);
-	void	serverPortsHandler(Server& srv, std::string& line);
-	bool	isNumbersOnly(const std::string& str);
-	void	enableUploadsHandler(Server& server, std::string& line);
-	std::string	toString(size_t nbr);
-	void	handleRedirects(Server& server, std::string& line);
-	size_t	hexaToNbr(std::string& str); //! not created yet
-	void	handleCGIs(Server& server, std::string& line);
-	size_t	getCurrentTimeMs();
+	void						setServerIndexes(Server& server, std::string& line);
+	void						autoIndexHandler(Server& server, std::string& line);
+	void						serverPortsHandler(Server& srv, std::string& line);
+	void						enableUploadsHandler(Server& server, std::string& line);
+	void						handleRedirects(Server& server, std::string& line);
+	void						handleCGIs(Server& server, std::string& line);
+	char						*stringToChar(std::string& str);
+	bool						strnCompare(std::string& str1, std::string str2, size_t n);
+	bool						isNewServer(std::string& line);
+	bool						isValidPattern(std::string& str);
+	bool						isValidIP4(std::string& str);
+	bool						containSpaces(std::string& str);
+	bool						isNumbersOnly(const std::string& str);
+	size_t						hexaToNbr(std::string& str); //! not created yet
+	size_t						getCurrentTimeMs();
+	size_t						charsCount(std::string& str, char c);
+	uint32_t					ftInetPton(const std::string& str); //! delete this
+	std::string&				strTrim(std::string&str, std::string set);
+	std::string					toString(size_t nbr);
+	std::map<std::string, bool>	parseMethods(const std::map<std::string, bool>& oldMp, std::string& str);
 }

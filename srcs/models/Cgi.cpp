@@ -129,6 +129,7 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 		}
 		close(pipeFd[0]);
 		waitpid(processId, NULL, 0);
+		// delete temp files in temp folder
 	}
 	else
 		exit(EXIT_FAILURE);

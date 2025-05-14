@@ -12,15 +12,8 @@
 
 #pragma once
 
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <cstdlib>
-#include "./header.hpp"
-#include "./Server.hpp"
-#include "./FtPars.hpp"
-#include "./debug.hpp"
-
+#include "Types.hpp"
+#include "Server.hpp"
 
 class	readConfig {
 	private:
@@ -32,9 +25,10 @@ class	readConfig {
 	public:
 		readConfig(void);
 		~readConfig(void);
-		void	readFile(char *argFile);
-		void	seperateServers(void);
+		void					readFile(char *argFile);
+		void					seperateServers(void);
 		std::vector<Server>&	getServers();
+
 		class OpenFileException : public std::exception {
 			public:
 				const char* what() const throw();

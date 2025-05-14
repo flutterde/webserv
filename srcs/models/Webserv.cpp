@@ -11,9 +11,8 @@
 /* ************************************************************************** */
 
 #include "./../../headers/Webserv.hpp"
-#include <iostream>
-#include <string>
-#include <sys/poll.h>
+#include "./../../headers/header.hpp"
+
 
 Webserv::Webserv() {
 }

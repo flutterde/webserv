@@ -12,15 +12,14 @@
 
 #pragma once
 
-# include <iostream>
-# include <map>
+#include "Types.hpp"
 
-class	MimeTypes {
+class MimeTypes {
 	private:
-		std::map<std::string, std::string> types;
+		std::map<std::string, std::string>	types;
 	public:
 		MimeTypes();
 		~MimeTypes();
-		std::string getMimeType(std::string filepath);
+		std::string	getMimeType(std::string filepath);
 };
 
