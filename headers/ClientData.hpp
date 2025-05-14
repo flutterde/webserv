@@ -6,14 +6,17 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 13:07:08 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/14 09:27:53 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/14 12:21:29 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 # include "FtPars.hpp"
+# include "Response.hpp"
 #include <cstddef>
+
+class Response;
 
 enum	requestType {
 	NOT_SET = -1,
@@ -53,10 +56,11 @@ struct ClientData {
 	std::string	tmpFileName;
 	int			currentFileFd;
 	std::map<std::string, int> uploadFd;
+	Response	*resp;
 	//! add map
 	ClientData() : type(NOT_SET), isRequestComplete(false),
 		bytesSent(0), contentLen(-1), readed(0), isHeaderComplete(false),
 		isHeadersChecked(false), file(-1), server(NULL), bodyReded(-1), progress(NOT_STARTED),
-		startTime(FtPars::getCurrentTimeMs()), currentFileFd(-1) {}
-	~ClientData() {}
+		startTime(FtPars::getCurrentTimeMs()), currentFileFd(-1), resp(NULL) {}
+	~ClientData();
 };

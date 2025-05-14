@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/14 11:36:24 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/14 12:01:02 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,7 +155,7 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 		}
 		else {
 			struct stat fileStat;
-			
+			std::cout << "===> index file: " << path << std::endl;
 			!index.empty() 
 				? fd = ResponseUtils::openFile(req.getPath() + index)
 				: fd = ResponseUtils::openFile(path);

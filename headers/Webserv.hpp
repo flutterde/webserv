@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:49:53 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/13 13:59:44 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/14 13:07:06 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@ class Webserv : public WebservHandler {
 		void	run();
 		bool	isServerSocket(int fd) const;
 		void	acceptNewConnection(int srvfd);
-		void	handleClientRequest(int pollIdx, int fd);
+		void	handleClientRequest(int fd);
+		void	prepareClientResponse(ClientData& client);
 		void	sendResponse(int fd);
 		void	timeoutHandler(void);
 

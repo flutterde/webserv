@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/13 18:10:22 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/14 14:58:17 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ void	WebservHandler::_closeClient(int fd)
 
 void	WebservHandler::setRequestType(ClientData& client)
 {
-	printWarning("setRequestType....");
 	if (client.headers.empty() || client.type != NOT_SET)
 		return;
 	else if (client.method != "POST")
@@ -61,7 +60,6 @@ void	WebservHandler::setRequestType(ClientData& client)
 
 void	WebservHandler::setContentLength(ClientData& client)
 {
-	printWarning("setContentLength....");
 	if (!client.isHeaderComplete || client.contentLen != -1 || client.type == NO_CONTENT)
 		return;
 	size_t contentLength = client.headers.find("Content-Length: ");
@@ -76,7 +74,6 @@ void	WebservHandler::setContentLength(ClientData& client)
 
 bool	WebservHandler::isHeaderComplete(ClientData& client)
 {
-	printWarning("isHeaderComplete....");
 	size_t	pos;
 	if (client.isHeaderComplete)
 		return (true);
@@ -95,11 +92,11 @@ bool	WebservHandler::isHeaderComplete(ClientData& client)
 
 bool	WebservHandler::isRequestComplete(ClientData& client)
 {
-	printWarning("is Request Complete....");
 	this->isRequestValid(client);
 	if (!client.isHeaderComplete)
 		return (false);
-	processMultipartUpload(client); //? ....
+	if (!client.boundary.empty())
+		processMultipartUpload(client); //? ....
 	if (client.type == NO_CONTENT && client.contentLen == -1)
 		return ((client.progress = COLLECTED), true);
 	else if (client.type == MULTIPART_FORM && client.contentLen <= static_cast<long>(client.bodyReded))
@@ -115,15 +112,9 @@ bool	WebservHandler::isRequestComplete(ClientData& client)
 
 bool	WebservHandler::isRequestValid(ClientData& client)
 {
-	printWarning("isRequestValid....");
 	if (!client.isHeadersChecked)
 		this->validateRequestHeaders(client);
 	size_t max = client.server->getLimitClientBodySize();
-	(void)max;
-	//! if bad request chunked and content length
-	//! if bad request content length and no content
-	//! if bad request no content and chunked
-	//! if content length more than server limit
 	if (client.bodyReded > static_cast<long>(max))
 	{
 		HttpErrors::httpResponse413(client);
@@ -167,13 +158,19 @@ void	WebservHandler::handleRequest(ClientData& client)
 		this->_closeClient(client.fd);
 		return ;
 	}
-	Request req(client.headers + client.request);
-	Response *response = new Response(client, req); //! free this
-
-	std::string res = response->combineResponse();
+	if (!client.resp)
+		return;
+	// Request req(client.headers.append(client.request));
+	// if (!client.resp)
+	// 	client.resp = new Response(client, req); //! free this
+	std::string res = client.resp->combineResponse();
+	int ffd = client.resp->getFd();
+	std::cout << COL_MAGENTA << "File descriptor: " << ffd << END_COL << std::endl;
 	std::cout << "=======>\n" << res << "\n<=======" << std::endl;
 	send(client.fd, res.c_str(), res.size(), 0);
 	this->_closeClient(client.fd); // first should be the send everything
+	std::cout << COL_GREEN << "======+++ ++++ ++++ +++==========.." << END_COL << std::endl;
+
 }
 
 void	WebservHandler::validateRequestHeaders(ClientData& client)

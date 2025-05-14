@@ -1,23 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   HttpErrors.hpp                                     :+:      :+:    :+:   */
+/*   ClientData.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/08 15:20:55 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/14 12:09:40 by ochouati         ###   ########.fr       */
+/*   Created: 2025/05/14 12:20:57 by ochouati          #+#    #+#             */
+/*   Updated: 2025/05/14 12:25:39 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
-#include "WebservHandler.hpp"
+#include "./../../headers/ClientData.hpp"
 
-struct ClientData;
-class	WebservHandler;
-class	HttpErrors {
-	public:
-		static void	httpResponse400(ClientData& client);
-		static void	httpResponse414(ClientData& client);
-		static void	httpResponse413(ClientData& client);
-};
+ClientData::~ClientData()
+{
+	delete resp, resp = NULL;
+}
+

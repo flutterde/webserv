@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:37:19 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/14 09:59:54 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/14 12:24:03 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,12 @@
 # define POLL_TIMEOUT 0
 # define END_OF_HEADERS "\r\n\r\n"
 # define READ_SIZE 4096
-# define URL_MAX_SIZE 20
+# define URL_MAX_SIZE 2048
 # define CHUNCK_SIZE 4096
 
 void processMultipartUpload(ClientData &client);
 typedef std::map<int, ClientData>::iterator mapIt;
+struct ClientData;
 class HttpErrors;
 class WebservHandler
 {
