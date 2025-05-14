@@ -6,12 +6,13 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/14 09:54:06 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/14 11:36:24 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./../../headers/Response.hpp"
 #include <ostream>
+#include <sys/stat.h>
 
 Response::Response(void) {}
 
@@ -28,6 +29,14 @@ Response& Response::operator=(const Response& obj) {
 
 int Response::getFd() const {
 	return fd;
+}
+
+std::string Response::getBody() const {
+	return body;
+}
+
+std::map<std::string, std::string> Response::getHeaders() const {
+	return headers;
 }
 
 std::string Response::combineResponse(void) {
@@ -49,25 +58,25 @@ Response::Response(struct ClientData &client, Request &req) {
 	http_version = req.getVersion();
 
 	headers["Server"] = "NorthServ/1.0";
-	// headers["Content-Type"] = "text/html";
+	headers["Content-Type"] = "text/html";
 	headers["Connection"] = "keep-alive";
 	headers["Date"] = ResponseUtils::getDateTime();
 	fd = -1;
 	
 	if (full_path.find("..") != std::string::npos)
 		status_code = FORBIDDEN;
-	else if (!client.server->getAllowedMethods()[req.getMethod()])
+	else if (!client.server->getAllowedMethods()[req.getMethod()]) {
 		status_code = METHOD_NOT_ALLOWED;
+		headers["Allow"] = ResponseUtils::getAllowHeader(client.server->getAllowedMethods());
+	}
 	else if (!client.server->getRedirects()[req.getPath()].empty())
 	{
 		status_code = MOVED_PERMANENTLY;
 		headers["Location"] = client.server->getRedirects()[req.getPath()];
 		return ;
 	}
-	else if (!ResponseUtils::pathExists(full_path)) {
+	else if (!ResponseUtils::pathExists(full_path))
 		status_code = NOT_FOUND;
-		std::cout << COL_RED << "File really doesn't exist" << END_COL << std::endl;
-	}
 	else if (req.getMethod() == "GET")
 		handleGet(client, req, full_path);
 	else if (req.getMethod() == "POST")
@@ -78,14 +87,12 @@ Response::Response(struct ClientData &client, Request &req) {
 	switch (status_code) {
 		// 30x
 		case MOVED_PERMANENTLY:
-			std::cout << "MOVED PERMANENTLY" << std::endl;
 			if (body.empty())
 				body = "<html><body><center><h1>301 Moved Permanently</h1></center></body></html>";
 			headers["Content-Length"] = ResponseUtils::toString(body.length());
 			break ;
 		// 40x
 		case FORBIDDEN:
-			std::cout << "FORBIDDEN" << std::endl;
 			body = ResponseUtils::getErrorPage(FORBIDDEN);
 			headers["Content-Length"] = ResponseUtils::toString(body.length());
 			break ;
@@ -99,22 +106,22 @@ Response::Response(struct ClientData &client, Request &req) {
 			break ;
 		case NOCONTENT:
 			break;
+		// 50x
 		case INTERNAL_SERVER_ERROR:
 			break;
 		default:
 			status_code = OK;
 			status_text = "OK";
-			if (body.empty())
+			if (body.empty()) {
 				body = "<html><body><center><h1>All is good</h1></center></body></html>";
-			headers["Content-Length"] = ResponseUtils::toString(body.length());
+				headers["Content-Length"] = ResponseUtils::toString(body.length());
+			}
 			status_code = OK;
 	}
-	std::cout << "Allowed methods => [" << ResponseUtils::allowHeaderValue(client.server->getAllowedMethods()) << "]" << std::endl;
 }
 
 
 void Response::handleGet(struct ClientData &client, Request &req, std::string &path) {
-	std::cout << COL_YELLOW << "Getting here" << END_COL << std::endl;
 	bool isFile = true;
 	std::string index;
 
@@ -122,7 +129,6 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 		status_code = FORBIDDEN; 
 		return;
 	}
-	std::cout << COL_YELLOW << "Getting here" << END_COL << std::endl;
 	if (ResponseUtils::isDirectory(path)) {
 		if (path.at(path.length() - 1) != '/') {
 			status_code = MOVED_PERMANENTLY;
@@ -139,33 +145,41 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 			status_code = OK;
 		}
 		else status_code = FORBIDDEN;
-		std::cout << COL_YELLOW << "Status setted: " << status_code << END_COL << std::endl;
 	}
 	if (isFile) {
-		if (!index.empty()) {
+		if (!index.empty())
 			path += index;
-		}
 		if (!path.substr(path.find_last_of('.')).compare(".py") 
 			|| !path.substr(path.find_last_of('.')).compare(".php")) {
 			body = cgi->executeCgiScript(req, serverEnv);
 		}
 		else {
+			struct stat fileStat;
+			
 			!index.empty() 
-				? fd = ResponseUtils::openFile(req.getPath() + index)  
+				? fd = ResponseUtils::openFile(req.getPath() + index)
 				: fd = ResponseUtils::openFile(path);
+			
+			if (stat(path.c_str(), &fileStat) == -1) {
+				status_code = INTERNAL_SERVER_ERROR;
+				return ;
+			}
+			headers["Content-Length"] = fileStat.st_size;
+			std::cout << COL_BLUE << "Content Length is: " << fileStat.st_size << END_COL << std::endl;
 		}	
 	}
-	std::cout << COL_RED << "End get request" << END_COL << std::endl;
+	wServ->enablePOLLOUT(client.fd);
+	client.progress = READY;
 }
 
-void Response::handlePost(struct ClientData &client, Request &req, const std::string &path) {	
-	(void) client;
+void Response::handlePost(struct ClientData &client, Request &req, std::string &path) {	
 	(void) req;
 	(void) path;
-	std::cout << "post" << std::endl;
+	wServ->enablePOLLOUT(client.fd);
+	client.progress = READY;
 }
 
-void Response::handleDelete(struct ClientData &client, Request &req, const std::string &path) {
+void Response::handleDelete(struct ClientData &client, Request &req, std::string &path) {
 	(void) client;
 	if (path.find("..") != std::string::npos) {
 		status_code = FORBIDDEN; 
@@ -196,4 +210,6 @@ void Response::handleDelete(struct ClientData &client, Request &req, const std::
 				status_code = INTERNAL_SERVER_ERROR;
 		}
 	}
+	wServ->enablePOLLOUT(client.fd);
+	client.progress = READY;
 }

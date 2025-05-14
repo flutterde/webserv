@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 12:27:49 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/12 09:04:24 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/12 14:48:09 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,4 +50,5 @@ class ResponseUtils {
         static std::string generateAutoIndex(std::string filepath);
         static bool    deleteFile(const std::string& path);
         static bool    deleteFolder(const std::string& path);
+        static std::string getAllowHeader(const std::map<std::string, bool> allowed);
 };
