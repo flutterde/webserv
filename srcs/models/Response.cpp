@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/14 19:02:06 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/15 09:47:10 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,19 @@ std::map<std::string, std::string> Response::getHeaders() const {
 	return headers;
 }
 
+std::string Response::getHeadersString() const {
+	std::ostringstream res;
+
+	std::map<std::string, std::string>::const_iterator it;
+	for (it = headers.begin(); it != headers.end(); it++)
+		res << it->first << ": " << it->second << "\r\n";
+	return res.str();
+}
+
+
 std::string Response::combineResponse(void) {
 	std::ostringstream res;
 
-	headers["Date"] = ResponseUtils::getDateTime();
 	res << http_version << " " << status_code << " " << status_text << "\r\n";
 	std::map<std::string, std::string>::iterator it;
 	for (it = headers.begin(); it != headers.end(); it++)

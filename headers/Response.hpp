@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:11 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/14 17:44:41 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/15 09:45:45 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,4 +45,5 @@ class Response : public MimeTypes
 		int getFd() const;
 		std::string getBody() const;
 		std::map<std::string, std::string> getHeaders() const;
+		std::string getHeadersString() const;
 };	
