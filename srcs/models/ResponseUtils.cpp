@@ -6,12 +6,14 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 12:29:43 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/15 11:31:09 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/15 13:12:06 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../headers/ResponseUtils.hpp"
+#include <dirent.h>
 #include <iostream>
+#include <unistd.h>
 
 std::string ResponseUtils::getDateTime() {
 	time_t rawtime;
@@ -70,14 +72,17 @@ std::string ResponseUtils::isIndexFileExist(std::map<std::string, bool> &indexes
 	std::map<std::string, bool>::iterator it;
 
 	dir = opendir(path.c_str());
+	if (!dir) {
+		std::cout << COL_MAGENTA << "Can't open directory in 'isIndexFileExist'" << END_COL << std::endl;
+		return "";
+	}
 	while ((ent = readdir(dir))) {
 		if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, ".."))
 			continue ;
-		std::cout << "Inside find index loop" << std::endl;
 		if ((it = indexes.find(ent->d_name)) != indexes.end())
-			return it->first;
+			return closedir(dir), it->first;
 	}
-	return "";
+	return closedir(dir), "";
 }
 
 std::string ResponseUtils::getErrorPage(RESPONSE_CODE status) {
@@ -125,6 +130,8 @@ std::string ResponseUtils::generateAutoIndex(std::string filepath) {
 	body << "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>" << filepath << "</title><style>*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif;}body{background-color:rgb(23, 43, 61);color:black;padding:20px;}.container{background-color:rgb(229,221,221);padding:10px;border-radius:3px;max-width:650px;margin: 0 auto}hr{margin:10px 0}</style></head><body><div class='container'>";
 
 	dir = opendir(filepath.c_str());
+	if (!dir)
+		return "";
 	while ((ent = readdir(dir))) {
 		if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, ".."))
 			continue ;
@@ -136,6 +143,7 @@ std::string ResponseUtils::generateAutoIndex(std::string filepath) {
 			<< std::endl;
 		first = false;
 	}
+	closedir(dir);
 	if (first)
 		body << "<center><h2>This directory is empty</h2></center>";
 	body << "";
@@ -156,7 +164,7 @@ bool ResponseUtils::deleteFolder(const std::string& path)
     DIR* dir = opendir(path.c_str());
 
     if (!dir) {
-        std::cerr << "Error opening directory: " << path << std::endl;
+        std::cout << COL_MAGENTA << "Can't open directory in 'deleteFolder'" << END_COL << std::endl;
         return false;
     }
     struct dirent* entry;

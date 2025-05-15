@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/15 11:34:11 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/15 13:11:18 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,12 @@
 #include "../../headers/ResponseUtils.hpp"
 #include "../../headers/ClientData.hpp"
 #include "../../headers/header.hpp"
+#include <ostream>
 #include <unistd.h>
-
-Response::Response(void) {}
 
 Response::~Response(void) {
 	if (fd != -1)
 		close(fd);
-}
-
-Response::Response(const Response& obj) {
-	*this = obj;
-}
-
-Response& Response::operator=(const Response& obj) {
-	(void) obj;
-	return (*this);
 }
 
 int Response::getFd() const {
@@ -68,7 +58,6 @@ std::string Response::combineResponse(void) {
 Response::Response(struct ClientData &client, Request &req) {
 	cgi = new Cgi();
 	std::string full_path = client.server->getRootPath() + req.getPath();
-	std::cout << COL_GREEN << "Full path: " << full_path << END_COL << std::endl;
 	http_version = req.getVersion();
 
 	headers["Server"] = "NorthServ/1.0";
@@ -162,7 +151,6 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 	if (isFile) {
 		if (!index.empty())
 			path += index;
-		std::cout << COL_MAGENTA << "Path: " << path << END_COL << std::endl;
 		if (!path.substr(path.find_last_of('.')).compare(".py") 
 			|| !path.substr(path.find_last_of('.')).compare(".php")) {
 			body = cgi->executeCgiScript(req, serverEnv);
@@ -176,7 +164,6 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 				return ;
 			}
 			headers["Content-Length"] = fileStat.st_size;
-			std::cout << COL_BLUE << "Content Length is: " << fileStat.st_size << END_COL << std::endl;
 		}	
 	}
 	wServ->enablePOLLOUT(client.fd);

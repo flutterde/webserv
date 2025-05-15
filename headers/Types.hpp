@@ -25,7 +25,6 @@
 # include <arpa/inet.h>
 # include <netdb.h>  // For getaddrinfo
 
-
 # define FIRST_INDEX 0
 
 # define FT_LIMIT_BODY_SIZE 80000

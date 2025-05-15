@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/15 11:00:32 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/15 13:13:32 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,15 +102,13 @@ bool	Webserv::isServerSocket(int fd) const
 
 void	Webserv::acceptNewConnection(int fd)
 {
-	std::cout << "(" << fd << ")"<< " accepting new connection..." << std::endl;
 	ClientData	newClient;
 	try {
 		Server	*srv = this->getServerByFd(fd);
-		std::cout << "server port: " << srv->getPort() << "Server name: " << srv->getserverName() << std::endl;
 		struct sockaddr_in clientAddress;
 		socklen_t clientAddressSize = sizeof(clientAddress);
 		int clientFd = accept(fd, (struct sockaddr *)&clientAddress, &clientAddressSize);
-		std::cout << "client fd: " << clientFd << std::endl; //! remove this
+		std::cout << COL_GREEN << "New client, fd: " << clientFd << END_COL << std::endl; //! remove this
 		if (clientFd < 0) //? Should really exit here?
 			throw std::runtime_error("Error while accepting new connection");
 		Server::setNonBlocking(clientFd);
@@ -127,7 +125,6 @@ void	Webserv::handleClientRequest(int fd)
 {
 	char buffer[READ_SIZE];
 	ssize_t	bytesRead = recv(fd, buffer, READ_SIZE - 1, 0);
-	std::cout << COL_BLUE << "Bytes read: " << bytesRead << END_COL << std::endl;
 	if (bytesRead < 0) {
 		if (bytesRead == 0) {
 			std::cout << "Client disconnected" << std::endl;
@@ -146,14 +143,12 @@ void	Webserv::handleClientRequest(int fd)
 		std::cout << COL_GREEN << "Body readed: " << it->second.bodyReded << END_COL << std::endl;
 	}
 	if (this->_isRequestComplete(it->second)) {
-		printWarning("Request Ready......................>>>>");
 		this->prepareClientResponse(it->second);
 	}
 }
 
 void	Webserv::prepareClientResponse(ClientData& client)
 {
-	std::cout << COL_BLUE << "Preparing response for client...   the progress is: " << (client.progress == COLLECTED ? "Collected" : "Unkown") << END_COL << std::endl;
 	Request req(client.headers.append(client.request));
 	if (!client.resp)
 		client.resp = new Response(client, req); //! free this
@@ -164,7 +159,6 @@ void	Webserv::prepareClientResponse(ClientData& client)
 
 void	Webserv::sendResponse(int fd) //?! Complete the request, you have to send headers, body and file
 {
-	std::cout << COL_GREEN << "=========================.." << END_COL << std::endl;
 	mapIt it = this->_requests.find(fd);
 	if (it == this->_requests.end()) {
 		return;
@@ -172,7 +166,6 @@ void	Webserv::sendResponse(int fd) //?! Complete the request, you have to send h
 	if (it->second.progress == READY) {
 		this->handleRequest(it->second);
 	}
-	std::cout << " ************>>>>>>>>>>>>>>>>>> Sending response to client..." << std::endl;
 }
 
 void Webserv::timeoutHandler(void)

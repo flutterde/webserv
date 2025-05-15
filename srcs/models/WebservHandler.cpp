@@ -6,13 +6,13 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/15 11:21:25 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/15 13:16:19 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../headers/header.hpp"
 #include "../../headers/HttpErrors.hpp"
-#include <unistd.h>
+
 
 
 WebservHandler::WebservHandler() {
@@ -25,7 +25,6 @@ WebservHandler::~WebservHandler() {
 void	WebservHandler::_closeClient(int fd)
 {
 	std::cout << COL_YELLOW << "Closing client fd: " << fd << END_COL << std::endl;
-	// remove from pollfds
 	for (size_t i = 0; i < _pollfds.size(); ++i) {
 		if (_pollfds[i].fd == fd) {
 			close(fd);
@@ -51,7 +50,6 @@ void	WebservHandler::setRequestType(ClientData& client)
 		client.type = CHUNKED;
 	else
 		client.type = NO_CONTENT;
-	std::cout << COL_BLUE << "=> Request Type: " << client.type << END_COL << std::endl;
 }
 
 void	WebservHandler::setContentLength(ClientData& client)
@@ -65,7 +63,6 @@ void	WebservHandler::setContentLength(ClientData& client)
 	size_t vEnd = client.headers.find("\r\n", vStart);
 	std::string value = client.headers.substr(vStart, vEnd - vStart);
 	client.contentLen = std::atoi(value.c_str());
-	std::cout << "=> Content-Length: " << client.contentLen << std::endl;
 }
 
 bool	WebservHandler::isHeaderComplete(ClientData& client)
@@ -98,7 +95,6 @@ bool	WebservHandler::isRequestComplete(ClientData& client)
 	else if (client.type == MULTIPART_FORM && client.contentLen <= static_cast<long>(client.bodyReded))
 	{
 		client.isRequestComplete = true;
-		std::cout << COL_RED << "Multipart form data complete" <<  END_COL << std::endl;
 		return ((client.progress = COLLECTED), true);
 	}
 	else if (client.contentLen >= 0 && client.request.size() >= static_cast<size_t>(client.contentLen))
@@ -117,7 +113,6 @@ bool	WebservHandler::isRequestValid(ClientData& client)
 		std::cout << COL_RED << "Request body size exceeds server limit" << END_COL << std::endl;
 		return (false);
 	}
-	std::cout << COL_GREEN << "------------------ >> (Request Valid....) << ----------------" << END_COL << std::endl;
 	return (true);
 }
 
@@ -125,7 +120,6 @@ void	WebservHandler::setBoundary(ClientData& client)
 {
 	if (!client.isHeaderComplete || client.type != MULTIPART_FORM || !client.boundary.empty())
 		return;
-	std::cout << COL_MAGENTA << "setBoundary...." << END_COL << std::endl;
 	size_t pos = client.headers.find("boundary=");
 	if (pos == std::string::npos)
 		return;
@@ -134,7 +128,6 @@ void	WebservHandler::setBoundary(ClientData& client)
 	if (end == std::string::npos)
 		return;
 	client.boundary = client.headers.substr(start, end - start);
-	std::cout << "*>> Boundary: " << client.boundary << std::endl;
 }
 
 void	WebservHandler::setMethod(ClientData& client)
@@ -157,28 +150,15 @@ void	WebservHandler::handleRequest(ClientData& client)
 	if (!client.resp)
 		return this->_closeClient(client.fd);
 	std::string res = client.resp->combineResponse();
-	std::cout << COL_GREEN << "=== * * * * * * ======================.." << END_COL << std::endl;
-	std::cout << COL_MAGENTA << "FD: " << client.resp->getFd() << COL_MAGENTA << std::endl;
-	std::cout << COL_GREEN << "=== * * * * * * ======================.." << END_COL << std::endl;
-	std::cout << "=======>\n" << res << "\n<=======" << std::endl;
-
-	char buffer[1024];
-
-	std::cout << COL_BLUE << "Start reading" << END_COL << std::endl;
-	read(client.resp->getFd(), buffer, sizeof(buffer));
-	std::cout << buffer << std::endl;
-	std::cout << COL_BLUE << "End Reading" << END_COL << std::endl;
 
 	send(client.fd, res.c_str(), res.size(), 0);
 	this->_closeClient(client.fd); // first should be the send everything
-	std::cout << COL_GREEN << "======+++ ++++ ++++ +++==========.." << END_COL << std::endl;
 }
 
 void	WebservHandler::validateRequestHeaders(ClientData& client)
 {
 	if (!client.isHeaderComplete)
 		return;
-	printWarning("validate Request Headers....");
 	this->validateUrl(client);
 	if (client.type == CHUNKED)
 		return HttpErrors::httpResponse400(client), this->enablePOLLOUT(client.fd);
