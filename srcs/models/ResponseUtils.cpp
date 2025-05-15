@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseUtils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 12:29:43 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/14 11:36:36 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/15 11:31:09 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../headers/ResponseUtils.hpp"
+#include <iostream>
 
 std::string ResponseUtils::getDateTime() {
 	time_t rawtime;
@@ -72,6 +73,7 @@ std::string ResponseUtils::isIndexFileExist(std::map<std::string, bool> &indexes
 	while ((ent = readdir(dir))) {
 		if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, ".."))
 			continue ;
+		std::cout << "Inside find index loop" << std::endl;
 		if ((it = indexes.find(ent->d_name)) != indexes.end())
 			return it->first;
 	}

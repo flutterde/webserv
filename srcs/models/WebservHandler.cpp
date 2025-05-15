@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   WebservHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/15 09:47:40 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/15 11:21:25 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../headers/header.hpp"
 #include "../../headers/HttpErrors.hpp"
+#include <unistd.h>
 
 
 WebservHandler::WebservHandler() {
@@ -156,13 +157,21 @@ void	WebservHandler::handleRequest(ClientData& client)
 	if (!client.resp)
 		return this->_closeClient(client.fd);
 	std::string res = client.resp->combineResponse();
-	int ffd = client.resp->getFd();
-	std::cout << COL_MAGENTA << "File descriptor: " << ffd << END_COL << std::endl;
+	std::cout << COL_GREEN << "=== * * * * * * ======================.." << END_COL << std::endl;
+	std::cout << COL_MAGENTA << "FD: " << client.resp->getFd() << COL_MAGENTA << std::endl;
+	std::cout << COL_GREEN << "=== * * * * * * ======================.." << END_COL << std::endl;
 	std::cout << "=======>\n" << res << "\n<=======" << std::endl;
+
+	char buffer[1024];
+
+	std::cout << COL_BLUE << "Start reading" << END_COL << std::endl;
+	read(client.resp->getFd(), buffer, sizeof(buffer));
+	std::cout << buffer << std::endl;
+	std::cout << COL_BLUE << "End Reading" << END_COL << std::endl;
+
 	send(client.fd, res.c_str(), res.size(), 0);
 	this->_closeClient(client.fd); // first should be the send everything
 	std::cout << COL_GREEN << "======+++ ++++ ++++ +++==========.." << END_COL << std::endl;
-
 }
 
 void	WebservHandler::validateRequestHeaders(ClientData& client)

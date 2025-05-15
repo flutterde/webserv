@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/15 09:47:10 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/15 11:34:11 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,14 @@
 #include "../../headers/ResponseUtils.hpp"
 #include "../../headers/ClientData.hpp"
 #include "../../headers/header.hpp"
+#include <unistd.h>
 
 Response::Response(void) {}
 
-Response::~Response(void) {}
+Response::~Response(void) {
+	if (fd != -1)
+		close(fd);
+}
 
 Response::Response(const Response& obj) {
 	*this = obj;
@@ -130,7 +134,6 @@ Response::Response(struct ClientData &client, Request &req) {
 	}
 }
 
-
 void Response::handleGet(struct ClientData &client, Request &req, std::string &path) {
 	bool isFile = true;
 	std::string index;
@@ -159,17 +162,15 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 	if (isFile) {
 		if (!index.empty())
 			path += index;
+		std::cout << COL_MAGENTA << "Path: " << path << END_COL << std::endl;
 		if (!path.substr(path.find_last_of('.')).compare(".py") 
 			|| !path.substr(path.find_last_of('.')).compare(".php")) {
 			body = cgi->executeCgiScript(req, serverEnv);
 		}
 		else {
 			struct stat fileStat;
-			std::cout << "===> index file: " << path << std::endl;
-			!index.empty() 
-				? fd = ResponseUtils::openFile(req.getPath() + index)
-				: fd = ResponseUtils::openFile(path);
-			
+
+			fd = ResponseUtils::openFile(path);
 			if (stat(path.c_str(), &fileStat) == -1) {
 				status_code = INTERNAL_SERVER_ERROR;
 				return ;

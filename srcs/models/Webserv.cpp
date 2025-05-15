@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/14 19:02:30 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/15 11:00:32 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,6 @@ void	Webserv::prepareClientResponse(ClientData& client)
 		client.resp = new Response(client, req); //! free this
 	client.progress = READY;
 	this->enablePOLLOUT(client.fd);
-	std::cout << COL_GREEN << "=== * * * * * * ======================.." << END_COL << std::endl;
 }
 
 
