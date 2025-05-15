@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:37:19 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/14 12:24:03 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/15 15:19:08 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 class WebservHandler
 {
 	protected:
+		char						*_buffer;
 		bool						isRequestValid(ClientData& client);
 		bool						isHeaderComplete(ClientData& client);
 		bool						isRequestComplete(ClientData& client);

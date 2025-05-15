@@ -27,6 +27,8 @@
 
 # define FIRST_INDEX 0
 
+# define SEND_SIZE 1024
+
 # define FT_LIMIT_BODY_SIZE 80000
 # define FT_PORT 8080
 

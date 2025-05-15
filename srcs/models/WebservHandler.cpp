@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WebservHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/15 13:16:19 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/15 15:21:16 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,13 @@
 
 
 WebservHandler::WebservHandler() {
+	_buffer = new char[SEND_SIZE];
 	wServ = this;
 }
 
 WebservHandler::~WebservHandler() {
+	if (_buffer)
+		delete[] _buffer;
 }
 
 void	WebservHandler::_closeClient(int fd)
@@ -150,7 +153,11 @@ void	WebservHandler::handleRequest(ClientData& client)
 	if (!client.resp)
 		return this->_closeClient(client.fd);
 	std::string res = client.resp->combineResponse();
-
+	// send res
+	// send file as chunks
+	
+	std::cout << COL_GREEN << "Headers: " << client.resp->getHeadersString() << END_COL << std::endl;
+	std::cout << COL_RED << "The length of the response is: " << client.resp->getContentlength() << " & fd: " << client.resp->getFd() << END_COL << std::endl;
 	send(client.fd, res.c_str(), res.size(), 0);
 	this->_closeClient(client.fd); // first should be the send everything
 }

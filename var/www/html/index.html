@@ -1,12 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Webserv</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webserv</title>
+    <style>
+        /* Reset some default styles */
+        body, h1, h2, p, ul {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Full viewport height */
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        /* Global Styles */
+        body {
+            background-color: #f0f4f8;
+            color: #333;
+        }
+
+        /* Header */
+        header {
+            background-color: #007BFF;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1rem;
+        }
+
+        nav a:hover {
+            background-color: #555;
+        }
+
+        /* Main content area */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .content, .random-content, .profile {
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .content h2 {
+            color: #007BFF;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+
+        footer p {
+            font-size: 0.9rem;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
 </head>
 <body>
-	<center>
-		Welcome to Webserv!	</center>
+
+    <!-- Header -->
+    <header>
+        <h1>Welcome to Webserv!</h1>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Random Quotes Section -->
+        <div class="content">
+            <h2>Random Quote</h2>
+            <p id="quote">"Click below to get a random quote!"</p>
+            <button onclick="generateRandomQuote()">Get Random Quote</button>
+        </div>
+
+        <!-- Random News Section -->
+        <div class="random-content">
+            <h2>Random News</h2>
+            <p id="news">"Click below for random news articles!"</p>
+            <button onclick="generateRandomNews()">Get Random News</button>
+        </div>
+
+        <!-- Random User Profiles Section -->
+        <div class="profile">
+            <h2>User Profile</h2>
+            <p id="user">"Click below to generate a random user profile!"</p>
+            <button onclick="generateRandomUser()">Generate User Profile</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Webserv &copy; 2025 | All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // Function to generate a random quote
+        function generateRandomQuote() {
+            const quotes = [
+                "The only limit to our realization of tomorrow is our doubts of today.",
+                "Do not wait to strike till the iron is hot, but make it hot by striking.",
+                "It does not matter how slowly you go as long as you do not stop.",
+                "Success is not final, failure is not fatal: It is the courage to continue that counts.",
+                "It always seems impossible until it's done."
+            ];
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            document.getElementById("quote").innerText = `"${randomQuote}"`;
+        }
+
+        // Function to generate random news
+        function generateRandomNews() {
+            const newsArticles = [
+                "Scientists discover a new planet with conditions that might support life.",
+                "Tech company releases new AI-powered device for everyday use.",
+                "Global economies show signs of recovery after a tough year.",
+                "New breakthrough in renewable energy technology promises a greener future.",
+                "Local artist gains worldwide recognition for innovative artwork."
+            ];
+            const randomNews = newsArticles[Math.floor(Math.random() * newsArticles.length)];
+            document.getElementById("news").innerText = `"${randomNews}"`;
+        }
+
+        // Function to generate a random user profile
+        function generateRandomUser() {
+            const users = [
+                { name: "John Doe", age: 30, city: "New York", occupation: "Software Engineer" },
+                { name: "Jane Smith", age: 25, city: "San Francisco", occupation: "Product Manager" },
+                { name: "Alice Johnson", age: 35, city: "Chicago", occupation: "Graphic Designer" },
+                { name: "Bob Brown", age: 40, city: "Austin", occupation: "Marketing Director" },
+                { name: "Charlie Davis", age: 28, city: "Los Angeles", occupation: "Data Scientist" }
+            ];
+            const randomUser = users[Math.floor(Math.random() * users.length)];
+            const userProfile = `
+                Name: ${randomUser.name} <br>
+                Age: ${randomUser.age} <br>
+                City: ${randomUser.city} <br>
+                Occupation: ${randomUser.occupation}
+            `;
+            document.getElementById("user").innerHTML = userProfile;
+        }
+    </script>
+
 </body>
 </html>

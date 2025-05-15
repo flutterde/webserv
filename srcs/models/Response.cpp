@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/15 14:03:29 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/15 16:44:15 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ Response::Response(struct ClientData &client, Request &req) {
 	headers["Server"] = "NorthServ/1.0";
 	headers["Content-Type"] = "text/html";
 	headers["Connection"] = "keep-alive";
+	headers["Content-Length"] = "0";
 	headers["Date"] = ResponseUtils::getDateTime();
 	fd = -1;
 	
@@ -121,10 +122,7 @@ Response::Response(struct ClientData &client, Request &req) {
 		default:
 			status_code = OK;
 			status_text = "OK";
-			if (body.empty()) {
-				body = "<html><body><center><h1>All is good</h1></center></body></html>";
-				headers["Content-Length"] = ResponseUtils::toString(body.length());
-			}
+			headers["Content-Type"] = MimeTypes::getMimeType(full_path);
 			status_code = OK;
 	}
 }
@@ -170,7 +168,7 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 				return ;
 			}
 			contentLength = fileStat.st_size;
-			headers["Content-Length"] = contentLength;
+			headers["Content-Length"] = FtPars::toString(contentLength);
 		}	
 	}
 	wServ->enablePOLLOUT(client.fd);

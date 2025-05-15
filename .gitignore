@@ -13,6 +13,8 @@ ts.txt
 *.o
 *.obj
 *.p
+*.mp4
+# websites/main/video01.mp4
 ./configs/php/app 
 configs/php/app
 # Precompiled Headers
