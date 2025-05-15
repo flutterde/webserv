@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WebservHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/13 18:10:22 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/14 13:05:05 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,7 @@ void	WebservHandler::handleRequest(ClientData& client)
 	}
 	Request req(client.headers + client.request);
 	Response *response = new Response(client, req); //! free this
-
+	std::cout << COL_BLUE << "FD: ===> " << response->getFd() << END_COL << std::endl;
 	std::string res = response->combineResponse();
 	std::cout << "=======>\n" << res << "\n<=======" << std::endl;
 	send(client.fd, res.c_str(), res.size(), 0);

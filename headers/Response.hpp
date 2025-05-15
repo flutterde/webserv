@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:11 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/14 11:01:01 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/14 12:58:41 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,4 +47,5 @@ class Response : public MimeTypes
 		int getFd() const;
 		std::string getBody() const;
 		std::map<std::string, std::string> getHeaders() const;
+		std::string getHeadersString() const;
 };	
