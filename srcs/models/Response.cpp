@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/15 13:11:18 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/15 14:03:29 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,15 @@
 #include "../../headers/ResponseUtils.hpp"
 #include "../../headers/ClientData.hpp"
 #include "../../headers/header.hpp"
+#include <cstddef>
 #include <ostream>
 #include <unistd.h>
 
 Response::~Response(void) {
 	if (fd != -1)
 		close(fd);
+	delete cgi;
+	cgi = NULL;
 }
 
 int Response::getFd() const {
@@ -43,6 +46,9 @@ std::string Response::getHeadersString() const {
 	return res.str();
 }
 
+size_t Response::getContentlength() const {
+	return contentLength;
+}
 
 std::string Response::combineResponse(void) {
 	std::ostringstream res;
@@ -163,7 +169,8 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 				status_code = INTERNAL_SERVER_ERROR;
 				return ;
 			}
-			headers["Content-Length"] = fileStat.st_size;
+			contentLength = fileStat.st_size;
+			headers["Content-Length"] = contentLength;
 		}	
 	}
 	wServ->enablePOLLOUT(client.fd);
