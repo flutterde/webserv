@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/15 16:44:15 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/17 11:04:40 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ std::string Response::getHeadersString() const {
 	std::map<std::string, std::string>::const_iterator it;
 	for (it = headers.begin(); it != headers.end(); it++)
 		res << it->first << ": " << it->second << "\r\n";
+	res << "\r\n";
 	return res.str();
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/15 13:13:32 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/17 12:05:20 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void	Webserv::run() {
 					this->handleClientRequest(_pollfds[i].fd);
 			}
 			if (_pollfds[i].revents & POLLOUT) {
-				std::cout << COL_BLUE << "Sending response to client..." << END_COL << std::endl;
+				// std::cout << COL_BLUE << "Sending response to client..." << END_COL << std::endl;
 				this->sendResponse(_pollfds[i].fd);
 			}
 		}

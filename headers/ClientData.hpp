@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 13:07:08 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/14 12:21:29 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/17 08:40:44 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ struct ClientData {
 	bool						isRequestComplete;
 	bool						isHeaderComplete;
 	bool						isHeadersChecked;
+	bool						isHeadersSent;
 	Server						*server;
 	size_t						bytesSent; //! Why ?
 	size_t						readed; //! why ?
@@ -42,7 +43,7 @@ struct ClientData {
 	std::map<std::string, int>	uploadFd;
 	//! add map
 	ClientData() : file(-1),currentFileFd(-1) ,contentLen(-1), bodyReded(-1), isRequestComplete(false), isHeaderComplete(false),isHeadersChecked(false),
-				server(NULL), bytesSent(0),readed(0),startTime(FtPars::getCurrentTimeMs()),resp(NULL), type(NOT_SET), progress(NOT_STARTED){}
+				isHeadersSent(false), server(NULL), bytesSent(0),readed(0),startTime(FtPars::getCurrentTimeMs()),resp(NULL), type(NOT_SET), progress(NOT_STARTED){}
 	~ClientData();
 };
 

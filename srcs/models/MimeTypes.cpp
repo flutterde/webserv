@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MimeTypes.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboujama <mboujama@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 16:47:27 by ochouati          #+#    #+#             */
-/*   Updated: 2025/04/23 14:42:30 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/17 10:53:31 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ MimeTypes::MimeTypes()
 	types[".png"] = "image/png";
 	types[".gif"] = "image/gif";
 	types[".html"] = "text/html";
+	types[".txt"] = "text/plain";
 	types[".css"] = "text/css";
 	types[".js"] = "text/javascript";
 	types[".pdf"] = "application/pdf";
