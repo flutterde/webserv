@@ -254,6 +254,7 @@ void	Server::initServer(void)
 	this->ftBind();
 	this->ftListen();
 	this->setNonBlocking(this->serverSocket);
+	std::cout << "Path: " << this->rootPath << std::endl;
 }
 
 void	Server::ftSocket(void)
@@ -268,8 +269,13 @@ void	Server::setSocketOptions(void)
 	int opt = 1;
 	if (this->serverSocket < 0 || setsockopt(this->serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
 		throw std::runtime_error("Set socket options REUSEADDR failed");
+	#ifdef __APPLE__
 	if (this->serverSocket < 0 || setsockopt(this->serverSocket, SOL_SOCKET, SO_NOSIGPIPE, &opt, sizeof(opt)) < 0)
-		throw std::runtime_error("Set socket options REUSEADDR failed");
+		throw std::runtime_error("Set socket options SO_NOSIGPIPE failed");
+	#endif
+	#ifdef __linux__
+		signal(SIGPIPE, SIG_IGN);
+	#endif
 }
 
 
@@ -293,7 +299,7 @@ void	Server::ftListen(void)
 		throw std::runtime_error("Listen failed");
 }
 
-void	Server::setNonBlocking(int fd) //! Duplicate code in Webserv.cpp 
+void	Server::setNonBlocking(int fd)
 {
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
 		throw std::runtime_error("Set non blocking failed");

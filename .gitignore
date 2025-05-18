@@ -23,6 +23,9 @@ configs/php/app
 labs/app
 mmm/
 *.log
+ts.html
+otm.cpp 
+*.otm
 # Compiled Dynamic libraries
 *.so
 *.dylib

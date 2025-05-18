@@ -45,13 +45,13 @@
 #define SO_NOSIGPIPE    0x1022
 #endif
 
-#define LISTEN_BACKLOG 12 //! should we increase this ?
+#define LISTEN_BACKLOG 256 //! should we increase this ?
 #define DEFAULT_ROOT_PATH "./website"
 #define BODY_TEMP_PATH "./tmp/path"
 
 
 # define RUNNING 1
-# define POLL_TIMEOUT 0
+# define POLL_TIMEOUT 50
 # define END_OF_HEADERS "\r\n\r\n"
 # define READ_SIZE 4096
 # define URL_MAX_SIZE 2048

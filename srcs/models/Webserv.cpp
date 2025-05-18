@@ -6,12 +6,13 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/17 12:05:20 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/18 11:53:53 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../headers/Webserv.hpp"
 #include "../../headers/header.hpp"
+#include <iostream>
 
 
 Webserv::Webserv() {
@@ -47,11 +48,13 @@ void	Webserv::_init() {
 void	Webserv::run() {
 	this->_init();
 	while (RUNNING) {
-		if ((this->_nbrEvents = poll(_pollfds.data(), _pollfds.size(), 0)) < 0) continue;
+		if ((this->_nbrEvents = poll(_pollfds.data(), _pollfds.size(), POLL_TIMEOUT)) < 0) continue;
 		for (size_t i = 0; i < _pollfds.size() && this->_nbrEvents > 0; ++i) {
 			if (_pollfds[i].revents & (POLLERR | POLLHUP)) {
-				if (!isServerSocket(_pollfds[i].fd))
+				if (!isServerSocket(_pollfds[i].fd)) {
+					std::cerr << COL_RED << "Error in Socket (POLLERR | POLLHUP): " << _pollfds[i].fd << END_COL << std::endl;
 					this->_closeClient(_pollfds[i].fd);
+				}
 				--this->_nbrEvents;
 				continue;
 			}
@@ -108,7 +111,7 @@ void	Webserv::acceptNewConnection(int fd)
 		struct sockaddr_in clientAddress;
 		socklen_t clientAddressSize = sizeof(clientAddress);
 		int clientFd = accept(fd, (struct sockaddr *)&clientAddress, &clientAddressSize);
-		std::cout << COL_GREEN << "New client, fd: " << clientFd << END_COL << std::endl; //! remove this
+		// std::cout << COL_GREEN << "New client, fd: " << clientFd << END_COL << std::endl; //! remove this
 		if (clientFd < 0) //? Should really exit here?
 			throw std::runtime_error("Error while accepting new connection");
 		Server::setNonBlocking(clientFd);
@@ -131,6 +134,7 @@ void	Webserv::handleClientRequest(int fd)
 		} else {
 			std::cerr << COL_RED << "Error while reading from client" << END_COL << std::endl;
 		}
+		std::cout << COL_RED << "Error while reading from client: " << fd << END_COL << std::endl;
 		this->_closeClient(fd);
 		return;
 	}
@@ -140,7 +144,7 @@ void	Webserv::handleClientRequest(int fd)
 	if (it == this->_requests.end()) return;
 	if (it->second.bodyReded != -1) {
 		it->second.bodyReded += bytesRead;
-		std::cout << COL_GREEN << "Body readed: " << it->second.bodyReded << END_COL << std::endl;
+		// std::cout << COL_GREEN << "Body readed: " << it->second.bodyReded << END_COL << std::endl;
 	}
 	if (this->_isRequestComplete(it->second)) {
 		this->prepareClientResponse(it->second);

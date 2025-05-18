@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/17 11:41:04 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/17 13:58:51 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ WebservHandler::~WebservHandler() {
 
 void	WebservHandler::_closeClient(int fd)
 {
-	std::cout << COL_YELLOW << "Closing client fd: " << fd << END_COL << std::endl;
+	// std::cout << COL_YELLOW << "Closing client fd: " << fd << END_COL << std::endl;
 	for (size_t i = 0; i < _pollfds.size(); ++i) {
 		if (_pollfds[i].fd == fd) {
 			close(fd);
@@ -156,9 +156,6 @@ void	WebservHandler::handleRequest(ClientData& client)
 		return this->_closeClient(client.fd);
 	if (!client.isHeadersSent) {
 		std::string res = client.resp->combineResponse();
-		// std::string res = "HTTP/1.1 200 OK\r\nConnection: keep-alive\nContent-Length: 311\r\nContent-Type: text/plain\r\nDate: Sat, 17 May 2025 11:04:53\r\nServer: NorthServ/1.0\r\n\r\n";
-		// std::cout << COL_GREEN << "Headers: " << res << END_COL << std::endl;
-		// std::cout << COL_RED << "The length of the response is: " << client.resp->getContentlength() << " & fd: " << client.resp->getFd() << END_COL << std::endl;
 		send(client.fd, res.c_str(), res.size(), 0);
 		client.isHeadersSent = true;
 		return;
@@ -171,6 +168,7 @@ void	WebservHandler::handleRequest(ClientData& client)
 		int n = read(client.resp->getFd(), s__buffer, SEND_SIZE - 1);
 		// std::cout << COL_RED << " ==== ==== === === (N: " << n << ") === === ==== === === " << END_COL << std::endl;
 		if (n <= 0) {
+			std::cout << COL_RED << "Error while reading from file, for client/N: " << client.fd << " -- " << n << END_COL << std::endl;
 			return this->_closeClient(client.fd);
 		}
 		s__buffer[n] = '\0';
@@ -178,11 +176,12 @@ void	WebservHandler::handleRequest(ClientData& client)
 		int j = send(client.fd, s__buffer, n, 0);
 		// std::cout << COL_RED << " ==== ==== === === (J: " << j << ") === === ==== === === " << END_COL << std::endl;
 		if (j <= 0 || j != n) {
+			std::cout << COL_RED << "Error while sending socket, for client/N: " << client.fd << " -- " << j << END_COL << std::endl;
 			return this->_closeClient(client.fd);
 		}
 		client.bytesSent += j;
 	} else {
-		std::cout << COL_MAGENTA << "The response is sent completely: " << client.bytesSent << END_COL << std::endl;
+		// std::cout << COL_MAGENTA << "The response is sent completely: " << client.bytesSent << END_COL << std::endl;
 		this->_closeClient(client.fd); // first should be the send everything
 	}
 }
