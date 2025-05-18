@@ -179,8 +179,10 @@ bool ResponseUtils::deleteFolder(const std::string& path)
             deleteFile(filePath);
     }
     closedir(dir);
-    if (remove(path.c_str()) != 0)
+    if (remove(path.c_str()) != 0) {
         std::cerr << "Error deleting directory: " << path << std::endl;
+		return (false);
+	}
 	return true;
 }
 

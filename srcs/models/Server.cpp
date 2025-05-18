@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../../headers/header.hpp"
+#include <signal.h> //! 
 
 
 Server::Server(void)//! why ?

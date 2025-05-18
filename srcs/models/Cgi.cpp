@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../../headers/Cgi.hpp"
+ #include <sys/wait.h> //!
 
 // SCRIPT_FILENAME – hold the executeble file path
 // REQUEST_METHOD – hold the method name
