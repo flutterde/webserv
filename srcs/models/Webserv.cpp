@@ -12,7 +12,8 @@
 
 #include "../../headers/Webserv.hpp"
 #include "../../headers/header.hpp"
-
+#include "../../headers/Response.hpp"
+#include "../../headers/Request.hpp"
 
 Webserv::Webserv() {
 }
@@ -149,7 +150,7 @@ void	Webserv::handleClientRequest(int fd)
 
 void	Webserv::prepareClientResponse(ClientData& client)
 {
-	Request req(client.headers.append(client.request));
+	Request req(client.headers.append(client.request), client);
 	if (!client.resp)
 		client.resp = new Response(client, req); //! free this
 	client.progress = READY;

@@ -12,6 +12,7 @@
 
 #include "../../headers/header.hpp"
 #include "../../headers/HttpErrors.hpp"
+#include "../../headers/Response.hpp"
 
 
 

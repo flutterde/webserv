@@ -15,7 +15,6 @@
 # include "Types.hpp"
 #include "MimeTypes.hpp"
 #include "Cgi.hpp"
-#include <cstddef>
 
 class Response : public MimeTypes
 {

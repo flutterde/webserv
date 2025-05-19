@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "./../../headers/ClientData.hpp"
+#include "../../headers/Response.hpp"
 
 ClientData::~ClientData()
 {
