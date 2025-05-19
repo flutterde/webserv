@@ -254,7 +254,7 @@ namespace	FtPars {
 			if (getline(ss2, key, ':') && getline(ss2, val, ':')) {
 				if (FtPars::containSpaces(key) || FtPars::containSpaces(val))
 					throw std::runtime_error("Error parsing server cgis");
-				server.setCGI(key, val);
+				server.setCGI(val, key);
 			} else
 				throw std::runtime_error("Error parsing server cgis");
 		}
