@@ -3,17 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   WebservHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/17 13:58:51 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/20 09:48:33 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../headers/header.hpp"
 #include "../../headers/HttpErrors.hpp"
-#include <sys/socket.h>
-#include <unistd.h>
+#include "../../headers/Response.hpp"
 
 
 

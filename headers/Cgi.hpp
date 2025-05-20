@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "request.hpp"
+#include "Request.hpp"
 #include "Types.hpp"
 
 class Cgi {

@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/18 11:53:53 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/20 09:48:11 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../headers/Webserv.hpp"
 #include "../../headers/header.hpp"
-#include <iostream>
-
+#include "../../headers/Response.hpp"
+#include "../../headers/Request.hpp"
 
 Webserv::Webserv() {
 }
@@ -153,7 +153,7 @@ void	Webserv::handleClientRequest(int fd)
 
 void	Webserv::prepareClientResponse(ClientData& client)
 {
-	Request req(client.headers.append(client.request));
+	Request req(client.headers.append(client.request), client);
 	if (!client.resp)
 		client.resp = new Response(client, req); //! free this
 	client.progress = READY;

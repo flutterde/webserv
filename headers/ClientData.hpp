@@ -14,8 +14,9 @@
 #include "Types.hpp"
 #include "Server.hpp"
 #include "FtPars.hpp"
-#include "Response.hpp"
+// #include "Response.hpp"
 
+class Response;
 struct ClientData {
 	int							fd;
 	int							file; //!

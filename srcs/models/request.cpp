@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/15 16:39:40 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/15 16:39:41 by ochouati         ###   ########.fr       */
+/*   Created: 2025/05/20 12:43:53 by mboujama          #+#    #+#             */
+/*   Updated: 2025/05/20 12:43:55 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "request.hpp"
+#include "../../headers/Request.hpp"
 
 // GET /favicon.ico HTTP/1.1
 // Host: 127.0.0.1:8080
@@ -24,7 +24,7 @@
 // Sec-Fetch-Mode: no-cors
 // Sec-Fetch-Site: same-origin
 
-Request::Request(const std::string &requestString)
+Request::Request(const std::string &requestString, ClientData& c) :client(c)
 {
 	size_t methodEnd = requestString.find_first_of(" \t");
 	this->method = requestString.substr(0, methodEnd);
@@ -69,27 +69,46 @@ Request::Request(const std::string &requestString)
 		this->headerPairs[headerKey] = headerValue;
 	}
 	this->body = requestString.substr(versionEnd + 2, requestString.size() - versionEnd);
-	this->convertToEnv();
+	// this->convertToEnv();
 }
 
+
+template <typename T>
+void	printMap(T mp) {
+	for (typename T::iterator it = mp.begin(); it != mp.end(); ++it){
+		std::cout << "->" << *it << std::endl;	
+	}
+}
 void Request::convertToEnv(void)
 {
 	vEnv.push_back("REQUEST_METHOD="+ method);
+	vEnv.push_back("SERVER_NAME=Webserv");
+	vEnv.push_back("SERVER_PORT="+ std::to_string(client.server->getPort()));
 	vEnv.push_back("SCRIPT_FILENAME="+ path);
+	vEnv.push_back("GATEWAY_INTERFACE=CGI/1.1");
+	vEnv.push_back("SCRIPT_FILENAME="+ client.server->getRootPath() + path); // add the info path
 	if (!query.empty())
 		vEnv.push_back("QUERY_STRING="+ query);
 	if (!headerPairs["Content-Type"].empty())
 		vEnv.push_back("CONTENT_TYPE="+ headerPairs["Content-Type"]);
+	else
+		vEnv.push_back("CONTENT_TYPE=text/html");
+
 	if (!headerPairs["Content-Length"].empty())
 		vEnv.push_back("CONTENT_LENGTH="+ headerPairs["Content-Length"]);
+	else
+		vEnv.push_back("CONTENT_LENGTH=0");
+
 	if (!headerPairs["Host"].empty())
 		vEnv.push_back("HTTP_HOST="+ headerPairs["Host"]);
+	
 	if (!headerPairs["User-Agent"].empty())
 		vEnv.push_back("HTTP_USER_AGENT="+ headerPairs["User-Agent"]);
 	if (!headerPairs["Cookie"].empty())
-		vEnv.push_back("HTTP_COOKIE="+ headerPairs["Cookie"]);
+		vEnv.push_back("HTTP_COOKIE="+ headerPairs["Cookie"]); // is this correct HTTP_COOKIE=session=0c4982e7b7ef3dca??
 	if (!headerPairs["Authorization"].empty())
 		vEnv.push_back("HTTP_AUTHORIZATION="+ headerPairs["Authorization"]);
+	printMap(vEnv); // remove this
 }
 
 std::string Request::getEnv(size_t i) const
