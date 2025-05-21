@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/21 10:43:13 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/21 12:51:08 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,8 @@ Response::Response(struct ClientData &client, Request &req) {
 		handleDelete(client, req, full_path);
 
 	switch (status_code) {
+		case CREATED:
+			break ;
 		// 30x
 		case MOVED_PERMANENTLY:
 			if (body.empty())
@@ -180,11 +182,10 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 void Response::handlePost(struct ClientData &client, Request &req, std::string &path) {	
 	(void) req;
 	(void) path;
-	if (path.find("..") != std::string::npos) {
-		status_code = FORBIDDEN; 
-		return;
-	}
-	status_code = OK;
+
+	status_code = CREATED;
+	status_text = "Created";
+	headers["Allow-Origin"] = "*";
 	client.server->getEnableUploads();
 	wServ->enablePOLLOUT(client.fd);
 	client.progress = READY;

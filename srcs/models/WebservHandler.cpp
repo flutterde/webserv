@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/21 12:08:16 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/21 12:36:10 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ bool	WebservHandler::isHeaderComplete(ClientData& client)
 		client.bodyReded = client.request.size();
 		client.progress = WORKING;
 		this->setMethod(client);
+		std::cout << COL_RED << "Headers: \n" << client.headers << END_COL << std::endl;
 		return (true);
 	}
 	return (false);

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
 			justify-content: center;
 			align-items: center;
 		}
+
 		.main-form {
 			background-color: bisque;
 			width: 30%;
@@ -25,6 +27,7 @@
 		}
 	</style>
 </head>
+
 <body>
 	<div class="main-cs">
 		<form action="" method="post" class="main-form">
@@ -35,9 +38,9 @@
 	<script>
 		console.log("Hello, World!");
 		const form = document.querySelector('.main-form');
-		form.addEventListener('submit', function(event) {
-			const serverUrl = "http://localhost:8080/uploads"; // Replace with your server URL
-			event.preventDefault(); // Prevent the default form submission
+		form.addEventListener('submit', function (event) {
+			const serverUrl = "http://localhost:8080/uploads";
+			event.preventDefault();
 			console.log("Form submitted!");
 			const fileInput = document.getElementById('file');
 			const file = fileInput.files[0];
@@ -48,19 +51,22 @@
 
 				fetch(serverUrl, {
 					method: 'POST',
-					body: formData
+					body: formData,
+					mode: 'no-cors'
 				})
-				.then(response => response.json())
-				.then(data => {
-					console.log('=> Success:', data);
-				})
-				.catch((error) => {
-					console.error('=> Error:', error);
-				});
+					.then(() => {
+						console.log('File uploaded successfully (without response data)');
+					})
+					.catch((error) => {
+						console.error('Error uploading file:', error);
+					});
 			} else {
 				alert("Please select a file to upload.");
 			}
 		});
+
+
 	</script>
 </body>
+
 </html>
