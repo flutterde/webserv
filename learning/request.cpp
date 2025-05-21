@@ -6,11 +6,11 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 16:39:40 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/15 16:39:41 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/19 16:11:20 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "request.hpp"
+#include "../headers/request.hpp"
 
 // GET /favicon.ico HTTP/1.1
 // Host: 127.0.0.1:8080

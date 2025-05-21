@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/11 19:30:28 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/11 19:35:54 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/20 12:21:42 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void	Server::fillServerData(std::string& line, Server& srv) {
 		FtPars::serverPortsHandler(srv, str);
 	} else if (!line.compare(0, 20, "client_max_body_size")) {
 		this->validateAndTrim(str);
-		srv.setLimitClientBodySize(std::atoi(str.c_str()));
+		srv.setLimitClientBodySize(std::atol(str.c_str()));
 	} else if (!line.compare(0, 14, "error_page_404")) {
 		this->validateAndTrim(str);
 		srv.setErrorPage404(str);

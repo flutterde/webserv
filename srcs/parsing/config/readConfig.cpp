@@ -13,6 +13,7 @@
 #include "./../../../headers/readConfig.hpp"
 #include "./../../../headers/FtPars.hpp"
 #include "./../../../headers/header.hpp"
+#include <cstddef>
 
 readConfig::readConfig(void)
 {
@@ -91,20 +92,25 @@ void	readConfig::readFile(char *argFile)
 		else
 			++x;
 	}
-	this->seperateServers();
 	std::cout << " --------- ------------ ------------- ------------ \n";
-	// for (size_t i = 0; i < this->servers.size(); ++i) { //!
-	// 	std::cout << "Id: " << i << std::endl;
-	// 	printServer(this->servers[i]);
-	// }
+	this->seperateServers();
 }
 
 void	readConfig::seperateServers(void)
 {
+	std::cout << "Seperating server: __ " << this->servers.size() << std::endl;
 	for (size_t i = 0; i < this->servers.size(); ++i) {
 		for (size_t j = 1; j < this->servers[i].getPorts().size(); j++) {
 			Server tmp = Server(this->servers[i], this->servers[i].getPorts()[j]);
 			this->servers.push_back(tmp);
 		}
 	}
+	std::cout << "Seperated servers:: " << this->servers.size() << std::endl;
+	for (size_t i = 0; i < this->servers.size();) {
+		if (!this->servers[i].isValidServer()) {
+			this->servers.erase(this->servers.begin() + i);
+		} else
+			++i;
+	}
+	std::cout << "Seperated servers:: " << this->servers.size() << std::endl;
 }

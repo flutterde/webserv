@@ -11,18 +11,14 @@
 /* ************************************************************************** */
 
 #include "../../headers/header.hpp"
-#include <signal.h> //! 
+#include <climits>
+#include <cstddef>
+#include <iostream>
 
 
-Server::Server(void)//! why ?
+
+Server::Server(void) //! i think I have to remove this
 {		
-	this->limitClientBodySize = FT_LIMIT_BODY_SIZE;
-	this->port = FT_PORT;
-	this->serverName = "127.0.0.1";
-	this->serverBind = -1;
-	this->serverSocket = -1;
-	this->rootPath = DEFAULT_ROOT_PATH;
-	this->clientBodyTempPath = BODY_TEMP_PATH;
 }
 
 Server::~Server(void)
@@ -35,6 +31,7 @@ Server::~Server(void)
 
 Server::Server(const Server& srv, uint32_t port) //! 
 {
+	this->rootPath = srv.rootPath;
 	this->host = srv.host;
 	this->port = port;
 	this->serverName = srv.serverName;
@@ -46,20 +43,22 @@ Server::Server(const Server& srv, uint32_t port) //!
 	this->autoIndex = srv.autoIndex;
 	this->serverBind = -1;
 	this->serverSocket = -1;
+	this->timeout = srv.timeout;
 }
 
 
 Server::Server(std::vector<std::string>& arr, size_t& idx)
 {
 	this->limitClientBodySize = FT_LIMIT_BODY_SIZE;
-	this->port = FT_PORT;
+	this->port = INT_MAX;
 	this->allowedMethods["GET"] = true;
 	this->allowedMethods["POST"] = false;
 	this->allowedMethods["DELETE"] = false;
 	this->indexes["index.html"] = false;
 	this->autoIndex = false;
 	this->enableUploads = false;
-	// this->uploadPath = "uploads";
+	this->clientBodyTempPath = BODY_TEMP_PATH;
+	this->timeout = DEFAULT_TIME_OUT;
 	setServer(arr, idx, *this);
 }
 
@@ -89,7 +88,7 @@ std::string	Server::getRootPath(void)	const
 	return (this->rootPath);
 }
 
-uint32_t	Server::getLimitClientBodySize(void)	const
+size_t	Server::getLimitClientBodySize(void)	const
 {
 	return (this->limitClientBodySize);
 }
@@ -192,7 +191,7 @@ void	Server::setserverName(std::string& val)
 	this->serverName = val;
 }
 
-void	Server::setLimitClientBodySize(uint32_t val)
+void	Server::setLimitClientBodySize(size_t val)
 {
 	this->limitClientBodySize = val;
 }
@@ -255,7 +254,7 @@ void	Server::initServer(void)
 	this->ftBind();
 	this->ftListen();
 	this->setNonBlocking(this->serverSocket);
-	std::cout << "Path: " << this->rootPath << std::endl;
+	std::cout << "Path: " << this->rootPath << " " << (this->rootPath.empty() ? "Empty" : "") << std::endl;
 }
 
 void	Server::ftSocket(void)
@@ -304,4 +303,20 @@ void	Server::setNonBlocking(int fd)
 {
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
 		throw std::runtime_error("Set non blocking failed");
+}
+
+bool	Server::isValidServer(void)
+{
+	std::cout << "Server: " << this->serverName << std::endl;
+	std::cout << "Host: " << this->host << std::endl;
+	std::cout << "Port: " << this->port << std::endl;
+	std::cout << "Root: " << this->rootPath << std::endl;
+	std::cout << "Limit Client Body Size: " << this->limitClientBodySize << std::endl;
+	std::cout << "Timeout: " << this->timeout << std::endl;
+	std::cout << "		********\n";	
+	if (this->rootPath.empty() || this->port == INT_MAX || this->host.empty()) {
+		std::cerr << COL_RED << "Invalid server configuration" << END_COL << std::endl;
+		return (false);
+	}
+	return (true);
 }

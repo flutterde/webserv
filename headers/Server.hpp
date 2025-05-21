@@ -13,6 +13,7 @@
 #pragma once
 
 # include "Types.hpp"
+#include <cstddef>
 
 /// @brief server class that hold data for each website
 class	Server {
@@ -28,7 +29,7 @@ class	Server {
 		bool								autoIndex; //?
 		size_t								timeout;
 		uint32_t							port;
-		uint32_t							limitClientBodySize;
+		size_t								limitClientBodySize;
 		std::string							host;
 		std::string							serverName;
 		std::string							rootPath;
@@ -62,7 +63,7 @@ class	Server {
 		bool										getEnableUploads(void) const;
 		size_t										getTimeout(void) const;
 		uint32_t									getPort(void) const;
-		uint32_t									getLimitClientBodySize(void) const;
+		size_t										getLimitClientBodySize(void) const;
 		std::string									getHost(void) const;
 		std::string									getserverName(void) const;
 		std::string									getRootPath(void) const;
@@ -82,7 +83,7 @@ class	Server {
 		void										setTimeout(size_t val);
 		void										setHost(std::string& val);
 		void										setserverName(std::string& val);
-		void										setLimitClientBodySize(uint32_t val);
+		void										setLimitClientBodySize(size_t val);
 		void										setClientBodyTempPath(std::string& val);
 		void										setUploadsPath(std::string& val);
 		void										setErrorPage404(std::string& val);
@@ -98,4 +99,5 @@ class	Server {
 
 		// Server_handlers
 		void										initServer(void);
+		bool										isValidServer(void);
 };

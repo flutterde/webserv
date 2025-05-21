@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/19 10:08:45 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/19 16:25:35 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,10 +66,8 @@ void	Webserv::run() {
 				else
 					this->handleClientRequest(_pollfds[i].fd);
 			}
-			if (_pollfds[i].revents & POLLOUT) {
-				// std::cout << COL_BLUE << "Sending response to client..." << END_COL << std::endl;
+			if (_pollfds[i].revents & POLLOUT)
 				this->sendResponse(_pollfds[i].fd);
-			}
 		}
 		this->timeoutHandler();
 	}
@@ -129,7 +127,7 @@ void	Webserv::handleClientRequest(int fd)
 {
 	char buffer[READ_SIZE];
 	ssize_t	bytesRead = recv(fd, buffer, READ_SIZE - 1, 0);
-	if (bytesRead < 0) {
+	if (bytesRead <= 0) {
 		if (bytesRead == 0) {
 			std::cout << "Client disconnected" << std::endl;
 		} else {
@@ -143,22 +141,16 @@ void	Webserv::handleClientRequest(int fd)
 	this->_requests[fd].request.append(buffer, bytesRead);
 	std::map<int, ClientData>::iterator it = this->_requests.find(fd);
 	if (it == this->_requests.end()) return;
-	if (it->second.bodyReded != -1) {
+	if (it->second.bodyReded != -1)
 		it->second.bodyReded += bytesRead;
-		// std::cout << COL_GREEN << "Body readed: " << it->second.bodyReded << END_COL << std::endl;
-	}
-	if (this->_isRequestComplete(it->second)) {
+	if (this->_isRequestComplete(it->second))
 		this->prepareClientResponse(it->second);
-	}
 }
 
 void	Webserv::prepareClientResponse(ClientData& client)
 {
-	std::cout << COL_BLUE << "Preparing Request for client..." << END_COL << std::endl;
 	try {
-		
 	Request req(client.headers.append(client.request));
-	std::cout << COL_BLUE << "2. Preparing response for client..." << END_COL << std::endl;
 	if (!client.resp)
 		client.resp = new Response(client, req);
 	client.progress = READY;

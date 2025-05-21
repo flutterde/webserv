@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/17 11:04:40 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/20 12:19:58 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,6 +179,7 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 void Response::handlePost(struct ClientData &client, Request &req, std::string &path) {	
 	(void) req;
 	(void) path;
+	client.server->getEnableUploads();
 	wServ->enablePOLLOUT(client.fd);
 	client.progress = READY;
 }

@@ -12,6 +12,7 @@
 # include <cctype>
 # include <sys/socket.h>
 # include <time.h>
+#include <climits>
 # include <sys/fcntl.h>
 # include <fstream>
 # include <dirent.h>
@@ -23,6 +24,7 @@
 # include <sys/stat.h>
 # include <stdexcept>
 # include <arpa/inet.h>
+# include <signal.h>
 # include <netdb.h>  // For getaddrinfo
 
 # define FIRST_INDEX 0
@@ -45,8 +47,8 @@
 #define SO_NOSIGPIPE    0x1022
 #endif
 
-#define LISTEN_BACKLOG 256 //! should we increase this ?
-#define DEFAULT_ROOT_PATH "./website"
+#define LISTEN_BACKLOG 1024
+// #define DEFAULT_ROOT_PATH "./website"
 #define BODY_TEMP_PATH "./tmp/path"
 
 
@@ -56,6 +58,8 @@
 # define READ_SIZE 4096
 # define URL_MAX_SIZE 2048
 # define CHUNCK_SIZE 4096
+
+# define DEFAULT_TIME_OUT 5
 
 #define CHARS_SIZE 256
 
