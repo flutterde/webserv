@@ -102,6 +102,13 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 		interpreterPath = locateExecutable(binaryPaths, "php");
 	else if (scriptExtension == ".py")
 		interpreterPath = locateExecutable(binaryPaths, "python3");
+	// Multiple CGI Not tested
+	else {
+		interpreterPath = request.client.server->getCGI(scriptExtension);
+		if(!interpreterPath.empty()){
+			return ""; //! is this return value valid ?
+		}
+	}
 
 	int pipeFd[2];
 	if (pipe(pipeFd) < 0)

@@ -12,8 +12,8 @@ private:
 	std::vector<std::string>			vQuery;
 	std::map<std::string, std::string>	headerPairs;
 	std::vector<std::string>			vEnv;
-	ClientData&							client;
 public:
+	ClientData&							client;
 	Request(const std::string& requestString, ClientData& c);
 	~Request();
 
