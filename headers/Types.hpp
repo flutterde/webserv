@@ -24,6 +24,8 @@
 # include <stdexcept>
 # include <arpa/inet.h>
 # include <netdb.h>  // For getaddrinfo
+#include <cstddef>
+#include <ostream>
 
 # define FIRST_INDEX 0
 

@@ -3,20 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/17 11:04:40 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/20 13:08:36 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../headers/Response.hpp"
 #include "../../headers/ResponseUtils.hpp"
-// #include "../../headers/ClientData.hpp"
 #include "../../headers/header.hpp"
-#include <cstddef>
-#include <ostream>
-#include <unistd.h>
+#include <iostream>
 
 Response::~Response(void) {
 	if (fd != -1)
@@ -73,7 +70,6 @@ Response::Response(struct ClientData &client, Request &req) {
 	headers["Content-Length"] = "0";
 	headers["Date"] = ResponseUtils::getDateTime();
 	fd = -1;
-	
 	if (full_path.find("..") != std::string::npos)
 		status_code = FORBIDDEN;
 	else if (!client.server->getAllowedMethods()[req.getMethod()]) {
@@ -88,13 +84,17 @@ Response::Response(struct ClientData &client, Request &req) {
 	}
 	else if (!ResponseUtils::pathExists(full_path))
 		status_code = NOT_FOUND;
-	else if (req.getMethod() == "GET")
+	else if (req.getMethod() == "GET") {
+		std::cout << "Before handling Post" << std::endl;
 		handleGet(client, req, full_path);
+		std::cout << "After handling Post" << std::endl;
+	}
 	else if (req.getMethod() == "POST")
 		handlePost(client, req, full_path);
 	else if (req.getMethod() == "DELETE")
 		handleDelete(client, req, full_path);
-
+	
+	std::cout << "Before switch: " << status_code << std::endl;
 	switch (status_code) {
 		// 30x
 		case MOVED_PERMANENTLY:
@@ -123,8 +123,7 @@ Response::Response(struct ClientData &client, Request &req) {
 		default:
 			status_code = OK;
 			status_text = "OK";
-			headers["Content-Type"] = MimeTypes::getMimeType(full_path);
-			status_code = OK;
+			headers["Content-Length"] = ResponseUtils::toString(body.length());
 	}
 }
 
@@ -145,7 +144,6 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 		isFile = false;
 		std::map<std::string, bool> indexes = client.server->getIndexes();
 		index = ResponseUtils::isIndexFileExist(indexes, path);
-		
 		if (!index.empty()) isFile = true;
 		else if (client.server->getAutoIndex()) {
 			body = ResponseUtils::generateAutoIndex(path);
@@ -170,6 +168,7 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 			}
 			contentLength = fileStat.st_size;
 			headers["Content-Length"] = FtPars::toString(contentLength);
+			headers["Content-Type"] = MimeTypes::getMimeType(path);
 		}	
 	}
 	wServ->enablePOLLOUT(client.fd);
@@ -177,8 +176,11 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 }
 
 void Response::handlePost(struct ClientData &client, Request &req, std::string &path) {	
+	if (path.find("..") != std::string::npos) {
+		status_code = FORBIDDEN; 
+		return;
+	}
 	(void) req;
-	(void) path;
 	wServ->enablePOLLOUT(client.fd);
 	client.progress = READY;
 }
