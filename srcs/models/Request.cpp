@@ -1,16 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   request.cpp                                        :+:      :+:    :+:   */
+/*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 12:43:53 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/20 12:43:55 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/21 08:07:56 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../headers/Request.hpp"
+#include "../../headers/ResponseUtils.hpp"
 
 // GET /favicon.ico HTTP/1.1
 // Host: 127.0.0.1:8080
@@ -79,11 +80,12 @@ void	printMap(T mp) {
 		std::cout << "->" << *it << std::endl;	
 	}
 }
+
 void Request::convertToEnv(void)
 {
 	vEnv.push_back("REQUEST_METHOD="+ method);
 	vEnv.push_back("SERVER_NAME=Webserv");
-	vEnv.push_back("SERVER_PORT="+ std::to_string(client.server->getPort()));
+	vEnv.push_back("SERVER_PORT="+ ResponseUtils::toString(client.server->getPort()));
 	vEnv.push_back("SCRIPT_FILENAME="+ path);
 	vEnv.push_back("GATEWAY_INTERFACE=CGI/1.1");
 	vEnv.push_back("SCRIPT_FILENAME="+ client.server->getRootPath() + path); // add the info path

@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/20 13:08:36 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/21 08:19:23 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,11 +84,8 @@ Response::Response(struct ClientData &client, Request &req) {
 	}
 	else if (!ResponseUtils::pathExists(full_path))
 		status_code = NOT_FOUND;
-	else if (req.getMethod() == "GET") {
-		std::cout << "Before handling Post" << std::endl;
+	else if (req.getMethod() == "GET")
 		handleGet(client, req, full_path);
-		std::cout << "After handling Post" << std::endl;
-	}
 	else if (req.getMethod() == "POST")
 		handlePost(client, req, full_path);
 	else if (req.getMethod() == "DELETE")
@@ -123,7 +120,8 @@ Response::Response(struct ClientData &client, Request &req) {
 		default:
 			status_code = OK;
 			status_text = "OK";
-			headers["Content-Length"] = ResponseUtils::toString(body.length());
+			if (!body.empty())
+				headers["Content-Length"] = ResponseUtils::toString(body.length());
 	}
 }
 
