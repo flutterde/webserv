@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/11 19:30:28 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/20 12:21:42 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/21 12:15:26 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,8 @@ void	Server::fillServerData(std::string& line, Server& srv) {
 		this->validateAndTrim(str);
 		FtPars::autoIndexHandler(srv, str);
 	} else if (!line.compare(0, 12, "upload_store")) {
-
+		this->validateAndTrim(str);
+		srv.setUploadsPath(str);
 	} else if (!line.compare(0, 14, "upload_enabled")) {
 		this->validateAndTrim(str);
 		FtPars::enableUploadsHandler(srv, str);

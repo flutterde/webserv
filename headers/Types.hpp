@@ -55,7 +55,7 @@
 # define RUNNING 1
 # define POLL_TIMEOUT 50
 # define END_OF_HEADERS "\r\n\r\n"
-# define READ_SIZE 4096
+# define READ_SIZE 8192
 # define URL_MAX_SIZE 2048
 # define CHUNCK_SIZE 4096
 
