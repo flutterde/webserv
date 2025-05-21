@@ -37,7 +37,6 @@ struct ClientData {
 	std::string					boundary;
 	std::string					error;
 	std::string					tmpFolder;
-	std::string					tmpFileName;
 	std::string					fileName;
 	requestType					type;
 	requestProgress				progress;
