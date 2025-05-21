@@ -317,7 +317,7 @@ bool	Server::isValidServer(void)
 	std::cout << "Auto Index: " << (this->autoIndex ? "true" : "false") << std::endl;
 	std::cout << "Upload path: " << this->uploadsPath << std::endl;
 	std::cout << "		********\n";	
-	if (this->rootPath.empty() || this->port == INT_MAX || this->host.empty()) {
+	if (this->rootPath.empty() || (this->port == INT_MAX || !this->port) || this->host.empty()) {
 		std::cerr << COL_RED << "Invalid server configuration" << END_COL << std::endl;
 		return (false);
 	}

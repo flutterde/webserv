@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/21 12:36:10 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/21 19:43:57 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,6 @@ bool	WebservHandler::isHeaderComplete(ClientData& client)
 		client.bodyReded = client.request.size();
 		client.progress = WORKING;
 		this->setMethod(client);
-		std::cout << COL_RED << "Headers: \n" << client.headers << END_COL << std::endl;
 		return (true);
 	}
 	return (false);
@@ -100,7 +99,6 @@ bool	WebservHandler::isRequestComplete(ClientData& client)
 	else if (client.type == MULTIPART_FORM && client.contentLen <= static_cast<long>(client.bodyReded))
 	{
 		client.isRequestComplete = true;
-		std::cout << COL_BLUE << "Multipart form data received" << END_COL << std::endl;
 		return ((client.progress = COLLECTED), true);
 	}
 	else if (client.contentLen >= 0 && client.request.size() >= static_cast<size_t>(client.contentLen))
@@ -116,7 +114,6 @@ bool	WebservHandler::isRequestValid(ClientData& client)
 	if (client.bodyReded > static_cast<long>(max))
 	{
 		HttpErrors::httpResponse413(client);
-		std::cout << COL_RED << "Request body size exceeds server limit" << END_COL << std::endl;
 		return (false);
 	}
 	return (true);
