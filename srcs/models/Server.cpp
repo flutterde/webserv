@@ -254,7 +254,6 @@ void	Server::initServer(void)
 	this->ftBind();
 	this->ftListen();
 	this->setNonBlocking(this->serverSocket);
-	std::cout << "Path: " << this->rootPath << " " << (this->rootPath.empty() ? "Empty" : "") << std::endl;
 }
 
 void	Server::ftSocket(void)
@@ -286,7 +285,7 @@ void	Server::ftBind(void)
 	std::memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(this->port);
-	std::cout << "Host: " << COL_GREEN << this->host << END_COL " Port: " << COL_YELLOW << this->port << END_COL << std::endl;
+	std::cout << "Listen on Host: " << COL_GREEN << this->host << END_COL " Port: " << COL_YELLOW << this->port << END_COL << std::endl;
 	addr.sin_addr.s_addr = inet_addr(this->host.c_str());
 	if ((this->serverBind = bind(this->serverSocket, (struct sockaddr *)&addr, sizeof(addr))) < 0)
 		throw std::runtime_error("Bind failed 3");
@@ -307,16 +306,6 @@ void	Server::setNonBlocking(int fd)
 
 bool	Server::isValidServer(void)
 {
-	std::cout << "Server: " << this->serverName << std::endl;
-	std::cout << "Host: " << this->host << std::endl;
-	std::cout << "Port: " << this->port << std::endl;
-	std::cout << "Root: " << this->rootPath << std::endl;
-	std::cout << "Limit Client Body Size: " << this->limitClientBodySize << std::endl;
-	std::cout << "Timeout: " << this->timeout << std::endl;
-	std::cout << "Enable Uploads: " << (this->enableUploads ? "true" : "false") << std::endl;
-	std::cout << "Auto Index: " << (this->autoIndex ? "true" : "false") << std::endl;
-	std::cout << "Upload path: " << this->uploadsPath << std::endl;
-	std::cout << "		********\n";	
 	if (this->rootPath.empty() || (this->port == INT_MAX || !this->port) || this->host.empty()) {
 		std::cerr << COL_RED << "Invalid server configuration" << END_COL << std::endl;
 		return (false);

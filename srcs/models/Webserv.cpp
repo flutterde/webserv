@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/19 16:25:35 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/22 13:18:16 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,28 +46,34 @@ void	Webserv::_init() {
 	}
 }
 
+void	Webserv::_loop() {
+	
+}
+
 void	Webserv::run() {
 	this->_init();
 	while (RUNNING) {
 		if ((this->_nbrEvents = poll(_pollfds.data(), _pollfds.size(), POLL_TIMEOUT)) < 0) continue;
 		for (size_t i = 0; i < _pollfds.size() && this->_nbrEvents > 0; ++i) {
-			if (_pollfds[i].revents & (POLLERR | POLLHUP)) {
-				if (!isServerSocket(_pollfds[i].fd)) {
-					std::cerr << COL_RED << "Error in Socket (POLLERR | POLLHUP): " << _pollfds[i].fd << END_COL << std::endl;
-					this->_closeClient(_pollfds[i].fd);
+			try {
+				if (_pollfds[i].revents & (POLLERR | POLLHUP)) {
+					if (!isServerSocket(_pollfds[i].fd))
+						this->_closeClient(_pollfds[i].fd);
+					--this->_nbrEvents;
+					continue;
 				}
-				--this->_nbrEvents;
-				continue;
+				if (_pollfds[i].revents & POLLIN) {
+					--this->_nbrEvents;
+					if (isServerSocket(_pollfds[i].fd))
+						this->acceptNewConnection(_pollfds[i].fd);
+					else
+						this->handleClientRequest(_pollfds[i].fd);
+				}
+				if (_pollfds[i].revents & POLLOUT)
+					this->sendResponse(_pollfds[i].fd);
+			} catch (std::exception& e) {
+				(void)e;
 			}
-			if (_pollfds[i].revents & POLLIN) {
-				--this->_nbrEvents;
-				if (isServerSocket(_pollfds[i].fd))
-					this->acceptNewConnection(_pollfds[i].fd);
-				else
-					this->handleClientRequest(_pollfds[i].fd);
-			}
-			if (_pollfds[i].revents & POLLOUT)
-				this->sendResponse(_pollfds[i].fd);
 		}
 		this->timeoutHandler();
 	}
@@ -89,8 +95,6 @@ bool	Webserv::_isRequestComplete(ClientData& client) {
 	this->setRequestType(client);
 	this->setContentLength(client);
 	this->setBoundary(client);
-	//! Validate request
-	//! ...
 	return (this->isRequestComplete(client));
 }
 
@@ -110,7 +114,6 @@ void	Webserv::acceptNewConnection(int fd)
 		struct sockaddr_in clientAddress;
 		socklen_t clientAddressSize = sizeof(clientAddress);
 		int clientFd = accept(fd, (struct sockaddr *)&clientAddress, &clientAddressSize);
-		// std::cout << COL_GREEN << "New client, fd: " << clientFd << END_COL << std::endl; //! remove this
 		if (clientFd < 0) //? Should really exit here?
 			throw std::runtime_error("Error while accepting new connection");
 		Server::setNonBlocking(clientFd);
