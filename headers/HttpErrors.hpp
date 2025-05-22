@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:20:55 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/14 12:09:40 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/21 11:41:54 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,4 +18,5 @@ class	HttpErrors {
 		static void	httpResponse400(ClientData& client);
 		static void	httpResponse414(ClientData& client);
 		static void	httpResponse413(ClientData& client);
+		static void	httpResponse405(ClientData& client);
 };

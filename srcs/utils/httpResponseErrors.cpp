@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 14:10:39 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/08 16:31:01 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/21 11:42:53 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,17 @@ void	HttpErrors::httpResponse413(ClientData& client) {
 						   "Content-Type: text/html\r\n"
 						   "Content-Length: 56\r\n"
 						   "\r\n<html><body><h1>413 Payload Too Large</h1></body></html>";
+	std::cout << COL_RED << response << END_COL << std::endl;
+	client.error = response;
+	client.progress = READY;
+	wServ->enablePOLLOUT(client.fd);
+}
+
+void	HttpErrors::httpResponse405(ClientData& client) {
+	std::string response = "HTTP/1.1 413 405 Method Not Allowed\r\n"
+						   "Content-Type: text/html\r\n"
+						   "Content-Length: 57\r\n"
+						   "\r\n<html><body><h1>405 Method Not Allowed</h1></body></html>";
 	std::cout << COL_RED << response << END_COL << std::endl;
 	client.error = response;
 	client.progress = READY;

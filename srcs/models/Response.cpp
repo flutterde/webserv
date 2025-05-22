@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/21 08:19:23 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/22 09:21:37 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,8 @@ Response::Response(struct ClientData &client, Request &req) {
 	
 	std::cout << "Before switch: " << status_code << std::endl;
 	switch (status_code) {
+		case CREATED:
+			break ;
 		// 30x
 		case MOVED_PERMANENTLY:
 			if (body.empty())

@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/20 12:57:49 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/22 09:22:26 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ WebservHandler::~WebservHandler() {
 
 void	WebservHandler::_closeClient(int fd)
 {
-	// std::cout << COL_YELLOW << "Closing client fd: " << fd << END_COL << std::endl;
 	for (size_t i = 0; i < _pollfds.size(); ++i) {
 		if (_pollfds[i].fd == fd) {
 			close(fd);
@@ -114,7 +113,6 @@ bool	WebservHandler::isRequestValid(ClientData& client)
 	if (client.bodyReded > static_cast<long>(max))
 	{
 		HttpErrors::httpResponse413(client);
-		std::cout << COL_RED << "Request body size exceeds server limit" << END_COL << std::endl;
 		return (false);
 	}
 	return (true);
@@ -146,11 +144,8 @@ void	WebservHandler::setMethod(ClientData& client)
 
 void	WebservHandler::handleRequest(ClientData& client)
 {
-	if (!client.error.empty()) {
-		send(client.fd, client.error.c_str(), client.error.size(), 0);
-		this->_closeClient(client.fd);
-		return ;
-	}
+	if (!client.error.empty())
+		return send(client.fd, client.error.c_str(), client.error.size(), 0), this->_closeClient(client.fd);
 	if (!client.resp)
 		return this->_closeClient(client.fd);
 	if (!client.isHeadersSent) {
@@ -161,30 +156,22 @@ void	WebservHandler::handleRequest(ClientData& client)
 		client.isHeadersSent = true;
 		return;
 	}
-	// send res
-	// send file as chunks
 	if ((client.bytesSent < client.resp->getContentlength()) && (client.resp->getFd() != -1)) {
-		// std::cout << COL_RED << " ==== ==== === === === === ==== === === " << END_COL << std::endl;
 		char s__buffer[SEND_SIZE];
 		int n = read(client.resp->getFd(), s__buffer, SEND_SIZE - 1);
-		// std::cout << COL_RED << " ==== ==== === === (N: " << n << ") === === ==== === === " << END_COL << std::endl;
 		if (n <= 0) {
 			std::cout << COL_RED << "Error while reading from file, for client/N: " << client.fd << " -- " << n << END_COL << std::endl;
 			return this->_closeClient(client.fd);
 		}
 		s__buffer[n] = '\0';
-		// std::cout << COL_YELLOW << "Buffer: \n\n" << s__buffer << END_COL << std::endl;
 		int j = send(client.fd, s__buffer, n, 0);
-		// std::cout << COL_RED << " ==== ==== === === (J: " << j << ") === === ==== === === " << END_COL << std::endl;
 		if (j <= 0 || j != n) {
 			std::cout << COL_RED << "Error while sending socket, for client/N: " << client.fd << " -- " << j << END_COL << std::endl;
 			return this->_closeClient(client.fd);
 		}
 		client.bytesSent += j;
-	} else {
-		// std::cout << COL_MAGENTA << "The response is sent completely: " << client.bytesSent << END_COL << std::endl;
-		this->_closeClient(client.fd); // first should be the send everything
-	}
+	} else
+		this->_closeClient(client.fd);
 }
 
 void	WebservHandler::validateRequestHeaders(ClientData& client)
@@ -194,6 +181,9 @@ void	WebservHandler::validateRequestHeaders(ClientData& client)
 	this->validateUrl(client);
 	if (client.type == CHUNKED)
 		return HttpErrors::httpResponse400(client), this->enablePOLLOUT(client.fd);
+	std::map<std::string, bool>::iterator it = client.server->getAllowedMethods().find(client.method);
+	if (it == client.server->getAllowedMethods().end())
+		return HttpErrors::httpResponse405(client);
 	client.isHeadersChecked = true;
 }
 

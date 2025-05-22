@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 13:07:08 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/17 08:40:44 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/21 12:16:29 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ struct ClientData {
 	std::string					boundary;
 	std::string					error;
 	std::string					tmpFolder;
-	std::string					tmpFileName;
+	std::string					fileName;
 	requestType					type;
 	requestProgress				progress;
 	std::map<std::string, int>	uploadFd;
