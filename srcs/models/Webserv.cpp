@@ -6,15 +6,14 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/22 13:18:16 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/22 14:40:22 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../headers/Webserv.hpp"
 #include "../../headers/header.hpp"
-#include <exception>
-#include <iostream>
-
+#include "../../headers/Response.hpp"
+#include "../../headers/Request.hpp"
 
 Webserv::Webserv() {
 }
@@ -153,12 +152,13 @@ void	Webserv::handleClientRequest(int fd)
 void	Webserv::prepareClientResponse(ClientData& client)
 {
 	try {
-	Request req(client.headers.append(client.request));
-	if (!client.resp)
-		client.resp = new Response(client, req);
-	client.progress = READY;
-	this->enablePOLLOUT(client.fd);
-	} catch(std::exception& e) {
+		Request req(client.headers.append(client.request), client);
+		if (!client.resp)
+			client.resp = new Response(client, req);
+		client.progress = READY;
+		this->enablePOLLOUT(client.fd);
+	}
+	catch(std::exception& e) {
 		std::cerr << COL_RED << "Error while preparing response: " << e.what() << END_COL << std::endl;
 		this->_closeClient(client.fd);
 	}

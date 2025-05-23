@@ -1,5 +1,6 @@
 #pragma once
 #include "Types.hpp"
+#include "ClientData.hpp"
 
 class Request {
 private:
@@ -11,9 +12,9 @@ private:
 	std::vector<std::string>			vQuery;
 	std::map<std::string, std::string>	headerPairs;
 	std::vector<std::string>			vEnv;
-
 public:
-	Request(const std::string& requestString);
+	ClientData&							client;
+	Request(const std::string& requestString, ClientData& c);
 	~Request();
 
 	void		setPath(std::string &newPath);

@@ -3,17 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   WebservHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/21 19:43:57 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/22 09:22:26 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../headers/header.hpp"
 #include "../../headers/HttpErrors.hpp"
-#include <sys/socket.h>
-#include <unistd.h>
+#include "../../headers/Response.hpp"
 
 
 
@@ -150,7 +149,9 @@ void	WebservHandler::handleRequest(ClientData& client)
 	if (!client.resp)
 		return this->_closeClient(client.fd);
 	if (!client.isHeadersSent) {
+		std::cout << "Before combine" << std::endl;
 		std::string res = client.resp->combineResponse();
+		std::cout << "Response = " << res << std::endl;
 		send(client.fd, res.c_str(), res.size(), 0);
 		client.isHeadersSent = true;
 		return;

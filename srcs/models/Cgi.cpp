@@ -32,7 +32,7 @@ char **Cgi::createEnvironmentVariables(Request &request, char **systemEnv)
 	while (systemEnv[systemEnvCount])
 		++systemEnvCount;
 
-	char **envVariables = new char *[systemEnvCount + request.getEnvSize()]; // free this
+	char **envVariables = new char *[systemEnvCount + request.getEnvSize() + 1]; // free this
 	size_t index = 0;
 
 	while (systemEnv[index])
@@ -86,6 +86,7 @@ std::string Cgi::locateExecutable(const std::vector<std::string> &searchPaths, c
 
 std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 {
+	request.convertToEnv();
 	char **envVariables = createEnvironmentVariables(request, systemEnv);
 	std::vector<std::string> binaryPaths = extractBinaryPaths(systemEnv);
 	std::string scriptExtension;
@@ -101,6 +102,13 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 		interpreterPath = locateExecutable(binaryPaths, "php");
 	else if (scriptExtension == ".py")
 		interpreterPath = locateExecutable(binaryPaths, "python3");
+	// Multiple CGI Not tested
+	else {
+		interpreterPath = request.client.server->getCGI(scriptExtension);
+		if(!interpreterPath.empty()){
+			return ""; //! is this return value valid ?
+		}
+	}
 
 	int pipeFd[2];
 	if (pipe(pipeFd) < 0)
@@ -135,8 +143,8 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 	else
 		exit(EXIT_FAILURE);
 	// !! waaaaaa abadelaziz
-	// for(size_t i = 0; envVariables[i]; ++i)
-	// 	delete envVariables[i];
-	// delete[] envVariables;
+	for(size_t i = 0; envVariables[i]; ++i)
+		delete envVariables[i];
+	delete[] envVariables;
 	return file;
 }
