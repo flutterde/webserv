@@ -12,6 +12,7 @@
 
 #include "../../headers/Cgi.hpp"
  #include <sys/wait.h> //!
+#include <unistd.h>
 
 // SCRIPT_FILENAME – hold the executeble file path
 // REQUEST_METHOD – hold the method name
@@ -97,43 +98,75 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 	// Multiple CGI Not tested
 	else {
 		interpreterPath = request.client.server->getCGI(scriptExtension);
-		if(!interpreterPath.empty()){
+		if(interpreterPath.empty()){
 			return ""; //! is this return value valid ?
 		}
 	}
 
-	int pipeFd[2];
-	if (pipe(pipeFd) < 0)
-		std::cerr << "Error: pipe creation failed\n";
+	int stdoutPipe[2], stdinPipe[2];
+	if (pipe(stdoutPipe) < 0)
+		std::cerr << COL_RED << "Error: pipe stdout creation failed\n" << END_COL;
+	if (pipe(stdinPipe) < 0){
+		std::cerr << COL_RED << "Error: pipe stdin creation failed\n" << END_COL;
+		close(stdoutPipe[0]);
+		close(stdoutPipe[1]);
+	}
 	pid_t processId = fork();
 	if (processId == 0)
 	{
-		close(pipeFd[0]);
-		dup2(pipeFd[1], STDOUT_FILENO);
-		dup2(pipeFd[1], STDERR_FILENO);
-		close(pipeFd[1]);
+		dup2(stdinPipe[0], STDIN_FILENO);
 
-		std::string fullpath = "var/www/html" + request.getPath();
+		dup2(stdoutPipe[1], STDOUT_FILENO);
+		dup2(stdoutPipe[1], STDERR_FILENO);
+		
+		close(stdoutPipe[0]);
+		close(stdoutPipe[1]);
+		close(stdinPipe[0]);
+		close(stdinPipe[1]);
+
+		std::string fullpath = request.client.server->getRootPath() + request.getPath();
 		char *arguments[3] = {strdup(interpreterPath.c_str()), strdup(fullpath.c_str()), NULL};
 		execve(arguments[0], arguments, envVariables);
 		std::cerr << "Error: execve failed\n";
 	}
 	else if (processId > 0)
 	{
-		close(pipeFd[1]);
+		close(stdinPipe[0]);
+		close(stdoutPipe[1]);
+
+		if (request.getMethod() == "POST" && !request.getBody().empty()) {
+            std::string postData = request.getBody();
+            ssize_t bytesWritten = write(stdinPipe[1], postData.c_str(), postData.length());
+            if (bytesWritten < 0) {
+                std::cerr << COL_RED << "Error: Failed to write POST data to CGI\n" << END_COL;
+            }
+        }
+
+		close(stdinPipe[1]);
+
 		char outputBuffer[1024];
 		ssize_t bytesRead;
-		while ((bytesRead = read(pipeFd[0], outputBuffer, sizeof(outputBuffer) - 1)) > 0)
+		while ((bytesRead = read(stdoutPipe[0], outputBuffer, sizeof(outputBuffer) - 1)) > 0)
 		{
 			outputBuffer[bytesRead] = '\0';
 			file += outputBuffer;
 		}
-		close(pipeFd[0]);
+		
+		close(stdoutPipe[0]);
 		waitpid(processId, NULL, 0);
 		// delete temp files in temp folder
 	}
 	else
-		exit(EXIT_FAILURE);
+	{
+		close(stdoutPipe[0]);
+		close(stdoutPipe[1]);
+		close(stdinPipe[0]);
+		close(stdinPipe[1]);
+		for(size_t i = 0; envVariables[i]; ++i)
+            delete[] envVariables[i];
+        delete[] envVariables;
+        return "";
+	}
 	// !! waaaaaa abadelaziz
 	for(size_t i = 0; envVariables[i]; ++i)
 		delete envVariables[i];

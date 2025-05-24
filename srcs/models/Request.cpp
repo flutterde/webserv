@@ -74,13 +74,6 @@ Request::Request(const std::string &requestString, ClientData& c) :client(c)
 }
 
 
-template <typename T>
-void	printMap(T mp) {
-	for (typename T::iterator it = mp.begin(); it != mp.end(); ++it){
-		std::cout << "->" << *it << std::endl;	
-	}
-}
-
 void Request::convertToEnv(void)
 {
 	vEnv.push_back("REQUEST_METHOD="+ method);
@@ -113,7 +106,6 @@ void Request::convertToEnv(void)
 		vEnv.push_back("HTTP_COOKIE="+ headerPairs["Cookie"]); // is this correct HTTP_COOKIE=session=0c4982e7b7ef3dca ??
 	if (!headerPairs["Authorization"].empty())
 		vEnv.push_back("HTTP_AUTHORIZATION="+ headerPairs["Authorization"]);
-	printMap(vEnv); // remove this
 }
 
 std::string Request::getEnv(size_t i) const

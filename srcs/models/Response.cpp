@@ -180,6 +180,12 @@ void Response::handlePost(struct ClientData &client, Request &req, std::string &
 		status_code = FORBIDDEN; 
 		return;
 	}
+	if (!path.substr(path.find_last_of('.')).compare(".py") 
+			|| !path.substr(path.find_last_of('.')).compare(".php")) {
+			std::cout << COL_GREEN << "Before cgi: " << END_COL << std::endl;
+			body = cgi->executeCgiScript(req, serverEnv);
+			std::cout << COL_GREEN << "After cgi: " << body << END_COL << std::endl;
+	}
 	(void) req;
 	wServ->enablePOLLOUT(client.fd);
 	client.progress = READY;
