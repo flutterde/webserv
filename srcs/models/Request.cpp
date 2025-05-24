@@ -36,7 +36,7 @@ Request::Request(const std::string &requestString, ClientData& c) :client(c)
 	
 	if (this->path.find_first_of("?") != std::string::npos)
 	{
-		this->query = this->path.substr(this->path.find_first_of("?"));
+		this->query = this->path.substr(this->path.find_first_of("?") + 1);
 		size_t queryStart = this->path.find_first_of("?") + 1;
 		while (true)
 		{
@@ -104,10 +104,13 @@ void Request::convertToEnv(void)
 	if (!headerPairs["Host"].empty())
 		vEnv.push_back("HTTP_HOST="+ headerPairs["Host"]);
 	
+	// vEnv.push_back(("DOCUMENT_ROOT="+ client.server->getRootPath()));
+	vEnv.push_back("DOCUMENT_ROOT=/Users/achakkaf/Documents/webserv/var/www/html");
+
 	if (!headerPairs["User-Agent"].empty())
 		vEnv.push_back("HTTP_USER_AGENT="+ headerPairs["User-Agent"]);
 	if (!headerPairs["Cookie"].empty())
-		vEnv.push_back("HTTP_COOKIE="+ headerPairs["Cookie"]); // is this correct HTTP_COOKIE=session=0c4982e7b7ef3dca??
+		vEnv.push_back("HTTP_COOKIE="+ headerPairs["Cookie"]); // is this correct HTTP_COOKIE=session=0c4982e7b7ef3dca ??
 	if (!headerPairs["Authorization"].empty())
 		vEnv.push_back("HTTP_AUTHORIZATION="+ headerPairs["Authorization"]);
 	printMap(vEnv); // remove this

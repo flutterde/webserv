@@ -26,25 +26,17 @@ Cgi::Cgi() {}
 
 Cgi::~Cgi() {}
 
-char **Cgi::createEnvironmentVariables(Request &request, char **systemEnv)
+char **Cgi::createEnvironmentVariables(Request &request)
 {
-	size_t systemEnvCount = 0;
-	while (systemEnv[systemEnvCount])
-		++systemEnvCount;
-
-	char **envVariables = new char *[systemEnvCount + request.getEnvSize() + 1]; // free this
 	size_t index = 0;
+	char **envVariables = new char *[request.getEnvSize() + 1];
 
-	while (systemEnv[index])
-	{
-		envVariables[index] = strdup(systemEnv[index]);
+	while (index < request.getEnvSize()){
+		envVariables[index] = strdup(request.getEnv(index).c_str());
 		++index;
 	}
 
-	for (size_t j = 0; !request.getEnv(j).empty(); ++j)
-		envVariables[index++] = strdup(request.getEnv(j).c_str());
-
-	envVariables[index - 1] = NULL;
+	envVariables[index] = NULL;
 	return envVariables;
 }
 
@@ -87,7 +79,7 @@ std::string Cgi::locateExecutable(const std::vector<std::string> &searchPaths, c
 std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 {
 	request.convertToEnv();
-	char **envVariables = createEnvironmentVariables(request, systemEnv);
+	char **envVariables = createEnvironmentVariables(request);
 	std::vector<std::string> binaryPaths = extractBinaryPaths(systemEnv);
 	std::string scriptExtension;
 	std::string interpreterPath;
