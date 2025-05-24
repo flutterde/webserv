@@ -154,7 +154,6 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 		
 		close(stdoutPipe[0]);
 		waitpid(processId, NULL, 0);
-		// delete temp files in temp folder
 	}
 	else
 	{
@@ -167,7 +166,6 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
         delete[] envVariables;
         return "";
 	}
-	// !! waaaaaa abadelaziz
 	for(size_t i = 0; envVariables[i]; ++i)
 		delete envVariables[i];
 	delete[] envVariables;
