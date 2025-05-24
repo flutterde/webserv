@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 19:52:42 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/14 19:08:39 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/24 11:23:10 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,8 +86,15 @@ std::string Cgi::locateExecutable(const std::vector<std::string> &searchPaths, c
 
 std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 {
+	std::cout << COL_YELLOW << "Executing CGI script: " << std::endl;
 	request.convertToEnv();
 	char **envVariables = createEnvironmentVariables(request, systemEnv);
+	int i = 0;
+	while (envVariables[i])
+	{
+		std::cout << envVariables[i] << std::endl;
+		++i;
+	}
 	std::vector<std::string> binaryPaths = extractBinaryPaths(systemEnv);
 	std::string scriptExtension;
 	std::string interpreterPath;
@@ -98,6 +105,7 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 		scriptExtension = request.getPath().substr(extensionPos);
 	else
 		scriptExtension = "";
+	std::cout << COL_RED << "Error: Unsupported CGI script extension: " << scriptExtension << END_COL << std::endl;
 	if (scriptExtension == ".php")
 		interpreterPath = locateExecutable(binaryPaths, "php");
 	else if (scriptExtension == ".py")
@@ -121,7 +129,7 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 		dup2(pipeFd[1], STDERR_FILENO);
 		close(pipeFd[1]);
 
-		std::string fullpath = "var/www/html" + request.getPath();
+		std::string fullpath = request.client.server->getRootPath() + request.getPath();
 		char *arguments[3] = {strdup(interpreterPath.c_str()), strdup(fullpath.c_str()), NULL};
 		execve(arguments[0], arguments, envVariables);
 		std::cerr << "Error: execve failed\n";

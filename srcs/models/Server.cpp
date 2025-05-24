@@ -17,7 +17,7 @@
 
 
 
-Server::Server(void) //! i think I have to remove this
+Server::Server(void)
 {		
 }
 
@@ -29,7 +29,7 @@ Server::~Server(void)
 		close(this->serverBind);
 }
 
-Server::Server(const Server& srv, uint32_t port) //! 
+Server::Server(const Server& srv, uint32_t port)
 {
 	this->rootPath = srv.rootPath;
 	this->host = srv.host;

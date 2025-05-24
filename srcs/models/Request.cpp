@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 12:43:53 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/22 09:21:18 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/23 18:35:29 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ void Request::convertToEnv(void)
 		vEnv.push_back("HTTP_COOKIE="+ headerPairs["Cookie"]); // is this correct HTTP_COOKIE=session=0c4982e7b7ef3dca??
 	if (!headerPairs["Authorization"].empty())
 		vEnv.push_back("HTTP_AUTHORIZATION="+ headerPairs["Authorization"]);
-	printMap(vEnv); // remove this
+	// printMap(vEnv); // remove this
 }
 
 std::string Request::getEnv(size_t i) const
