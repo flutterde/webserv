@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/25 15:24:35 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/25 16:44:17 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,7 +164,7 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 		if (!index.empty())
 			path += index;
 		std::string extension = path.substr(path.find_last_of('.'));
-		if (!extension.compare(".py") || !extension.compare(".php")) {
+		if (client.server->getCGI(extension).compare("not_found")) {
 			body = cgi->executeCgiScript(req, serverEnv);
 			isCgi = true;
 		}
@@ -191,14 +191,11 @@ void Response::handlePost(struct ClientData &client, Request &req, std::string &
 		return;
 	}
 	std::string extension = path.substr(path.find_last_of('.'));
-	if (!extension.compare(".py") || !extension.compare(".php")) {
+	if (client.server->getCGI(extension).compare("not_found")) {
 		body = cgi->executeCgiScript(req, serverEnv);
 		isCgi = true;
 	}
 	(void) req;
-	status_code = CREATED;
-	status_text = "Created";
-	headers["Allow-Origin"] = "*";
 	status_code = CREATED;
 	status_text = "Created";
 	headers["Allow-Origin"] = "*";
