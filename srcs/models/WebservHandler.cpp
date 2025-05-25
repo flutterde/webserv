@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WebservHandler.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/22 09:22:26 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/25 11:06:15 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,13 +160,13 @@ void	WebservHandler::handleRequest(ClientData& client)
 		char s__buffer[SEND_SIZE];
 		int n = read(client.resp->getFd(), s__buffer, SEND_SIZE - 1);
 		if (n <= 0) {
-			std::cout << COL_RED << "Error while reading from file, for client/N: " << client.fd << " -- " << n << END_COL << std::endl;
+			std::cout << COL_RED << "Error while reading from file, for client/N: " << client.fd << " -- " << n << END_COL << std::endl; //! ******************************************************
 			return this->_closeClient(client.fd);
 		}
 		s__buffer[n] = '\0';
 		int j = send(client.fd, s__buffer, n, 0);
 		if (j <= 0 || j != n) {
-			std::cout << COL_RED << "Error while sending socket, for client/N: " << client.fd << " -- " << j << END_COL << std::endl;
+			std::cout << COL_RED << "Error while sending socket, for client/N: " << client.fd << " -- " << j << END_COL << std::endl; //! ******************************************************
 			return this->_closeClient(client.fd);
 		}
 		client.bytesSent += j;
@@ -178,7 +178,9 @@ void	WebservHandler::validateRequestHeaders(ClientData& client)
 {
 	if (!client.isHeaderComplete)
 		return;
+	std::cout << "Headers: " << client.headers << std::endl;
 	this->validateUrl(client);
+	std::cout << " ============================ " << std::endl;
 	if (client.type == CHUNKED)
 		return HttpErrors::httpResponse400(client), this->enablePOLLOUT(client.fd);
 	std::map<std::string, bool>::iterator it = client.server->getAllowedMethods().find(client.method);
@@ -198,8 +200,10 @@ void	WebservHandler::validateUrl(ClientData& client)
 	if (end - start > URL_MAX_SIZE)
 		return HttpErrors::httpResponse414(client), this->enablePOLLOUT(client.fd);
 	// 400 Bad Request url contains invalid characters
-	if (url.find_first_not_of(ALLOWED_CHARS) != std::string::npos)
+	if (url.find_first_not_of(ALLOWED_CHARS) != std::string::npos) {
+		std::cout << COL_MAGENTA << "Invalid URL: " << url << END_COL << std::endl;
 		return HttpErrors::httpResponse400(client), this->enablePOLLOUT(client.fd);
+	}
 }
 
 

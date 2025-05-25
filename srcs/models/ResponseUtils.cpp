@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ResponseUtils.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 12:29:43 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/20 13:38:46 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/24 17:06:51 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,7 @@ std::string ResponseUtils::generateAutoIndex(std::string filepath) {
 		if (!first)
 			body << "<hr/>";
 		body << "<div class='directory'>" 
-				"<a href='" << ent->d_name << "/'>" << ent->d_name << "</a>" 
+				"<a href='" << ent->d_name << "'>" << ent->d_name << "</a>" 
 			"</div>" << std::endl;
 		first = false;
 	}

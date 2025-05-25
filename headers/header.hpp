@@ -14,9 +14,7 @@
 // rename it to tooles;
 # include "Types.hpp"
 #include "WebservHandler.hpp"
-// #include "Cgi.hpp"
 #include "ClientData.hpp"
-#include "debug.hpp"
 #include "FtPars.hpp"
 
 extern char				**serverEnv;

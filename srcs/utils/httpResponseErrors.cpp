@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 14:10:39 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/21 11:42:53 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/25 11:02:54 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ void	HttpErrors::httpResponse414(ClientData& client) {
 }
 
 void	HttpErrors::httpResponse400(ClientData& client) {
+	std::cout << " ************************* HTTP 400 ERROR ************************* " << std::endl;
 	std::string response = "HTTP/1.1 400 Bad Request\r\n"
 						   "Content-Type: text/html\r\n"
 						   "Content-Length: 50\r\n"

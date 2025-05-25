@@ -1,11 +1,11 @@
 CPP = c++
-CPPFLAGS = -Wall -Wextra -Werror -std=c++98 -I./headers/  -fsanitize=address
+CPPFLAGS = -Wall -Wextra -Werror -std=c++98 -I./headers/  -g -fsanitize=address
 
 NAME=webserv
 
 # OTM
 SRCS=main.cpp srcs/parsing/config/readConfig.cpp srcs/parsing/helpers/strTrim.cpp \
-srcs/parsing/helpers/FtPars.cpp srcs/models/Server.cpp  debug/printing.cpp \
+srcs/parsing/helpers/FtPars.cpp srcs/models/Server.cpp \
 srcs/utils/httpResponseErrors.cpp srcs/utils/serverUtils.cpp srcs/utils/ClientData.cpp \
 
 # ACHAKKAF

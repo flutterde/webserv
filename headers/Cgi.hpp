@@ -15,7 +15,7 @@
 
 class Cgi {
     private:
-        char                        **createEnvironmentVariables(Request &request, char **systemEnv);
+        char                        **createEnvironmentVariables(Request &request);
         std::vector<std::string>    extractBinaryPaths(char **environmentVariables);
         std::string                 locateExecutable(const std::vector<std::string> &searchPaths,
 													const std::string &executableName);

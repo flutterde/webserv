@@ -49,7 +49,7 @@ void processMultipartUpload(ClientData &client)
 	ssize_t written;
     std::string tmpFileName;
 
-    std::cout << COL_RED << "uploading..." << END_COL << std::endl;
+    // std::cout << COL_RED << "uploading..." << END_COL << std::endl;
     while(!client.request.empty()) {
         if (client.uploadFd.find(client.fileName) == client.uploadFd.end()){
             size_t headers = client.request.find("\r\n\r\n");

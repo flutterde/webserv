@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 12:43:53 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/23 18:35:29 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/24 14:43:24 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ Request::Request(const std::string &requestString, ClientData& c) :client(c)
 	
 	if (this->path.find_first_of("?") != std::string::npos)
 	{
-		this->query = this->path.substr(this->path.find_first_of("?"));
+		this->query = this->path.substr(this->path.find_first_of("?") + 1);
 		size_t queryStart = this->path.find_first_of("?") + 1;
 		while (true)
 		{
@@ -74,13 +74,6 @@ Request::Request(const std::string &requestString, ClientData& c) :client(c)
 }
 
 
-template <typename T>
-void	printMap(T mp) {
-	for (typename T::iterator it = mp.begin(); it != mp.end(); ++it){
-		std::cout << "->" << *it << std::endl;	
-	}
-}
-
 void Request::convertToEnv(void)
 {
 	vEnv.push_back("REQUEST_METHOD="+ method);
@@ -104,13 +97,15 @@ void Request::convertToEnv(void)
 	if (!headerPairs["Host"].empty())
 		vEnv.push_back("HTTP_HOST="+ headerPairs["Host"]);
 	
+	// vEnv.push_back(("DOCUMENT_ROOT="+ client.server->getRootPath()));
+	vEnv.push_back("DOCUMENT_ROOT=/Users/achakkaf/Documents/webserv/var/www/html");
+
 	if (!headerPairs["User-Agent"].empty())
 		vEnv.push_back("HTTP_USER_AGENT="+ headerPairs["User-Agent"]);
 	if (!headerPairs["Cookie"].empty())
-		vEnv.push_back("HTTP_COOKIE="+ headerPairs["Cookie"]); // is this correct HTTP_COOKIE=session=0c4982e7b7ef3dca??
+		vEnv.push_back("HTTP_COOKIE="+ headerPairs["Cookie"]); // is this correct HTTP_COOKIE=session=0c4982e7b7ef3dca ??
 	if (!headerPairs["Authorization"].empty())
 		vEnv.push_back("HTTP_AUTHORIZATION="+ headerPairs["Authorization"]);
-	// printMap(vEnv); // remove this
 }
 
 std::string Request::getEnv(size_t i) const

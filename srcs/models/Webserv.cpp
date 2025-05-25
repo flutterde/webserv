@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:25:44 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/22 14:40:22 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/24 16:24:36 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "../../headers/header.hpp"
 #include "../../headers/Response.hpp"
 #include "../../headers/Request.hpp"
+#include <stdexcept>
 
 Webserv::Webserv() {
 }
@@ -113,7 +114,7 @@ void	Webserv::acceptNewConnection(int fd)
 		struct sockaddr_in clientAddress;
 		socklen_t clientAddressSize = sizeof(clientAddress);
 		int clientFd = accept(fd, (struct sockaddr *)&clientAddress, &clientAddressSize);
-		if (clientFd < 0) //? Should really exit here?
+		if (clientFd < 0)
 			throw std::runtime_error("Error while accepting new connection");
 		Server::setNonBlocking(clientFd);
 		this->_pollfds.push_back((struct pollfd){clientFd, POLLIN, 0});
@@ -130,14 +131,8 @@ void	Webserv::handleClientRequest(int fd)
 	char buffer[READ_SIZE];
 	ssize_t	bytesRead = recv(fd, buffer, READ_SIZE - 1, 0);
 	if (bytesRead <= 0) {
-		if (bytesRead == 0) {
-			std::cout << "Client disconnected" << std::endl;
-		} else {
-			std::cerr << COL_RED << "Error while reading from client" << END_COL << std::endl;
-		}
-		std::cout << COL_RED << "Error while reading from client: " << fd << END_COL << std::endl;
 		this->_closeClient(fd);
-		return;
+		throw std::runtime_error("Error while reading from client");
 	}
 	buffer[bytesRead] = '\0';
 	this->_requests[fd].request.append(buffer, bytesRead);
@@ -151,6 +146,7 @@ void	Webserv::handleClientRequest(int fd)
 
 void	Webserv::prepareClientResponse(ClientData& client)
 {
+	// std::cout << " PPP, the client is: " << client.fd << std::endl;
 	try {
 		Request req(client.headers.append(client.request), client);
 		if (!client.resp)
@@ -161,19 +157,19 @@ void	Webserv::prepareClientResponse(ClientData& client)
 	catch(std::exception& e) {
 		std::cerr << COL_RED << "Error while preparing response: " << e.what() << END_COL << std::endl;
 		this->_closeClient(client.fd);
+		std::cout << COL_RED << " *-*-*-*-*-*-*-*-*-*-* " << END_COL << std::endl;
+		throw std::runtime_error("Error while preparing response");
 	}
 }
 
 
-void	Webserv::sendResponse(int fd) //?! Complete the request, you have to send headers, body and file
+void	Webserv::sendResponse(int fd)
 {
 	mapIt it = this->_requests.find(fd);
-	if (it == this->_requests.end()) {
+	if (it == this->_requests.end())
 		return;
-	}
-	if (it->second.progress == READY) {
+	if (it->second.progress == READY)
 		this->handleRequest(it->second);
-	}
 }
 
 void Webserv::timeoutHandler(void)

@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 16:47:27 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/17 10:53:31 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/24 14:44:45 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,21 @@ MimeTypes::MimeTypes()
 	types[".pdf"] = "application/pdf";
 	types[".zip"] = "application/zip";
 	types[".tar"] = "application/x-tar";
+	types[".json"] = "application/json";
+	types[".xml"] = "application/xml";
+	types[".svg"] = "image/svg+xml";
+	types[".webp"] = "image/webp";
+	types[".woff"] = "font/woff";
+	types[".woff2"] = "font/woff2";
+	types[".eot"] = "application/vnd.ms-fontobject";
+	types[".otf"] = "font/otf";
+	types[".ttf"] = "font/ttf";
+	types[".csv"] = "text/csv";
+	types[".md"] = "text/markdown";
+	types[".avi"] = "video/x-msvideo";
+	types[".webm"] = "video/webm";
+	types[".ico"] = "image/x-icon";
+	
 }
 
 MimeTypes::~MimeTypes()

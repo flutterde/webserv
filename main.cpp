@@ -12,7 +12,6 @@
 
 #include "headers/Webserv.hpp"
 #include "headers/header.hpp"
-#include "headers/debug.hpp"//!
 #include "headers/readConfig.hpp"
 #include <fstream>
 #include <iostream>
@@ -27,9 +26,8 @@ char	**serverEnv;
 std::string	*notFound;
 WebservHandler	*wServ;
 
-// void    ll(){ //! DELETE ME
-//     system("leaks -q webserv");
-// }
+
+//! Remove files from var/tmp
 
 int server(char *argFile, char **env) {
     try {

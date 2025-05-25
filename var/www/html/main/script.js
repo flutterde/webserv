@@ -137,31 +137,60 @@ if (uploadButton) {
         const file = fileInput?.files[0];
         
         if (file) {
+            // Disable the button and show the loading spinner
             uploadButton.disabled = true;
             uploadButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
             
+            // Create FormData and append the file
             const formData = new FormData();
             formData.append('file', file);
 
-            setTimeout(() => {
+            // Send the file to the server using fetch
+            fetch('/uploads', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json()) // Assuming server returns JSON response
+            .then(data => {
+                // Handle success response
                 uploadButton.disabled = false;
                 uploadButton.innerHTML = '<i class="fas fa-upload"></i> Upload';
 
                 if (uploadStatus) {
-                    uploadStatus.textContent = 'File uploaded successfully!';
-                    uploadStatus.className = 'status-message success';
+                    if (data.success) {
+                        uploadStatus.textContent = 'File uploaded successfully!';
+                        uploadStatus.className = 'status-message success';
+                    } else {
+                        uploadStatus.textContent = 'Error uploading file. Please try again.';
+                        uploadStatus.className = 'status-message error';
+                    }
                     uploadStatus.style.display = 'block';
 
                     setTimeout(() => {
                         uploadStatus.style.display = 'none';
                     }, 5000);
                 }
-                
                 if (fileInput) fileInput.value = '';
                 if (fileName) fileName.textContent = '';
-                
-            }, 2000);
+            })
+            .catch(error => {
+                console.error('Error uploading file:', error);
+                uploadButton.disabled = false;
+                uploadButton.innerHTML = '<i class="fas fa-upload"></i> Upload';
+
+                if (uploadStatus) {
+                    uploadStatus.textContent = 'Error uploading file. Please try again.';
+                    uploadStatus.className = 'status-message error';
+                    uploadStatus.style.display = 'block';
+
+                    setTimeout(() => {
+                        uploadStatus.style.display = 'none';
+                    }, 5000);
+                }
+            });
+
         } else if (uploadStatus) {
+            // If no file is selected
             uploadStatus.textContent = 'Please select a file to upload.';
             uploadStatus.className = 'status-message error';
             uploadStatus.style.display = 'block';
@@ -176,32 +205,64 @@ if (deleteButton) {
         const deletePath = document.getElementById('deletePath');
         const deleteStatus = document.getElementById('deleteStatus');
         const path = deletePath?.value;
-        
+
         if (path) {
+            // Disable the button and show the loading spinner
             deleteButton.disabled = true;
             deleteButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
-            
-            setTimeout(() => {
+
+            // Construct the URL for the DELETE request, using the path entered in the input field
+            const deleteUrl = `http://127.0.0.1:8080${path}`;
+
+            // For now, just simulate the DELETE request using a console log
+            // (since no backend is available to handle the DELETE request)
+            console.log(`Sending DELETE request to: ${deleteUrl}`);
+
+            // Send DELETE request to the server
+            fetch(deleteUrl, {
+                method: 'DELETE',
+            })
+            .then(response => {
+                // Check if the response status code is in the 2xx range (successful)
+                if (response.ok) {
+                    deleteButton.disabled = false;
+                    deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i> Delete';
+
+                    if (deleteStatus) {
+                        deleteStatus.textContent = 'File/Folder deleted successfully!';
+                        deleteStatus.className = 'status-message success';
+                        deleteStatus.style.display = 'block';
+                    }
+
+                    // Clear the input field
+                    if (deletePath) deletePath.value = '';
+                } else {
+                    throw new Error('Error: ' + response.statusText);
+                }
+            })
+            .catch(error => {
+                // Handle any errors (network issues or server errors)
+                console.error('Error:', error);
                 deleteButton.disabled = false;
                 deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i> Delete';
 
                 if (deleteStatus) {
-                    deleteStatus.textContent = 'File/Folder deleted successfully!';
-                    deleteStatus.className = 'status-message success';
+                    deleteStatus.textContent = 'Error deleting the file/folder. Please try again.';
+                    deleteStatus.className = 'status-message error';
                     deleteStatus.style.display = 'block';
-                    
+
                     setTimeout(() => {
                         deleteStatus.style.display = 'none';
                     }, 5000);
                 }
-
-                if (deletePath) deletePath.value = '';
-                
-            }, 1500);
+            });
         } else if (deleteStatus) {
+            // If no path is entered
             deleteStatus.textContent = 'Please enter a file or folder path.';
             deleteStatus.className = 'status-message error';
             deleteStatus.style.display = 'block';
         }
     });
 }
+
+
