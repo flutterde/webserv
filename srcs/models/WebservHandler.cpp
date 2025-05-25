@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/25 16:53:24 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/25 17:32:18 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,9 +176,7 @@ void	WebservHandler::validateRequestHeaders(ClientData& client)
 {
 	if (!client.isHeaderComplete)
 		return;
-	std::cout << "Headers: " << client.headers << std::endl;
 	this->validateUrl(client);
-	std::cout << " ============================ " << std::endl;
 	if (client.type == CHUNKED)
 		return HttpErrors::httpResponse400(client), this->enablePOLLOUT(client.fd);
 	std::map<std::string, bool>::iterator it = client.server->getAllowedMethods().find(client.method);

@@ -53,6 +53,8 @@
 #define BODY_TEMP_PATH "./tmp/path"
 
 
+# define PHP_CGI_PATH "/Users/ochouati/Desktop/webserv/headers/Types.hpp" //! PHP CGI Path
+
 # define RUNNING 1
 # define POLL_TIMEOUT 50
 # define END_OF_HEADERS "\r\n\r\n"

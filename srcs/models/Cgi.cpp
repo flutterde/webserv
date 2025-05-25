@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/05/25 16:53:53 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/25 17:59:48 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 		scriptExtension = "";
 	std::cout << COL_RED << "Error: Unsupported CGI script extension: " << scriptExtension << END_COL << std::endl;
 	if (scriptExtension == ".php")
-		interpreterPath = locateExecutable(binaryPaths, "php");
+		interpreterPath = PHP_CGI_PATH;
 	else if (scriptExtension == ".py")
 		interpreterPath = locateExecutable(binaryPaths, "python3");
 	// Multiple CGI Not tested
