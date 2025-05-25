@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   Cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/07 19:52:42 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/14 19:08:39 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/24 13:31:52 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../headers/Cgi.hpp"
+#include <stdexcept>
  #include <sys/wait.h> //!
 #include <unistd.h>
 
