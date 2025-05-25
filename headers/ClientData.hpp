@@ -19,7 +19,7 @@
 class Response;
 struct ClientData {
 	int							fd;
-	int							file; //!
+	int							status; //!
 	int							currentFileFd;
 	long						contentLen;
 	long						bodyReded;
@@ -43,7 +43,7 @@ struct ClientData {
 	requestProgress				progress;
 	std::map<std::string, int>	uploadFd;
 	//! add map
-	ClientData() : file(-1),currentFileFd(-1) ,contentLen(-1), bodyReded(-1), isRequestComplete(false), isHeaderComplete(false),isHeadersChecked(false),
+	ClientData() : status(0),currentFileFd(-1) ,contentLen(-1), bodyReded(-1), isRequestComplete(false), isHeaderComplete(false),isHeadersChecked(false),
 				isHeadersSent(false), server(NULL), bytesSent(0),readed(0),startTime(FtPars::getCurrentTimeMs()),resp(NULL), type(NOT_SET), progress(NOT_STARTED){}
 	~ClientData();
 };

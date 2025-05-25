@@ -94,24 +94,19 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 		scriptExtension = request.getPath().substr(extensionPos);
 	else
 		scriptExtension = "";
-	std::cout << COL_RED << "Error: Unsupported CGI script extension: " << scriptExtension << END_COL << std::endl;
+
 	if (scriptExtension == ".php")
 		interpreterPath = PHP_CGI_PATH;
 	else if (scriptExtension == ".py")
 		interpreterPath = locateExecutable(binaryPaths, "python3");
-	// Multiple CGI Not tested
-	else {
+	else
 		interpreterPath = request.client.server->getCGI(scriptExtension);
-		if(interpreterPath.empty()){
-			return ""; //! is this return value valid ?
-		}
-	}
 
 	int stdoutPipe[2], stdinPipe[2];
 	if (pipe(stdoutPipe) < 0)
-		std::cerr << COL_RED << "Error: pipe stdout creation failed\n" << END_COL;
+		request.client.status = -1;
 	if (pipe(stdinPipe) < 0){
-		std::cerr << COL_RED << "Error: pipe stdin creation failed\n" << END_COL;
+		request.client.status = -1;
 		close(stdoutPipe[0]);
 		close(stdoutPipe[1]);
 	}
@@ -131,7 +126,11 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 		std::string fullpath = request.client.server->getRootPath() + request.getPath();
 		char *arguments[3] = {strdup(interpreterPath.c_str()), strdup(fullpath.c_str()), NULL};
 		execve(arguments[0], arguments, envVariables);
-		std::cerr << "Error: execve failed\n";
+		request.client.status = -1;
+		for(size_t i = 0; envVariables[i]; ++i)
+			delete envVariables[i];
+		delete[] envVariables;
+		exit(1);
 	}
 	else if (processId > 0)
 	{
@@ -141,9 +140,8 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 		if (request.getMethod() == "POST" && !request.getBody().empty()) {
             std::string postData = request.getBody();
             ssize_t bytesWritten = write(stdinPipe[1], postData.c_str(), postData.length());
-            if (bytesWritten < 0) {
-                std::cerr << COL_RED << "Error: Failed to write POST data to CGI\n" << END_COL;
-            }
+            if (bytesWritten < 0)
+				request.client.status = -1;
         }
 
 		close(stdinPipe[1]);
@@ -155,9 +153,13 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 			outputBuffer[bytesRead] = '\0';
 			file += outputBuffer;
 		}
-		
+
 		close(stdoutPipe[0]);
-		waitpid(processId, NULL, 0);
+		int status; 
+		waitpid(processId, &status, 0);
+		std::cout << "status:" << status << std::endl;
+		if (WIFSIGNALED(status))
+			request.client.status = WIFSIGNALED(status);
 	}
 	else
 	{

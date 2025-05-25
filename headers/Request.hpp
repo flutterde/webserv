@@ -18,7 +18,7 @@ public:
 	~Request();
 
 	void		setPath(std::string &newPath);
-	void		convertToEnv(void);
+	void		convertToEnv(void); 
 	void 		printHeaders(void) const;
 	size_t		getQuerySize(void) const;
 	size_t		getEnvSize(void) const;

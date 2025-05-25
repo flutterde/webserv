@@ -53,7 +53,7 @@
 #define BODY_TEMP_PATH "./tmp/path"
 
 
-# define PHP_CGI_PATH "/Users/ochouati/Desktop/webserv/headers/Types.hpp" //! PHP CGI Path
+# define PHP_CGI_PATH "/Users/achakkaf/Documents/webser42/configs/php-cgi" //! PHP CGI Path
 
 # define RUNNING 1
 # define POLL_TIMEOUT 50

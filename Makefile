@@ -21,6 +21,7 @@ HEADERS=headers/*.hpp
 OBJS=$(SRCS:.cpp=.o)
 
 all: $(NAME)
+	mkdir -p ./var/tmp
 
 $(NAME): $(OBJS)
 	$(CPP) $(CPPFLAGS) $(OBJS) -o $(NAME)

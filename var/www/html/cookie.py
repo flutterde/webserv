@@ -12,11 +12,7 @@ print("Content-Type: text/html")
 print(cookie.output())
 print()
 
-print("""
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Set Cookie</title>
+pookie</title>
 </head>
 <body>
     <h1>Python CGI Cookie Example</h1>

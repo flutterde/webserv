@@ -51,6 +51,7 @@ size_t Response::getContentlength() const {
 std::string Response::combineResponse(void) {
 	std::ostringstream res;
 
+	std::cout << COL_RED << body << END_COL << std::endl;
 	res << http_version << " " << status_code << " " << status_text << "\r\n";
 	std::map<std::string, std::string>::iterator it;
 	for (it = headers.begin(); it != headers.end(); it++)
@@ -80,6 +81,7 @@ Response::Response(struct ClientData &client, Request &req) {
 	headers["Content-Length"] = "0";
 	headers["Date"] = ResponseUtils::getDateTime();
 	fd = -1;
+	
 	if (full_path.find("..") != std::string::npos)
 		status_code = FORBIDDEN;
 	else if (!client.server->getAllowedMethods()[req.getMethod()]) {
@@ -166,6 +168,9 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 		std::string extension = path.substr(path.find_last_of('.'));
 		if (!extension.compare(".php") || !extension.compare(".py") || client.server->getCGI(extension).compare("not_found")) {
 			body = cgi->executeCgiScript(req, serverEnv);
+			std::cout << "status => " << req.client.status << std::endl;
+			if (req.client.status != 0)
+				status_code = INTERNAL_SERVER_ERROR;
 			isCgi = true;
 		}
 		else {

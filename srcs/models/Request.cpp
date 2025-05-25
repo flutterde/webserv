@@ -76,6 +76,7 @@ Request::Request(const std::string &requestString, ClientData& c) :client(c)
 void Request::convertToEnv(void)
 {
 	vEnv.push_back("REQUEST_METHOD="+ method);
+	// vEnv.push_back("REDIRECT_STATUS=1");
 	vEnv.push_back("SERVER_NAME=Webserv");
 	vEnv.push_back("SERVER_PORT="+ ResponseUtils::toString(client.server->getPort()));
 	vEnv.push_back("SCRIPT_FILENAME="+ path);
@@ -96,8 +97,7 @@ void Request::convertToEnv(void)
 	if (!headerPairs["Host"].empty())
 		vEnv.push_back("HTTP_HOST="+ headerPairs["Host"]);
 	
-	// vEnv.push_back(("DOCUMENT_ROOT="+ client.server->getRootPath()));
-	vEnv.push_back("DOCUMENT_ROOT=/Users/achakkaf/Documents/webserv/var/www/html");
+	vEnv.push_back(("DOCUMENT_ROOT="+ client.server->getRootPath()));
 
 	if (!headerPairs["User-Agent"].empty())
 		vEnv.push_back("HTTP_USER_AGENT="+ headerPairs["User-Agent"]);

@@ -149,6 +149,7 @@ void	Webserv::prepareClientResponse(ClientData& client)
 	// std::cout << " PPP, the client is: " << client.fd << std::endl;
 	try {
 		Request req(client.headers.append(client.request), client);
+		client.status = 200000;
 		if (!client.resp)
 			client.resp = new Response(client, req);
 		client.progress = READY;

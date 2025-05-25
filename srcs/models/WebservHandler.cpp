@@ -150,6 +150,7 @@ void	WebservHandler::handleRequest(ClientData& client)
 		return this->_closeClient(client.fd);
 	if (!client.isHeadersSent) {
 		std::string res = client.resp->combineResponse();
+		std::cout << res << std::endl;
 		send(client.fd, res.c_str(), res.size(), 0);
 		client.isHeadersSent = true;
 		return;
