@@ -5,12 +5,14 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/07 19:52:42 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/24 14:43:12 by ochouati         ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2025/05/25 16:53:53 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+
 #include "../../headers/Cgi.hpp"
+#include <stdexcept>
  #include <sys/wait.h> //!
 #include <unistd.h>
 
@@ -119,7 +121,7 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 		dup2(stdinPipe[0], STDIN_FILENO);
 
 		dup2(stdoutPipe[1], STDOUT_FILENO);
-		dup2(stdoutPipe[1], STDERR_FILENO);
+		// dup2(stdoutPipe[1], STDERR_FILENO);
 		
 		close(stdoutPipe[0]);
 		close(stdoutPipe[1]);
@@ -156,7 +158,6 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 		
 		close(stdoutPipe[0]);
 		waitpid(processId, NULL, 0);
-		// delete temp files in temp folder
 	}
 	else
 	{
@@ -169,7 +170,6 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
         delete[] envVariables;
         return "";
 	}
-	// !! waaaaaa abadelaziz
 	for(size_t i = 0; envVariables[i]; ++i)
 		delete envVariables[i];
 	delete[] envVariables;

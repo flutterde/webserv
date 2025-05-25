@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/22 09:21:37 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/25 17:03:56 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,12 +55,22 @@ std::string Response::combineResponse(void) {
 	std::map<std::string, std::string>::iterator it;
 	for (it = headers.begin(); it != headers.end(); it++)
 		res << it->first << ": " << it->second << "\r\n";
-	res << "\r\n" << body;
+	if (!isCgi)
+		res << "\r\n";
+	res << body;
 	return res.str();
 }
 
+size_t Response::getBodyLength() {
+    if (isCgi)
+        return body.length() - body.find("\n\n") - 4;
+    return body.length();
+}
+
+
 Response::Response(struct ClientData &client, Request &req) {
 	cgi = new Cgi();
+	isCgi = false;
 	std::string full_path = client.server->getRootPath() + req.getPath();
 	http_version = req.getVersion();
 
@@ -91,7 +101,6 @@ Response::Response(struct ClientData &client, Request &req) {
 	else if (req.getMethod() == "DELETE")
 		handleDelete(client, req, full_path);
 	
-	std::cout << "Before switch: " << status_code << std::endl;
 	switch (status_code) {
 		case CREATED:
 			break ;
@@ -123,7 +132,7 @@ Response::Response(struct ClientData &client, Request &req) {
 			status_code = OK;
 			status_text = "OK";
 			if (!body.empty())
-				headers["Content-Length"] = ResponseUtils::toString(body.length());
+				headers["Content-Length"] = ResponseUtils::toString(getBodyLength());
 	}
 }
 
@@ -154,9 +163,10 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 	if (isFile) {
 		if (!index.empty())
 			path += index;
-		if (!path.substr(path.find_last_of('.')).compare(".py") 
-			|| !path.substr(path.find_last_of('.')).compare(".php")) {
+		std::string extension = path.substr(path.find_last_of('.'));
+		if (!extension.compare(".php") || !extension.compare(".py") || client.server->getCGI(extension).compare("not_found")) {
 			body = cgi->executeCgiScript(req, serverEnv);
+			isCgi = true;
 		}
 		else {
 			struct stat fileStat;
@@ -180,13 +190,15 @@ void Response::handlePost(struct ClientData &client, Request &req, std::string &
 		status_code = FORBIDDEN; 
 		return;
 	}
-	if (!path.substr(path.find_last_of('.')).compare(".py") 
-			|| !path.substr(path.find_last_of('.')).compare(".php")) {
-			std::cout << COL_GREEN << "Before cgi: " << END_COL << std::endl;
-			body = cgi->executeCgiScript(req, serverEnv);
-			std::cout << COL_GREEN << "After cgi: " << body << END_COL << std::endl;
+	std::string extension = path.substr(path.find_last_of('.'));
+	if (!extension.compare(".php") || !extension.compare(".py") || client.server->getCGI(extension).compare("not_found")) {
+		body = cgi->executeCgiScript(req, serverEnv);
+		isCgi = true;
 	}
 	(void) req;
+	status_code = CREATED;
+	status_text = "Created";
+	headers["Allow-Origin"] = "*";
 	wServ->enablePOLLOUT(client.fd);
 	client.progress = READY;
 }

@@ -66,11 +66,10 @@ Request::Request(const std::string &requestString, ClientData& c) :client(c)
 		headerKey = requestString.substr(headerStart, headerKeyEnd - headerStart);
 		size_t headerValueStart = requestString.find_first_not_of(": \t", headerKeyEnd);
 		versionEnd = requestString.find_first_of("\n", headerValueStart);
-		headerValue = requestString.substr(headerValueStart, versionEnd - headerValueStart);
+		headerValue = requestString.substr(headerValueStart, versionEnd - headerValueStart - 1);
 		this->headerPairs[headerKey] = headerValue;
 	}
-	this->body = requestString.substr(versionEnd + 2, requestString.size() - versionEnd);
-	// this->convertToEnv();
+	this->body = requestString.substr(versionEnd + 3, requestString.size() - versionEnd);
 }
 
 
