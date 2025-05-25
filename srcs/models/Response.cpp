@@ -6,7 +6,7 @@
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/25 15:15:39 by mboujama         ###   ########.fr       */
+/*   Updated: 2025/05/25 15:24:35 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,6 +196,9 @@ void Response::handlePost(struct ClientData &client, Request &req, std::string &
 		isCgi = true;
 	}
 	(void) req;
+	status_code = CREATED;
+	status_text = "Created";
+	headers["Allow-Origin"] = "*";
 	status_code = CREATED;
 	status_text = "Created";
 	headers["Allow-Origin"] = "*";

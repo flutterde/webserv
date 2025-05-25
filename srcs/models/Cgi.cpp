@@ -5,10 +5,11 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mboujama <mboujama@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/07 19:52:42 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/24 13:31:52 by mboujama         ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2025/05/25 15:39:09 by mboujama         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "../../headers/Cgi.hpp"
 #include <stdexcept>
@@ -118,7 +119,7 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 		dup2(stdinPipe[0], STDIN_FILENO);
 
 		dup2(stdoutPipe[1], STDOUT_FILENO);
-		dup2(stdoutPipe[1], STDERR_FILENO);
+		// dup2(stdoutPipe[1], STDERR_FILENO);
 		
 		close(stdoutPipe[0]);
 		close(stdoutPipe[1]);
