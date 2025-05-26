@@ -54,7 +54,7 @@ Server::Server(std::vector<std::string>& arr, size_t& idx)
 	this->allowedMethods["GET"] = true;
 	this->allowedMethods["POST"] = false;
 	this->allowedMethods["DELETE"] = false;
-	this->indexes["index.html"] = false;
+	// this->indexes["index.html"] = false;
 	this->autoIndex = false;
 	this->enableUploads = false;
 	this->clientBodyTempPath = BODY_TEMP_PATH;

@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/25 17:32:18 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/26 11:52:36 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,6 +151,7 @@ void	WebservHandler::handleRequest(ClientData& client)
 	if (!client.isHeadersSent) {
 		std::string res = client.resp->combineResponse();
 		std::cout << res << std::endl;
+		std::cout << COL_GREEN << "the file lenght: " << client.resp->getContentlength() << " the fd: " << client.resp->getFd()  << END_COL << std::endl;
 		send(client.fd, res.c_str(), res.size(), 0);
 		client.isHeadersSent = true;
 		return;

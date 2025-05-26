@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/25 17:03:56 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/26 12:20:26 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ size_t Response::getBodyLength() {
         return body.length() - body.find("\n\n") - 4;
     return body.length();
 }
-
 
 Response::Response(struct ClientData &client, Request &req) {
 	cgi = new Cgi();
@@ -134,7 +133,6 @@ Response::Response(struct ClientData &client, Request &req) {
 			body = ResponseUtils::getErrorPage(INTERNAL_SERVER_ERROR);
 			headers["Content-Length"] = ResponseUtils::toString(body.length());
 			break ;
-			break;
 		default:
 			status_code = OK;
 			status_text = "OK";
@@ -147,6 +145,7 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 	bool isFile = true;
 	std::string index;
 
+	
 	if (path.find("..") != std::string::npos) {
 		status_code = FORBIDDEN; 
 		return;
@@ -170,22 +169,19 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 	if (isFile) {
 		if (!index.empty())
 			path += index;
-
-		// ! Check if directory instead of dot !!!
 		int dot = path.find_last_of(".");
-		if ((int)dot != -1) {        
-			std::string extension = path.substr(dot);
-        	if (!extension.compare(".py") || client.server->getCGI(extension).compare("not_found")) {            
-				body = cgi->executeCgiScript(req, serverEnv);
-				if (req.client.status != 0)
-					status_code = INTERNAL_SERVER_ERROR;
-				else
-					isCgi = true;      
-			}
-   		}
+		std::string extension = "";
+		if (dot != -1)
+			extension = path.substr(dot);
+		if (!extension.compare(".py") || client.server->getCGI(extension).compare("not_found")) {            
+			body = cgi->executeCgiScript(req, serverEnv);
+			if (req.client.status != 0)
+				status_code = INTERNAL_SERVER_ERROR;
+			else
+				isCgi = true;
+		}   
 		else {
 			struct stat fileStat;
-
 			fd = ResponseUtils::openFile(path);
 			if (stat(path.c_str(), &fileStat) == -1) {
 				status_code = INTERNAL_SERVER_ERROR;
@@ -193,7 +189,7 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 			}
 			contentLength = fileStat.st_size;
 			headers["Content-Length"] = FtPars::toString(contentLength);
-			headers["Content-Type"] = MimeTypes::getMimeType(path);
+			headers["Content-Type"] = MimeTypes::getMimeType(path);	
 		}	
 	}
 	wServ->enablePOLLOUT(client.fd);

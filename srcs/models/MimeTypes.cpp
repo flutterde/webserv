@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 16:47:27 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/24 14:44:45 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/26 12:17:35 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,5 +49,8 @@ MimeTypes::~MimeTypes()
 {}
 
 std::string MimeTypes::getMimeType(std::string filepath) {
-	return types[filepath.substr(filepath.find_last_of('.'))];
+	int dot = filepath.find_last_of('.');
+	if (dot == -1) 
+		return "plain/text";
+	return types[filepath.substr(dot)];
 }

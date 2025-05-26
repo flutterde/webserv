@@ -19,13 +19,9 @@
 # include <string>
 # include <cstring>
 # include <netinet/in.h>
-# include <sys/poll.h>
 # include <poll.h>
 # include <sys/stat.h>
-# include <stdexcept>
-# include <arpa/inet.h>
 # include <signal.h>
-# include <netdb.h>  // For getaddrinfo
 #include <cstddef>
 #include <ostream>
 

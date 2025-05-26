@@ -14,7 +14,7 @@ ts.txt
 *.obj
 *.p
 *.mp4
-# websites/main/video01.mp4
+
 ./configs/php/app 
 configs/php/app
 # Precompiled Headers
@@ -22,6 +22,8 @@ configs/php/app
 *.pch
 labs/app
 mmm/
+var/tmp/*
+var/www/html/main/uploads/*
 *.log
 ts.html
 otm.cpp 

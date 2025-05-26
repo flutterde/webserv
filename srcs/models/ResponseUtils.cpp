@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 12:29:43 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/25 16:54:17 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/26 11:53:45 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,9 @@ bool ResponseUtils::isDirectory(const std::string& path) {
 
 int ResponseUtils::openFile(const std::string& filepath) {
 	int fd = open(filepath.c_str(), O_RDONLY);
-	// ? What is the file didn't open ?
+	// ? What if the file didn't open ?
+
+	std::cout << COL_RED << "File descriptor: " << fd << END_COL << std::endl;
 
 	return fd;
 }
