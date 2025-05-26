@@ -6,70 +6,65 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/20 12:43:53 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/24 14:43:24 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/26 14:16:42 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../headers/Request.hpp"
 #include "../../headers/ResponseUtils.hpp"
 
-// GET /favicon.ico HTTP/1.1
-// Host: 127.0.0.1:8080
-// User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:123.0) Gecko/20100101 Firefox/123.0
-// Accept: image/avif,image/webp,*/*
-// Accept-Language: en-US,en;q=0.5
-// Accept-Encoding: gzip, deflate, br
-// Connection: keep-alive
-// Referer: http://127.0.0.1:8080/
-// Sec-Fetch-Dest: image
-// Sec-Fetch-Mode: no-cors
-// Sec-Fetch-Site: same-origin
 
 Request::Request(const std::string &requestString, ClientData& c) :client(c)
 {
-	size_t methodEnd = requestString.find_first_of(" \t");
+	std::string requestLine = requestString.substr(0, requestString.find("\r\n", 0));
+
+	size_t methodEnd = requestLine.find(' ');
 	this->method = requestString.substr(0, methodEnd);
 
-	size_t pathStart = requestString.find_first_not_of(" \t", methodEnd);
-	size_t pathEnd = requestString.find_first_of(" \t", pathStart);
-	this->path = requestString.substr(pathStart, pathEnd - pathStart);
-	
-	if (this->path.find_first_of("?") != std::string::npos)
-	{
-		this->query = this->path.substr(this->path.find_first_of("?") + 1);
-		size_t queryStart = this->path.find_first_of("?") + 1;
-		while (true)
-		{
-			size_t queryEnd = this->path.find_first_of("&", queryStart);
-			if (queryEnd != queryStart)
-				this->vQuery.push_back(this->path.substr(queryStart, queryEnd - queryStart));
-			if (queryEnd == std::string::npos)
-				break;
-			queryStart = ++queryEnd;
-		}
-		this->path = this->path.substr(0, this->path.find_first_of("?"));
-	}
+	size_t pathStart = requestLine.find_first_not_of(' ', methodEnd);
+	size_t pathEnd = requestLine.find(' ', pathStart);
+	std::string fullPath = requestLine.substr(pathStart, pathEnd - pathStart);
 
-	size_t versionStart = requestString.find_last_of(" \t", pathEnd) + 1;
-	size_t versionEnd = requestString.find_first_of("\n", versionStart);
-	this->version = requestString.substr(versionStart, versionEnd - versionStart - 1); // -1 for /r before \n in the request
+	size_t queryPos = fullPath.find("?");
+	if (queryPos != std::string::npos) {
+		this->path = fullPath.substr(0, queryPos);
+		this->query = fullPath.substr(queryPos + 1);
+		size_t queryStart = 0;
+		while (queryStart < this->query.length()) {
+			size_t queryEnd = this->path.find('&', queryStart);
+			if (queryEnd == std::string::npos)
+				queryEnd = this->query.length();
+			if (queryEnd > queryStart)
+				this->vQuery.push_back(this->query.substr(queryStart, queryEnd - queryStart));
+			if (queryEnd == this->query.length())
+				break;
+			queryStart = queryEnd + 1;
+		}
+	}
+	else
+		this->path = fullPath;
+
+	size_t versionStart = requestLine.find_last_of(' ', pathEnd) + 1;
+	this->version = requestLine.substr(versionStart); // -1 for /r before \n in the request
 
 	std::string headerKey, headerValue;
+	size_t headerStart = requestLine.length() + 2;
+	size_t headerEnd = headerStart;
 	while (true)
 	{
-		size_t headerStart = requestString.find_first_not_of(" \t", versionEnd + 1);
 		if (headerStart == std::string::npos || requestString[headerStart] == '\r' || requestString[headerStart] == '\n')
 			break;
-		size_t headerKeyEnd = requestString.find_first_of(":", headerStart);
+		size_t headerKeyEnd = requestString.find_first_of(':', headerStart);
 		if (headerKeyEnd == std::string::npos)
 			break;
 		headerKey = requestString.substr(headerStart, headerKeyEnd - headerStart);
-		size_t headerValueStart = requestString.find_first_not_of(": \t", headerKeyEnd);
-		versionEnd = requestString.find_first_of("\n", headerValueStart);
-		headerValue = requestString.substr(headerValueStart, versionEnd - headerValueStart - 1);
+		size_t headerValueStart = requestString.find_first_not_of(": ", headerKeyEnd);
+		headerEnd = requestString.find_first_of("\r\n", headerValueStart);
+		headerValue = requestString.substr(headerValueStart, headerEnd - headerValueStart);
 		this->headerPairs[headerKey] = headerValue;
+		headerStart = requestString.find_first_not_of("\r\n", headerEnd); // I remove +1 for here
 	}
-	this->body = requestString.substr(versionEnd + 3, requestString.size() - versionEnd);
+	this->body = requestString.substr(headerEnd + 3, requestString.size() - headerEnd);
 }
 
 

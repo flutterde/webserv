@@ -135,24 +135,31 @@ if (uploadButton) {
         const uploadStatus = document.getElementById('uploadStatus');
         const fileName = document.getElementById('fileName');
         const file = fileInput?.files[0];
-        
+
         if (file) {
-            // Disable the button and show the loading spinner
             uploadButton.disabled = true;
             uploadButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
-            
-            // Create FormData and append the file
+
             const formData = new FormData();
             formData.append('file', file);
 
-            // Send the file to the server using fetch
             fetch('/uploads', {
                 method: 'POST',
-                body: formData
+                body: formData,
+                mode: 'no-cors' // This is required for your case where the backend is not modified
             })
-            .then(response => response.json()) // Assuming server returns JSON response
+            .then(response => {
+                console.log("the status Code : ", response.status);
+                // Check if the status code is in the 2xx range
+                if (response.ok) {
+                    // If status is 2xx, we assume success even with an empty body
+                    return { success: true };
+                } else {
+                    // If not, return failure
+                    return { success: false };
+                }
+            })
             .then(data => {
-                // Handle success response
                 uploadButton.disabled = false;
                 uploadButton.innerHTML = '<i class="fas fa-upload"></i> Upload';
 
@@ -190,13 +197,15 @@ if (uploadButton) {
             });
 
         } else if (uploadStatus) {
-            // If no file is selected
             uploadStatus.textContent = 'Please select a file to upload.';
             uploadStatus.className = 'status-message error';
             uploadStatus.style.display = 'block';
         }
     });
 }
+
+
+
 
 
 const deleteButton = document.getElementById('deleteButton');
@@ -207,23 +216,16 @@ if (deleteButton) {
         const path = deletePath?.value;
 
         if (path) {
-            // Disable the button and show the loading spinner
             deleteButton.disabled = true;
             deleteButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+            const deleteUrl = `http://127.0.0.1:5050${path}`;
 
-            // Construct the URL for the DELETE request, using the path entered in the input field
-            const deleteUrl = `http://127.0.0.1:8080${path}`;
-
-            // For now, just simulate the DELETE request using a console log
-            // (since no backend is available to handle the DELETE request)
             console.log(`Sending DELETE request to: ${deleteUrl}`);
 
-            // Send DELETE request to the server
             fetch(deleteUrl, {
                 method: 'DELETE',
             })
             .then(response => {
-                // Check if the response status code is in the 2xx range (successful)
                 if (response.ok) {
                     deleteButton.disabled = false;
                     deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i> Delete';
@@ -234,14 +236,12 @@ if (deleteButton) {
                         deleteStatus.style.display = 'block';
                     }
 
-                    // Clear the input field
                     if (deletePath) deletePath.value = '';
                 } else {
                     throw new Error('Error: ' + response.statusText);
                 }
             })
             .catch(error => {
-                // Handle any errors (network issues or server errors)
                 console.error('Error:', error);
                 deleteButton.disabled = false;
                 deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i> Delete';
@@ -257,7 +257,6 @@ if (deleteButton) {
                 }
             });
         } else if (deleteStatus) {
-            // If no path is entered
             deleteStatus.textContent = 'Please enter a file or folder path.';
             deleteStatus.className = 'status-message error';
             deleteStatus.style.display = 'block';
