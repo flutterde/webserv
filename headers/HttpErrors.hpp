@@ -19,4 +19,5 @@ class	HttpErrors {
 		static void	httpResponse414(ClientData& client);
 		static void	httpResponse413(ClientData& client);
 		static void	httpResponse405(ClientData& client);
+		static void	httpResponse403(ClientData& client);
 };

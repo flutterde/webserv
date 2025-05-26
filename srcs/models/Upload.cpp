@@ -1,5 +1,5 @@
 #include "../../headers/Webserv.hpp"
-
+#include "../../headers/HttpErrors.hpp"
 
 /*-------- LARGE FILES ALGORITHM: --------*/
 //	 Receive chunk → store in buffer
@@ -55,6 +55,10 @@ void processMultipartUpload(ClientData &client)
             size_t headers = client.request.find("\r\n\r\n");
             if (headers != std::string::npos) {
                 client.fileName = getFileName(client.request);
+                if (!client.fileName.empty() && !client.server->getEnableUploads()){
+                    client.isRequestComplete = true;
+                    HttpErrors::httpResponse403(client);
+                }
                 if (!client.fileName.empty()) {
                     tmpFileName = client.server->getClientBodyTempPath() + "/upload_" + client.fileName; //! remove prefix & chan + add temp folder
                     if (client.uploadFd.find(client.fileName) != client.uploadFd.end())

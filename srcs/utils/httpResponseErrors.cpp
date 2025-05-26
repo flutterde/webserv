@@ -49,10 +49,21 @@ void	HttpErrors::httpResponse413(ClientData& client) {
 }
 
 void	HttpErrors::httpResponse405(ClientData& client) {
-	std::string response = "HTTP/1.1 413 405 Method Not Allowed\r\n"
+	std::string response = "HTTP/1.1 405 Method Not Allowed\r\n"
 						   "Content-Type: text/html\r\n"
 						   "Content-Length: 57\r\n"
 						   "\r\n<html><body><h1>405 Method Not Allowed</h1></body></html>";
+	std::cout << COL_RED << response << END_COL << std::endl;
+	client.error = response;
+	client.progress = READY;
+	wServ->enablePOLLOUT(client.fd);
+}
+
+void	HttpErrors::httpResponse403(ClientData& client) {
+	std::string response = "HTTP/1.1 403 Forbidden\r\n"
+						   "Content-Type: text/html\r\n"
+						   "Content-Length: 48\r\n"
+						   "\r\n<html><body><h1>403 Forbidden</h1></body></html>";
 	std::cout << COL_RED << response << END_COL << std::endl;
 	client.error = response;
 	client.progress = READY;

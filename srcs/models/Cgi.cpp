@@ -81,7 +81,7 @@ std::string Cgi::locateExecutable(const std::vector<std::string> &searchPaths, c
 
 std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 {
-	std::cout << COL_YELLOW << "Executing CGI script: " << std::endl;
+	std::cout << COL_YELLOW << "Executing CGI script: Status: " << request.client.status << std::endl;
 	request.convertToEnv();
 	char **envVariables = createEnvironmentVariables(request);
 	std::vector<std::string> binaryPaths = extractBinaryPaths(systemEnv);
@@ -95,9 +95,7 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 	else
 		scriptExtension = "";
 
-	if (scriptExtension == ".php")
-		interpreterPath = PHP_CGI_PATH;
-	else if (scriptExtension == ".py")
+	if (scriptExtension == ".py")
 		interpreterPath = locateExecutable(binaryPaths, "python3");
 	else
 		interpreterPath = request.client.server->getCGI(scriptExtension);
@@ -155,11 +153,13 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 		}
 
 		close(stdoutPipe[0]);
-		int status; 
-		waitpid(processId, &status, 0);
-		std::cout << "status:" << status << std::endl;
-		if (WIFSIGNALED(status))
-			request.client.status = WIFSIGNALED(status);
+		std::cout << COL_RED << "the status: " << request.client.status << std::endl;
+		waitpid(processId, &request.client.status, 0);
+		std::cout << COL_RED << "the status after WPID:  " << request.client.status << std::endl;
+		request.client.status = WEXITSTATUS(request.client.status);
+		if (request.client.status)
+			request.client.status = -1;
+		std::cout << COL_RED << "==> the status: " << request.client.status << std::endl;
 	}
 	else
 	{
@@ -177,3 +177,4 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 	delete[] envVariables;
 	return file;
 }
+ 

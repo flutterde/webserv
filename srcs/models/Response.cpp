@@ -105,6 +105,8 @@ Response::Response(struct ClientData &client, Request &req) {
 	
 	switch (status_code) {
 		case CREATED:
+			if (!body.empty())
+				headers["Content-Length"] = ResponseUtils::toString(getBodyLength());
 			break ;
 		// 30x
 		case MOVED_PERMANENTLY:
@@ -129,6 +131,9 @@ Response::Response(struct ClientData &client, Request &req) {
 			break;
 		// 50x
 		case INTERNAL_SERVER_ERROR:
+			body = ResponseUtils::getErrorPage(INTERNAL_SERVER_ERROR);
+			headers["Content-Length"] = ResponseUtils::toString(body.length());
+			break ;
 			break;
 		default:
 			status_code = OK;
@@ -165,14 +170,19 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 	if (isFile) {
 		if (!index.empty())
 			path += index;
-		std::string extension = path.substr(path.find_last_of('.'));
-		if (!extension.compare(".php") || !extension.compare(".py") || client.server->getCGI(extension).compare("not_found")) {
-			body = cgi->executeCgiScript(req, serverEnv);
-			std::cout << "status => " << req.client.status << std::endl;
-			if (req.client.status != 0)
-				status_code = INTERNAL_SERVER_ERROR;
-			isCgi = true;
-		}
+
+		// ! Check if directory instead of dot !!!
+		int dot = path.find_last_of(".");
+		if ((int)dot != -1) {        
+			std::string extension = path.substr(dot);
+        	if (!extension.compare(".py") || client.server->getCGI(extension).compare("not_found")) {            
+				body = cgi->executeCgiScript(req, serverEnv);
+				if (req.client.status != 0)
+					status_code = INTERNAL_SERVER_ERROR;
+				else
+					isCgi = true;      
+			}
+   		}
 		else {
 			struct stat fileStat;
 
@@ -195,15 +205,22 @@ void Response::handlePost(struct ClientData &client, Request &req, std::string &
 		status_code = FORBIDDEN; 
 		return;
 	}
-	std::string extension = path.substr(path.find_last_of('.'));
-	if (!extension.compare(".php") || !extension.compare(".py") || client.server->getCGI(extension).compare("not_found")) {
-		body = cgi->executeCgiScript(req, serverEnv);
-		isCgi = true;
+	int dot = path.find_last_of(".");
+	if ((int)dot != -1) {        
+		std::string extension = path.substr(dot);
+		if (!extension.compare(".py") || client.server->getCGI(extension).compare("not_found")) {            
+			body = cgi->executeCgiScript(req, serverEnv);
+			if (req.client.status != 0)
+				status_code = INTERNAL_SERVER_ERROR;
+			else
+				isCgi = true;      
+		}
+	} else {
+		status_code = CREATED;
+		status_text = "Created";
 	}
-	(void) req;
-	status_code = CREATED;
-	status_text = "Created";
 	headers["Allow-Origin"] = "*";
+	(void) req;
 	wServ->enablePOLLOUT(client.fd);
 	client.progress = READY;
 }
