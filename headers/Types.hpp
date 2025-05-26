@@ -46,7 +46,7 @@
 #endif
 
 #define LISTEN_BACKLOG 2048
-#define BODY_TEMP_PATH "./tmp/path"
+#define BODY_TEMP_PATH "./var/tmp"
 
 
 # define PHP_CGI_PATH "/Users/achakkaf/Documents/webser42/configs/php-cgi" //! PHP CGI Path
@@ -58,7 +58,7 @@
 # define URL_MAX_SIZE 2048
 # define CHUNCK_SIZE 4096
 
-# define DEFAULT_TIME_OUT 5
+# define DEFAULT_TIME_OUT 50
 
 #define CHARS_SIZE 256
 
