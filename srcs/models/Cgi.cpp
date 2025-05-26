@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2025/05/25 17:59:48 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/26 16:01:51 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,6 @@ std::string Cgi::locateExecutable(const std::vector<std::string> &searchPaths, c
 
 std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 {
-	std::cout << COL_YELLOW << "Executing CGI script: Status: " << request.client.status << std::endl;
 	request.convertToEnv();
 	char **envVariables = createEnvironmentVariables(request);
 	std::vector<std::string> binaryPaths = extractBinaryPaths(systemEnv);
@@ -153,13 +152,10 @@ std::string Cgi::executeCgiScript(Request &request, char **systemEnv)
 		}
 
 		close(stdoutPipe[0]);
-		std::cout << COL_RED << "the status: " << request.client.status << std::endl;
 		waitpid(processId, &request.client.status, 0);
-		std::cout << COL_RED << "the status after WPID:  " << request.client.status << std::endl;
 		request.client.status = WEXITSTATUS(request.client.status);
 		if (request.client.status)
 			request.client.status = -1;
-		std::cout << COL_RED << "==> the status: " << request.client.status << std::endl;
 	}
 	else
 	{
