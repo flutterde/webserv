@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 15:40:21 by ochouati          #+#    #+#             */
-/*   Updated: 2025/05/26 13:13:39 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/26 15:45:09 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,8 +150,6 @@ void	WebservHandler::handleRequest(ClientData& client)
 		return this->_closeClient(client.fd);
 	if (!client.isHeadersSent) {
 		std::string res = client.resp->combineResponse();
-		std::cout << res << std::endl;
-		std::cout << COL_GREEN << "the file lenght: " << client.resp->getContentlength() << " the fd: " << client.resp->getFd()  << END_COL << std::endl;
 		send(client.fd, res.c_str(), res.size(), 0);
 		client.isHeadersSent = true;
 		return;
@@ -160,13 +158,11 @@ void	WebservHandler::handleRequest(ClientData& client)
 		char s__buffer[SEND_SIZE];
 		int n = read(client.resp->getFd(), s__buffer, SEND_SIZE - 1);
 		if (n <= 0) {
-			std::cout << COL_RED << "Error while reading from file, for client/N: " << client.fd << " -- " << n << END_COL << std::endl; //! ******************************************************
 			return this->_closeClient(client.fd);
 		}
 		s__buffer[n] = '\0';
 		int j = send(client.fd, s__buffer, n, 0);
 		if (j <= 0 || j != n) {
-			std::cout << COL_RED << "Error while sending socket, for client/N: " << client.fd << " -- " << j << END_COL << std::endl; //! ******************************************************
 			return this->_closeClient(client.fd);
 		}
 		client.bytesSent += j;
@@ -189,7 +185,6 @@ void	WebservHandler::validateRequestHeaders(ClientData& client)
 
 void	WebservHandler::validateUrl(ClientData& client)
 {
-	// 414 Request-URI Too Long (more than URL_MAX_SIZE characters)
 	size_t start = client.headers.find_first_of("/", 0);
 	size_t end = client.headers.find(" HTTP/1.1", start);
 	if (start == std::string::npos || end == std::string::npos)
@@ -197,9 +192,7 @@ void	WebservHandler::validateUrl(ClientData& client)
 	std::string url = client.headers.substr(start, end - start);
 	if (end - start > URL_MAX_SIZE)
 		return HttpErrors::httpResponse414(client), this->enablePOLLOUT(client.fd);
-	// 400 Bad Request url contains invalid characters
 	if (url.find_first_not_of(ALLOWED_CHARS) != std::string::npos) {
-		std::cout << COL_MAGENTA << "Invalid URL: " << url << END_COL << std::endl;
 		return HttpErrors::httpResponse400(client), this->enablePOLLOUT(client.fd);
 	}
 }

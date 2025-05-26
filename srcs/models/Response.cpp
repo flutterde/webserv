@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:24:00 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/26 14:00:13 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/26 15:50:15 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ size_t Response::getContentlength() const {
 std::string Response::combineResponse(void) {
 	std::ostringstream res;
 
-	std::cout << COL_RED << body << END_COL << std::endl;
 	res << http_version << " " << status_code << " " << status_text << "\r\n";
 	std::map<std::string, std::string>::iterator it;
 	for (it = headers.begin(); it != headers.end(); it++)
@@ -167,20 +166,21 @@ void Response::handleGet(struct ClientData &client, Request &req, std::string &p
 		else status_code = FORBIDDEN;
 	}
 	if (isFile) {
-		if (!index.empty())
+		if (!index.empty()) {
 			path += index;
+			req.setPath(std::string("/").append(index));
+		}
 		int dot = path.find_last_of(".");
 		std::string extension = "";
 		if (dot != -1)
 			extension = path.substr(dot);
-		if (!extension.compare(".py") || client.server->getCGI(extension).compare("not_found")) {            
+		if (!extension.compare(".py") || client.server->getCGI(extension).compare("not_found")) {     
 			body = cgi->executeCgiScript(req, serverEnv);
 			if (req.client.status != 0)
 				status_code = INTERNAL_SERVER_ERROR;
 			else
 				isCgi = true;
-		}   
-		else {
+		} else {
 			struct stat fileStat;
 			fd = ResponseUtils::openFile(path);
 			if (stat(path.c_str(), &fileStat) == -1) {
@@ -201,16 +201,22 @@ void Response::handlePost(struct ClientData &client, Request &req, std::string &
 		status_code = FORBIDDEN; 
 		return;
 	}
-	int dot = path.find_last_of(".");
-	if ((int)dot != -1) {        
-		std::string extension = path.substr(dot);
-		if (!extension.compare(".py") || client.server->getCGI(extension).compare("not_found")) {            
-			body = cgi->executeCgiScript(req, serverEnv);
-			if (req.client.status != 0)
-				status_code = INTERNAL_SERVER_ERROR;
-			else
-				isCgi = true;      
+	if (!ResponseUtils::isDirectory(path)) {
+		int dot = path.find_last_of(".");
+		if ((int)dot != -1) {        
+			std::string extension = path.substr(dot);
+			if (!extension.compare(".py") || client.server->getCGI(extension).compare("not_found")) {            
+				body = cgi->executeCgiScript(req, serverEnv);
+				if (req.client.status != 0)
+					status_code = INTERNAL_SERVER_ERROR;
+				else
+					isCgi = true;      
+			}
 		}
+	}
+	if (isCgi) {
+		status_code = OK;
+		status_text = "OK";
 	} else {
 		status_code = CREATED;
 		status_text = "Created";
@@ -222,7 +228,6 @@ void Response::handlePost(struct ClientData &client, Request &req, std::string &
 }
 
 void Response::handleDelete(struct ClientData &client, Request &req, std::string &path) {
-	(void) client;
 	if (path.find("..") != std::string::npos) {
 		status_code = FORBIDDEN; 
 		return;

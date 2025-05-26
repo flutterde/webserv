@@ -146,16 +146,13 @@ if (uploadButton) {
             fetch('/uploads', {
                 method: 'POST',
                 body: formData,
-                mode: 'no-cors' // This is required for your case where the backend is not modified
+                mode: 'no-cors'
             })
             .then(response => {
                 console.log("the status Code : ", response.status);
-                // Check if the status code is in the 2xx range
                 if (response.ok) {
-                    // If status is 2xx, we assume success even with an empty body
                     return { success: true };
                 } else {
-                    // If not, return failure
                     return { success: false };
                 }
             })
@@ -218,7 +215,7 @@ if (deleteButton) {
         if (path) {
             deleteButton.disabled = true;
             deleteButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
-            const deleteUrl = `http://127.0.0.1:5050${path}`;
+            const deleteUrl = `http://127.0.0.1:8080${path}`;
 
             console.log(`Sending DELETE request to: ${deleteUrl}`);
 

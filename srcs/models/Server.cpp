@@ -306,7 +306,7 @@ void	Server::setNonBlocking(int fd)
 
 bool	Server::isValidServer(void)
 {
-	if (this->rootPath.empty() || (this->port == INT_MAX || !this->port) || this->host.empty()) {
+	if (this->rootPath.empty() || (this->port == INT_MAX || !this->port) || this->host.empty() || !this->getIndexes().size()) {
 		std::cerr << COL_RED << "Invalid server configuration" << END_COL << std::endl;
 		return (false);
 	}

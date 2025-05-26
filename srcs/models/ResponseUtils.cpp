@@ -6,7 +6,7 @@
 /*   By: ochouati <ochouati@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 12:29:43 by mboujama          #+#    #+#             */
-/*   Updated: 2025/05/26 11:53:45 by ochouati         ###   ########.fr       */
+/*   Updated: 2025/05/26 15:48:14 by ochouati         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,6 @@ bool ResponseUtils::isDirectory(const std::string& path) {
 
 int ResponseUtils::openFile(const std::string& filepath) {
 	int fd = open(filepath.c_str(), O_RDONLY);
-	// ? What if the file didn't open ?
-
-	std::cout << COL_RED << "File descriptor: " << fd << END_COL << std::endl;
-
 	return fd;
 }
 
@@ -75,7 +71,6 @@ std::string ResponseUtils::isIndexFileExist(std::map<std::string, bool> &indexes
 
 	dir = opendir(path.c_str());
 	if (!dir) {
-		std::cout << COL_MAGENTA << "Can't open directory in 'isIndexFileExist'" << END_COL << std::endl;
 		return "";
 	}
 	while ((ent = readdir(dir))) {
@@ -117,9 +112,6 @@ std::string ResponseUtils::getErrorPage(RESPONSE_CODE status) {
 			content.append(line);
 		}
 	}
-	else
-		std::cout << "File doesn't opened" << std::endl;
-
 	return content;
 }
 
@@ -154,7 +146,6 @@ std::string ResponseUtils::generateAutoIndex(std::string filepath) {
 bool    ResponseUtils::deleteFile(const std::string& path)
 {
     if (remove(path.c_str()) != 0) {
-        std::cerr << "Error deleting file: " << path << std::endl;
 		return false;
 	}
 	return true;
@@ -165,7 +156,6 @@ bool ResponseUtils::deleteFolder(const std::string& path)
     DIR* dir = opendir(path.c_str());
 
     if (!dir) {
-        std::cout << COL_MAGENTA << "Can't open directory in 'deleteFolder'" << END_COL << std::endl;
         return false;
     }
     struct dirent* entry;
@@ -181,7 +171,6 @@ bool ResponseUtils::deleteFolder(const std::string& path)
     }
     closedir(dir);
     if (remove(path.c_str()) != 0) {
-        std::cerr << "Error deleting directory: " << path << std::endl;
 		return (false);
 	}
 	return true;

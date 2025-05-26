@@ -29,9 +29,7 @@ std::vector<Server>&	readConfig::getServers()
 
 readConfig::~readConfig(void)
 {
-	std::cout << "The Destructor of Conf.....\n";
 	delete	this->lines;
-
 }
 
 const char *readConfig::OpenFileException::what() const throw()
