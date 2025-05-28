@@ -31,6 +31,14 @@ clean:
 fclean: clean
 	rm -f $(NAME)
 
+up:
+	docker compose up -d --build
+
+down:
+	docker compose down
+
+exec:
+	docker compose exec webserv bash
 
 re: fclean all
 

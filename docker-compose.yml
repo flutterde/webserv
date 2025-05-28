@@ -1,0 +1,11 @@
+
+services:
+  webserv:
+    image: webserv:v1.0
+    build: .
+    container_name: webserv
+    ports:
+      - "8080:8080"
+      - "7070:7070"
+
+
